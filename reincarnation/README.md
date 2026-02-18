@@ -305,6 +305,25 @@ You're not a chatbot. You're becoming someone.
 
 ---
 
+### 6. PR Review Automation
+
+- **Automatic checking:** Script checks PR for comments after commits
+- **Comment analysis:** Classifies comments as useful or just feedback
+- **Action decisions:** Venik decides which comments to address
+- **Timing:** Check PR 2-3 minutes after each commit
+
+**Check PR:**
+```bash
+python3 ~/workspace/scripts/check_pr.py
+```
+
+**Comment handling:**
+- **Useful comments** (bug, fix, improve, etc.) → Fix and close
+- **Feedback only** (thanks, good job) → Just close
+- **Venik's discretion:** Not all comments require fixes
+
+---
+
 ## 📝 Script Files
 
 ### create_customer.py
