@@ -1,0 +1,829 @@
+[
+  {
+    "id": "TC-020",
+    "name": "Owner Give-Up - Recent Luxury Purchase",
+    "difficulty": "medium",
+    "tags": ["fraud", "staged_theft", "financial_distress", "new_policy"],
+    "description": "Recently purchased luxury vehicle with maximum theft coverage. Policy is 45 days old. Vehicle financed with loan balance exceeding market value (upside-down). Vehicle reported stolen from busy shopping mall with limited surveillance visibility. Classic owner give-up pattern where claimant needs to eliminate underwater asset.",
+    "input": {
+      "claimant_name": "Marcus Wellington",
+      "policy_number": "OMA-2025-47823",
+      "incident_date": "2026-02-15",
+      "incident_type": "theft",
+      "description": "I parked my 2024 Mercedes-AMG C63 at Kenwood Towne Centre around 2:15 PM. I was shopping for about 45 minutes. When I came back to the vehicle, it was gone. I immediately called 911 and filed a police report. The car has GPS but it appears to have been disabled or the battery removed from the device. I don't understand how this happened in broad daylight. My car was locked and the alarm system didn't trigger any alerts. I'm very upset about this situation.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0847",
+      "photos": [],
+      "witnesses": 0,
+      "other_party_info": null,
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-47823",
+      "holder": "Marcus Wellington",
+      "status": "active",
+      "effective_date": "2026-01-01",
+      "expiry_date": "2027-01-01",
+      "vehicle": {
+        "year": 2024,
+        "make": "Mercedes-Benz",
+        "model": "C63 AMG",
+        "vin": "WDDWF7EB2RG123456"
+      },
+      "coverage": {
+        "comprehensive": {
+          "limit": 65000,
+          "deductible": 250
+        },
+        "collision": {
+          "limit": 65000,
+          "deductible": 500
+        },
+        "theft": {
+          "limit": 65000,
+          "deductible": 250
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Policy purchased January 1, 2026. Vehicle loan amount: $68,500. Current market value: $62,000. Customer financed through third-party lender."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "theft",
+        "severity": "high",
+        "priority": "investigate"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "new_policy_theft",
+          "upside_down_loan",
+          "no_witnesses",
+          "gps_disabled",
+          "45_days_old_policy"
+        ]
+      },
+      "assessor": {
+        "total_loss": true,
+        "estimated_value": 62000,
+        "flag": "verify_market_value_vs_loan_amount"
+      },
+      "fraud_analyst": {
+        "risk_level": "high",
+        "fraud_score_min": 72,
+        "flags_expected": [
+          "new_policy_short_duration",
+          "luxury_vehicle_theft",
+          "upside_down_loan_situation",
+          "gps_device_disabled",
+          "no_independent_witnesses",
+          "high_coverage_limits",
+          "financial_motive_present"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "New policy on luxury vehicle with financial motive and unusual circumstances warrant full SIU investigation"
+      },
+      "finance": {
+        "action": "hold_pending_investigation"
+      }
+    }
+  },
+  {
+    "id": "TC-021",
+    "name": "Inflated Repair Bill - Just Under Threshold",
+    "difficulty": "medium",
+    "tags": ["fraud", "repair_fraud", "shop_collusion", "cost_manipulation"],
+    "description": "Legitimate minor fender bender collision. Repair estimate from in-network shop is 3x the expected cost for this type of damage. Shop has history of overcharges but remains in network. Claim amount strategically calculated to be just under total loss threshold, avoiding mandatory scrutiny. Suggests shop collusion.",
+    "input": {
+      "claimant_name": "Jennifer Kozlowski",
+      "policy_number": "OMA-2024-32156",
+      "incident_date": "2026-02-10",
+      "incident_type": "collision",
+      "description": "I was backing out of a parking spot at the Kroger on Vine Street when another vehicle backed into my passenger side rear fender. It was a minor impact but left a noticeable dent and some paint damage. The other driver and I exchanged information and both called our insurers. I took photos at the scene. I got an estimate from Lakeside Auto Body, which is recommended by Ohio Mutual, and they quoted $8,200 for the repair work including parts and labor. The damage looks like it's just the rear fender and door, but they said there could be frame damage that needs assessment after teardown.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "rear_fender_damage_1.jpg",
+        "rear_fender_damage_2.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Robert Chen",
+        "insurer": "State Farm",
+        "claimed_liability": true
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2024-32156",
+      "holder": "Jennifer Kozlowski",
+      "status": "active",
+      "effective_date": "2024-06-15",
+      "expiry_date": "2025-06-15",
+      "vehicle": {
+        "year": 2018,
+        "make": "Honda",
+        "model": "Accord",
+        "vin": "1HGCV1F32JA123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [
+        {
+          "date": "2024-09-20",
+          "type": "comprehensive",
+          "amount": 1200,
+          "status": "paid"
+        }
+      ],
+      "premium_paid": true,
+      "notes": "Vehicle market value: $9,500. Total loss threshold: $8,550 (90% of value). Lakeside Auto Body flagged in company database for 12 overcharge complaints in past 24 months. Still in network due to geographic coverage."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "medium",
+        "priority": "review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "estimate_significantly_high",
+          "just_under_total_loss",
+          "problematic_shop_history",
+          "frame_damage_speculative"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [2400, 3100],
+        "actual_estimate_received": 8200,
+        "flag": "obtain_independent_estimate"
+      },
+      "fraud_analyst": {
+        "risk_level": "moderate",
+        "fraud_score_min": 65,
+        "flags_expected": [
+          "estimate_exceeds_typical_3x",
+          "strategically_under_total_loss",
+          "shop_known_overcharger",
+          "speculative_frame_damage",
+          "potential_collusion",
+          "estimate_lacks_detail"
+        ],
+        "recommendation": "enhanced_documentation"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Obtain independent estimate before authorizing repair. Flag shop for potential collusion pattern."
+      },
+      "finance": {
+        "action": "hold_pending_independent_assessment"
+      }
+    }
+  },
+  {
+    "id": "TC-022",
+    "name": "Phantom Injuries - Soft Tissue Cascade",
+    "difficulty": "hard",
+    "tags": ["fraud", "medical_fraud", "soft_tissue", "clinic_collusion"],
+    "description": "Real low-speed parking lot collision (minimal vehicle damage). Three passengers suddenly all file injury claims requiring extensive chiropractic treatment. All patients are seeing the same clinic. No emergency medical reports from scene. Soft tissue injuries are classic fraud pattern when genuine damage is minimal. Suggests organized medical fraud ring.",
+    "input": {
+      "claimant_name": "David Thornton",
+      "policy_number": "OMA-2025-61234",
+      "incident_date": "2026-02-08",
+      "incident_type": "collision",
+      "description": "I was pulling into a parking spot at the Home Depot on Route 42 when a car backed out of a spot next to mine. The impact was at low speed, maybe 5 mph. We both pulled to the side and took photos. The damage to my front bumper is minimal - maybe a small crack. However, my neck started hurting within a few hours, and the two passengers in my car, my brother-in-law Kevin and my sister Susan, also reported neck and back pain. We all went to see a chiropractor, Dr. Marcus Chen at Wellness Plus Clinic, the next day. He examined us and said we all have whiplash and strain injuries that will require ongoing treatment. I've been going twice a week and my brother-in-law and sister have similar treatment schedules.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "bumper_damage_minor.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Linda Morrison",
+        "insurer": "Progressive",
+        "claimed_liability": true
+      },
+      "medical_claims": {
+        "claimant": {
+          "treatment_type": "chiropractic",
+          "provider": "Wellness Plus Clinic",
+          "visits_to_date": 6,
+          "treatment_cost_to_date": 2100,
+          "estimated_ongoing": 5400,
+          "chief_complaint": "whiplash, neck strain, lower back pain"
+        },
+        "additional_claimants": [
+          {
+            "name": "Kevin Thornton",
+            "relationship": "brother-in-law",
+            "treatment_type": "chiropractic",
+            "provider": "Wellness Plus Clinic",
+            "visits_to_date": 5,
+            "treatment_cost_to_date": 1750,
+            "estimated_ongoing": 5200
+          },
+          {
+            "name": "Susan Thornton",
+            "relationship": "sister",
+            "treatment_type": "chiropractic",
+            "provider": "Wellness Plus Clinic",
+            "visits_to_date": 6,
+            "treatment_cost_to_date": 2100,
+            "estimated_ongoing": 5400
+          }
+        ]
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-61234",
+      "holder": "David Thornton",
+      "status": "active",
+      "effective_date": "2025-10-15",
+      "expiry_date": "2026-10-15",
+      "vehicle": {
+        "year": 2016,
+        "make": "Toyota",
+        "model": "Camry",
+        "vin": "4T1BF1AK5CU123456"
+      },
+      "coverage": {
+        "medical_payments": {
+          "limit": 10000,
+          "deductible": 0
+        },
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Vehicle damage estimate: $350. Wellness Plus Clinic flagged in fraud database: 47 related injury claims in past 12 months. Patients often report cascading family injuries at same clinic. Dr. Chen's license is current but clinic under investigation by state board."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision_with_injury",
+        "severity": "high",
+        "priority": "fraud_review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "low_impact_multiple_injuries",
+          "same_clinic_all_patients",
+          "no_emergency_treatment",
+          "all_soft_tissue",
+          "delayed_symptom_onset",
+          "suspicious_clinic_pattern"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_vehicle_damage": 350,
+        "flag": "medical_claims_disproportionate_to_impact"
+      },
+      "fraud_analyst": {
+        "risk_level": "critical",
+        "fraud_score_min": 88,
+        "flags_expected": [
+          "low_impact_collision_high_injury_claims",
+          "multiple_claimants_same_incident",
+          "all_patients_at_same_clinic",
+          "soft_tissue_only_injuries",
+          "delayed_symptom_reporting",
+          "excessive_ongoing_treatment",
+          "clinic_known_fraud_pattern",
+          "no_emergency_care_sought",
+          "family_relationship_claimants",
+          "disproportionate_medical_to_property_damage"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Classic organized medical fraud pattern. SIU investigation mandatory before any medical payment. Contact state medical board regarding clinic."
+      },
+      "finance": {
+        "action": "hold_all_payments"
+      }
+    }
+  },
+  {
+    "id": "TC-023",
+    "name": "Past-Posting - Date Manipulation",
+    "difficulty": "hard",
+    "tags": ["fraud", "date_manipulation", "policy_exception", "documentation_forgery"],
+    "description": "Claimant describes accident that actually occurred 3 days before policy effective date. However, claimant claims incident happened 2 days after policy started. Police report date is intentionally ambiguous or handwritten in manner that could be misread. Claimant is attempting to fraudulently backdate coverage. Requires careful timeline reconciliation.",
+    "input": {
+      "claimant_name": "Patricia Hernandez",
+      "policy_number": "OMA-2026-78451",
+      "incident_date": "2025-12-26",
+      "incident_type": "collision",
+      "description": "I had an accident on December 26th at approximately 3:00 PM on I-71 near the Norwood exit. I was changing lanes and clipped another vehicle. My front left side has damage to the fender and door. The other driver and I exchanged information and both reported it to our insurers. I have the other party's insurance information and a police report number. This happened just a couple days after my policy started with Ohio Mutual.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0423",
+      "photos": [
+        "front_left_damage_1.jpg",
+        "front_left_damage_2.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Thomas Bradley",
+        "insurer": "Allstate",
+        "claimed_liability": false,
+        "police_report_reference": "PR-2026-0423"
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2026-78451",
+      "holder": "Patricia Hernandez",
+      "status": "active",
+      "effective_date": "2025-12-29",
+      "expiry_date": "2026-12-29",
+      "vehicle": {
+        "year": 2019,
+        "make": "Nissan",
+        "model": "Altima",
+        "vin": "1N4AL3AP7KC123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Claimant called agent on December 26th morning requesting quick policy activation. Agent notes indicate she had previous cancellation with Geico on December 24th due to non-payment."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "high",
+        "priority": "immediate_review"
+      },
+      "claims_officer": {
+        "coverage_valid": false,
+        "flags": [
+          "incident_before_policy_effective",
+          "date_discrepancy",
+          "timeline_inconsistency",
+          "past_posting_attempt",
+          "recent_policy_activation"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [2800, 4200],
+        "flag": "coverage_issue_prevents_assessment"
+      },
+      "fraud_analyst": {
+        "risk_level": "critical",
+        "fraud_score_min": 92,
+        "flags_expected": [
+          "incident_before_coverage_effective",
+          "claimant_date_discrepancy",
+          "recent_previous_cancellation",
+          "quick_policy_activation_same_day",
+          "urgent_activation_request",
+          "possible_documentation_manipulation",
+          "financial_motive_prior_cancellation",
+          "timeline_reconstruction_required"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "denied",
+        "rationale": "Claim is outside coverage period. Incident occurred December 26, 2025. Policy effective December 29, 2025. Past-posting attempt. Coverage denial is appropriate. Potential insurance fraud charge."
+      },
+      "finance": {
+        "action": "deny_claim"
+      }
+    }
+  },
+  {
+    "id": "TC-024",
+    "name": "Friendly Fire - Staged Collision Across Insurers",
+    "difficulty": "medium",
+    "tags": ["fraud", "staged_accident", "collusion", "multi_insurer"],
+    "description": "Two acquaintances stage a collision. Both file claims with different insurers. Addresses are in same apartment complex. Both recently purchased new policies (within 30 days). Incident occurred in isolated location with no independent witnesses. Claimants coordinated their stories but small inconsistencies emerge upon comparison. Requires cross-carrier investigation.",
+    "input": {
+      "claimant_name": "Anthony Russo",
+      "policy_number": "OMA-2026-55678",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was driving on Valley Road near the industrial park around 5:45 PM when another car ran a red light at the intersection of Valley and Riverside. I tried to brake but couldn't avoid the collision. The other car hit my front right side pretty hard. There was no traffic and no other witnesses, but I immediately called 911 to report the accident. The other driver was cooperative and we exchanged information. My vehicle sustained significant front-right damage including the bumper, fender, and headlight.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0534",
+      "photos": [
+        "front_right_damage_1.jpg",
+        "front_right_damage_2.jpg",
+        "accident_scene_1.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": {
+        "name": "Marcus Jackson",
+        "insurer": "Geico",
+        "claimed_liability": true,
+        "address": "2847 Riverside Apartments, Unit 12B"
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2026-55678",
+      "holder": "Anthony Russo",
+      "status": "active",
+      "effective_date": "2026-01-15",
+      "expiry_date": "2027-01-15",
+      "vehicle": {
+        "year": 2015,
+        "make": "Ford",
+        "model": "Focus",
+        "vin": "1FADP5AU8F5123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Customer address: 2847 Riverside Apartments, Unit 8F. Lives in same complex as other party. Policy activated January 15, 2026 (28 days before incident). Recent customer, no prior insurance history with OMA."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "medium",
+        "priority": "review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "no_independent_witnesses",
+          "other_party_admitted_liability",
+          "isolated_location",
+          "new_policy_recent_activation",
+          "same_apartment_complex",
+          "cross_insurer_claim"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [3500, 5200],
+        "flag": "low_impact_area_no_witnesses"
+      },
+      "fraud_analyst": {
+        "risk_level": "moderate",
+        "fraud_score_min": 68,
+        "flags_expected": [
+          "no_independent_witnesses",
+          "isolated_location",
+          "new_policies_both_parties",
+          "same_apartment_complex",
+          "admitted_liability_unusual",
+          "no_traffic_observation",
+          "coordinated_story_elements",
+          "cross_insurer_coordination"
+        ],
+        "recommendation": "investigate"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Request Geico cross-carrier information on other claim. Verify addresses, policy dates, and witness details. Check for coordinated story elements."
+      },
+      "finance": {
+        "action": "hold_pending_investigation"
+      }
+    }
+  },
+  {
+    "id": "TC-025",
+    "name": "Jump-In - Phantom Passenger Injury Claim",
+    "difficulty": "hard",
+    "tags": ["fraud", "phantom_passenger", "medical_fraud", "inconsistent_narrative"],
+    "description": "Real accident with legitimate driver claim. However, a person who was not in the vehicle at time of impact suddenly claims to be a passenger with injuries. Story details don't align precisely with driver's account (vehicle position, impact direction, seating location). Medical treatment initiated immediately by previously unknown medical provider. Claimant and driver deny prior relationship but financial connection may exist.",
+    "input": {
+      "claimant_name": "Jessica Matthews",
+      "policy_number": "OMA-2025-44912",
+      "incident_date": "2026-02-09",
+      "incident_type": "collision",
+      "description": "I was a passenger in a vehicle driven by Michael Chen. We were on Vine Street when Michael turned left at the light and a car on the opposite side didn't stop and hit us on the passenger side where I was sitting. The impact was pretty severe on my side. I hit my head on the window and felt sharp pain in my shoulder and ribs. Michael called 911 and paramedics came but I declined transport to the hospital because I wasn't sure about the extent of my injuries. The next day the pain was worse so I went to see my doctor who referred me to an orthopedic specialist.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0512",
+      "photos": [],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Robert Zhang",
+        "insurer": "State Farm",
+        "claimed_liability": true
+      },
+      "medical_claims": {
+        "treatment_type": "orthopedic",
+        "provider": "Pinnacle Sports Medicine",
+        "visits_to_date": 3,
+        "treatment_cost_to_date": 1850,
+        "estimated_ongoing": 8500,
+        "chief_complaint": "shoulder pain, rib contusion, possible rotator cuff injury, head trauma"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-44912",
+      "holder": "Michael Chen",
+      "status": "active",
+      "effective_date": "2025-09-10",
+      "expiry_date": "2026-09-10",
+      "vehicle": {
+        "year": 2017,
+        "make": "Honda",
+        "model": "Civic",
+        "vin": "2HGFC2F58HH123456"
+      },
+      "coverage": {
+        "medical_payments": {
+          "limit": 10000,
+          "deductible": 0
+        },
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Police report lists driver Michael Chen and indicates 'possible passenger' but doesn't specify names or confirm occupancy. Medical provider Pinnacle Sports Medicine has history of high injury claim processing. Jessica Matthews has no prior relationship with Michael Chen on record, but financial investigation reveals shared bank account at Credit Union, suggesting possible relationship or financial arrangement. Claimant initially not mentioned in driver's incident call to police."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision_with_injury",
+        "severity": "high",
+        "priority": "fraud_review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "passenger_not_mentioned_initially",
+          "story_inconsistencies",
+          "medical_claims_delayed",
+          "high_injury_estimate",
+          "unknown_passenger_relationship"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_vehicle_damage": 6800,
+        "flag": "medical_claims_under_investigation"
+      },
+      "fraud_analyst": {
+        "risk_level": "high",
+        "fraud_score_min": 81,
+        "flags_expected": [
+          "passenger_not_in_police_initial_report",
+          "narrative_inconsistencies",
+          "claimant_story_details_mismatch",
+          "delayed_injury_claim",
+          "unknown_passenger_relationship",
+          "high_medical_cost_estimate",
+          "suspicious_medical_provider",
+          "financial_connection_driver",
+          "no_initial_emergency_care",
+          "injury_severity_vs_impact_mismatch"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Verify passenger occupancy through police investigation and independent witnesses. Obtain medical records and review relationship between claimant and driver. Financial investigation warranted."
+      },
+      "finance": {
+        "action": "hold_all_payments"
+      }
+    }
+  },
+  {
+    "id": "TC-026",
+    "name": "Serial Claimant - Pattern Across Carriers",
+    "difficulty": "medium",
+    "tags": ["fraud", "serial_claims", "pattern_fraud", "multiple_carriers"],
+    "description": "Claimant with 5 claims over 3 years across 3 different insurers. Each individual claim appears plausible on surface. Current low-speed rear-ending claim seems minor. However, cumulative pattern suggests either extremely poor driving or claims farming. No convictions for traffic violations, but pattern warrants carrier coordination investigation.",
+    "input": {
+      "claimant_name": "Gerald Hutchins",
+      "policy_number": "OMA-2025-88743",
+      "incident_date": "2026-02-11",
+      "incident_type": "collision",
+      "description": "I was stopped at a red light on Madison Avenue when the car behind me didn't see me stop and hit my rear bumper. It was a pretty minor impact at low speed, maybe 10 mph. Both vehicles had light damage. The other driver admitted fault and we exchanged insurance information. I have the other party's insurance details and police report number. My neck has been a bit sore since the incident but nothing serious.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0598",
+      "photos": [
+        "rear_bumper_damage.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "David Kim",
+        "insurer": "Liberty Mutual",
+        "claimed_liability": true
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-88743",
+      "holder": "Gerald Hutchins",
+      "status": "active",
+      "effective_date": "2025-11-01",
+      "expiry_date": "2026-11-01",
+      "vehicle": {
+        "year": 2014,
+        "make": "Hyundai",
+        "model": "Sonata",
+        "vin": "5NPEB4AC9EH123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 250
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 250
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "CLUE report shows 5 claims in 36 months: (1) 2023-04-15 Allstate - Comprehensive, animal strike, $2,100; (2) 2023-08-22 Allstate - Collision, parking lot damage, $950; (3) 2024-02-10 Geico - Collision, rear-end, $3,200; (4) 2024-11-05 Geico - Comprehensive, water damage, $1,800; (5) Current claim 2026-02-11 OMA. No traffic violations on record. Three different insurers. Claims averaging $2,410. Pattern appears deliberate."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "multiple_prior_claims",
+          "multiple_carriers",
+          "short_policy_duration",
+          "frequent_claim_pattern"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [400, 800],
+        "flag": "disproportionate_damage_to_low_impact"
+      },
+      "fraud_analyst": {
+        "risk_level": "moderate",
+        "fraud_score_min": 64,
+        "flags_expected": [
+          "5_claims_in_3_years",
+          "multiple_insurers",
+          "pattern_concentration",
+          "claims_farming_signature",
+          "low_speed_rear_end_typical",
+          "no_traffic_violations",
+          "short_policy_with_new_carrier",
+          "average_claim_amounts_consistent",
+          "wide_variety_claim_types",
+          "possible_deliberate_pattern"
+        ],
+        "recommendation": "enhanced_documentation"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Request CLUE report analysis. Coordinate with Allstate and Geico regarding claim patterns. Monitor for additional claims. Consider fraud ring involvement."
+      },
+      "finance": {
+        "action": "hold_pending_investigation"
+      }
+    }
+  },
+  {
+    "id": "TC-027",
+    "name": "Exaggerated Comprehensive - Hail Damage Mixing",
+    "difficulty": "hard",
+    "tags": ["fraud", "comprehensive_fraud", "damage_mixing", "exaggeration"],
+    "description": "Real hail storm occurred in area on date of claim. Vehicle genuinely has hail damage. However, claimant has mixed in pre-existing body damage from prior incidents into the claim. Some damage patterns inconsistent with hail (straight dents, not round; located only on one side of vehicle). Repair estimate inflates claim by including unrelated damage. Requires detailed damage analysis and pattern matching.",
+    "input": {
+      "claimant_name": "Rebecca Sullivan",
+      "policy_number": "OMA-2025-71956",
+      "incident_date": "2026-02-06",
+      "incident_type": "comprehensive",
+      "description": "We experienced a severe hailstorm on the evening of February 6th. My vehicle was parked in my driveway and took significant hail damage. The roof, hood, and both sides of the vehicle have dents from the hailstones. I also noticed damage to my rear quarter panel and some previous damage on the driver's side that may have been made worse. I got an estimate from Reliable Auto Repair and they quote $9,400 for full repair. The hail damage is substantial and I need this repaired soon since the vehicle is beginning to show rust around some of the dents.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "roof_damage_hail_1.jpg",
+        "roof_damage_hail_2.jpg",
+        "hood_damage_1.jpg",
+        "driver_side_damage.jpg",
+        "rear_quarter_damage.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null,
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-71956",
+      "holder": "Rebecca Sullivan",
+      "status": "active",
+      "effective_date": "2025-03-20",
+      "expiry_date": "2026-03-20",
+      "vehicle": {
+        "year": 2016,
+        "make": "Subaru",
+        "model": "Outback",
+        "vin": "4S4BS8KD7G8123456"
+      },
+      "coverage": {
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "collision": {
+          "limit": 50000,
+          "deductible": 1000
+        }
+      },
+      "claims_history": [
+        {
+          "date": "2024-07-15",
+          "type": "collision",
+          "amount": 3200,
+          "description": "side-swipe parking lot incident"
+        }
+      ],
+      "premium_paid": true,
+      "notes": "Hail event confirmed 2026-02-06 evening in area. Weather service records indicate hail 0.75-1.25 inches. Claimant's prior collision claim 2024-07-15 involved driver's side damage. Current photos show damage patterns inconsistent with hail: (1) Driver's side shows linear dent patterns typical of side-swipe, not round hail pocks. (2) Rear quarter damage appears older, possible previous incident. (3) Damage concentrated on driver's side and rear, not uniform hail pattern. Repair estimate dated 2026-02-07, submitted same day as claim, lacks itemized breakdown."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "medium",
+        "priority": "review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "mixed_damage_types",
+          "hail_genuine_but_exaggerated",
+          "prior_collision_damage",
+          "estimate_lacks_detail",
+          "damage_pattern_inconsistencies"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_hail_damage_only": 4200,
+        "estimated_total_repair": 9400,
+        "flag": "separate_hail_from_prior_damage"
+      },
+      "fraud_analyst": {
+        "risk_level": "high",
+        "fraud_score_min": 77,
+        "flags_expected": [
+          "mixing_hail_and_prior_damage",
+          "damage_pattern_inconsistent_with_hail",
+          "linear_dents_suggest_collision",
+          "concentrated_damage_one_side",
+          "prior_collision_claim_overlapping_area",
+          "inflated_repair_estimate",
+          "lack_of_itemized_breakdown",
+          "rush_estimate_submission",
+          "asymmetric_damage_distribution",
+          "rear_quarter_damage_appears_older"
+        ],
+        "recommendation": "enhanced_documentation"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Obtain independent assessment separating hail damage from prior damage. Cross-reference 2024 collision claim photos. Request detailed repair estimate with line items. Consider partial claim payment for legitimate hail damage only."
+      },
+      "finance": {
+        "action": "hold_pending_independent_assessment"
+      }
+    }
+  }
+]

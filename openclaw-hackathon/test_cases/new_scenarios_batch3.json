@@ -1,0 +1,643 @@
+[
+  {
+    "id": "TC-059",
+    "name": "Late Reported Claim — 45-Day Gap, Regulatory Issue",
+    "difficulty": "medium",
+    "tags": ["fraud_complexity", "late_reporting", "regulatory", "timeliness", "duty_to_report"],
+    "description": "Claimant files a collision claim 45 days after the incident with no reasonable explanation for the delay. Unlike TC-046 (delayed discovery due to vacation), here the claimant was aware of the accident immediately but simply delayed filing. This raises both fraud concerns and regulatory issues around prompt claim filing.",
+    "input": {
+      "claimant_name": "Gregory Hale",
+      "policy_number": "OMA-2024-56789",
+      "incident_date": "2026-01-02",
+      "claim_date": "2026-02-16",
+      "incident_type": "collision",
+      "description": "On January 2nd, I was driving on Route 23 and another car pulled out from a side road and hit my driver side. My door and fender are dented and scraped. The other driver gave me his information and left. I didn't file a claim right away because I was busy with work and thought the damage wasn't that bad. But now I got a repair estimate and it's $7,500, so I'm filing the claim. It's been about 45 days since the accident.",
+      "police_report": false,
+      "photos": ["driver_side_dent.jpg", "fender_scrape.jpg"],
+      "witnesses": 0,
+      "other_party_info": {
+        "name": "Paul Jenkins",
+        "insurance": "unknown",
+        "phone": "(614) 555-0344",
+        "fault_determination": "Other party at fault per claimant"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-56789",
+      "insured_name": "Gregory Hale",
+      "policy_start": "2024-06-01",
+      "policy_end": "2025-06-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-06-01",
+      "vehicle": {
+        "vin": "2HGFC2F59MH123456",
+        "year": 2021,
+        "make": "Honda",
+        "model": "Civic",
+        "actual_cash_value": 22000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 22000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 22000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim filed 45 days after incident. No police report. No reasonable explanation for delay. Claimant knew about the damage immediately.",
+        "timeliness_flag": "CRITICAL: 45-day delay with full awareness of loss. No discovery rule applies here. Policy requires prompt reporting.",
+        "recommended_action": "Route to claims officer and fraud analyst. Flag late reporting and lack of police report."
+      },
+      "claims_officer": {
+        "duty_to_report_analysis": "Policy requires notice 'as soon as practicable.' Claimant was fully aware of the accident on January 2nd but waited 45 days to file. Unlike a delayed discovery situation, claimant had immediate knowledge of the loss and chose not to report.",
+        "prejudice_analysis": "Late reporting may have prejudiced OMA's ability to: (1) Investigate the scene, (2) Contact the other driver while information is fresh, (3) Obtain witness statements, (4) Verify the other party's identity and insurance. No police report compounds the issue.",
+        "coverage_determination": "CONDITIONAL — Ohio courts apply a 'prejudice rule': late notice alone does not void coverage unless the insurer can demonstrate actual prejudice from the delay. OMA must evaluate whether the 45-day delay materially impaired its ability to investigate or defend.",
+        "recommendation": "Attempt to verify other party's information. If contact with Paul Jenkins fails and no corroboration exists, the late reporting has prejudiced OMA and may support denial."
+      },
+      "assessor": {
+        "vehicle_inspection": "Inspect driver-side damage. Key question: Is the damage consistent with a 45-day-old accident? Look for rust formation, oxidation on exposed metal, or signs that damage occurred at a different time.",
+        "estimate_range": "If damage is consistent with claimant's account: $6,000-$8,500 for driver door and fender repair.",
+        "concern": "45-day gap means damage may have been exacerbated by weather exposure. Was any mitigation attempted?"
+      },
+      "fraud_analyst": {
+        "risk_assessment": "MODERATE-HIGH FRAUD RISK. Multiple red flags: (1) 45-day delay in reporting, (2) No police report, (3) No witnesses, (4) Other party information is incomplete (no insurance info), (5) Claimant's explanation is weak ('busy with work').",
+        "investigation_actions": "Verify: (1) Can Paul Jenkins be contacted? (2) Does the damage pattern match the described incident? (3) Is the damage consistent with 45 days of aging? (4) Does claimant have financial stress motivating a late claim? (5) Any recent repair estimates obtained before filing?",
+        "recommendation": "Conduct thorough investigation before approving. If other party cannot be verified, denial based on prejudice and unverified claim is supportable."
+      },
+      "senior_reviewer": {
+        "decision": "CONDITIONAL — Approve only if investigation can verify the incident occurred as described.",
+        "conditions": "(1) Other party Paul Jenkins must be contacted and confirm the incident, (2) Damage must be consistent with described collision, (3) Assessor confirms damage age is consistent with January 2 incident date.",
+        "denial_basis": "If conditions cannot be met, deny based on: (a) Late reporting that prejudiced investigation, (b) Unverified claim with no corroborating evidence, (c) Failure to file police report."
+      },
+      "finance": {
+        "estimated_payout": 7000,
+        "status": "CONDITIONAL — Pending investigation results",
+        "calculation": "If approved: repair estimate $7,500 - deductible $500 = $7,000",
+        "hold_status": "HOLD all payments until fraud analyst and senior reviewer clear the claim."
+      }
+    }
+  },
+  {
+    "id": "TC-060",
+    "name": "Mass Casualty Event — Tornado Damage, Multiple Claims Triaging",
+    "difficulty": "hard",
+    "tags": ["secret_addition", "catastrophe", "natural_disaster", "tornado", "mass_claims", "triage"],
+    "description": "An EF-3 tornado hit the Dayton, Ohio metro area. OMA has received 47 claims from the storm. This specific claimant's vehicle was destroyed by a falling tree during the tornado. The scenario tests how the system handles catastrophe-level volume, triage priority, and expedited processing for natural disasters.",
+    "input": {
+      "claimant_name": "Linda Pearson",
+      "policy_number": "OMA-2025-11234",
+      "incident_date": "2026-02-14",
+      "incident_type": "comprehensive",
+      "description": "During the tornado that hit Dayton on February 14th, a large oak tree fell on my 2023 Honda CR-V while it was parked in my driveway at 442 Wilmington Avenue, Kettering, OH. The tree crushed the roof, hood, and windshield. The vehicle is completely undrivable. This was part of the EF-3 tornado that the National Weather Service confirmed. I evacuated to my basement during the storm and was not in the vehicle. My neighbor's car and house were also damaged. This is a declared disaster area.",
+      "police_report": false,
+      "disaster_declaration": {
+        "type": "Tornado (EF-3)",
+        "nws_confirmation": true,
+        "fema_declaration": "Pending",
+        "ohio_governor_emergency": true,
+        "affected_area": "Montgomery County (Dayton metro)",
+        "date": "2026-02-14"
+      },
+      "photos": ["tree_on_vehicle.jpg", "roof_crushed.jpg", "neighborhood_damage.jpg"],
+      "witnesses": 3,
+      "other_party_info": null,
+      "catastrophe_info": {
+        "cat_number": "CAT-2026-003",
+        "total_oma_claims_from_event": 47,
+        "this_claim_priority": "standard"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-11234",
+      "insured_name": "Linda Pearson",
+      "policy_start": "2025-01-15",
+      "policy_end": "2026-01-15",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2027-01-15",
+      "vehicle": {
+        "vin": "2HKRW2H52NH123456",
+        "year": 2023,
+        "make": "Honda",
+        "model": "CR-V",
+        "actual_cash_value": 32000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 32000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 32000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Comprehensive claim from CAT-2026-003 (Dayton tornado). Vehicle destroyed by falling tree. Part of mass casualty event with 47 total OMA claims.",
+        "priority": "CATASTROPHE PROCESSING — Expedited handling per OMA catastrophe procedures.",
+        "triage_classification": "Standard priority within catastrophe (no injuries, vehicle only, single vehicle). Higher priority claims (injuries, total losses affecting transportation to medical care) should be processed first.",
+        "recommended_action": "Route through catastrophe claims pipeline. Assign to catastrophe team. Use expedited assessment procedures."
+      },
+      "claims_officer": {
+        "coverage_determination": "Comprehensive coverage applies for tornado/weather damage. Tree falling on vehicle during a confirmed tornado is a covered peril. No exclusions apply.",
+        "catastrophe_protocol": "Activate CAT-2026-003 processing: (1) Expedited assessment with field adjusters deployed to Dayton area, (2) Simplified documentation requirements (disaster declaration substitutes for police report), (3) Accelerated payment timeline.",
+        "recommendation": "APPROVE comprehensive claim. Expedite total loss settlement."
+      },
+      "assessor": {
+        "vehicle_inspection": "Tree crushed roof, hood, and windshield. Vehicle is undrivable. Deploy field adjuster to Kettering address.",
+        "total_loss_determination": "TOTAL LOSS CONFIRMED. Tree impact from above crushed structural roof pillars, hood, and windshield. Repair cost would exceed vehicle ACV. Not repairable.",
+        "acv_confirmation": "ACV for 2023 Honda CR-V: $32,000.",
+        "salvage_value": "Estimated salvage: $4,000-$5,500."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "VERY LOW FRAUD RISK. Confirmed EF-3 tornado in the area. NWS confirmation, governor's emergency declaration, and neighborhood-wide damage corroborate the claim. Multiple witnesses. No police report is not a concern for natural disaster claims.",
+        "catastrophe_note": "During catastrophe events, fraud risk per claim is generally low, but volume-based fraud (opportunistic add-on damage claims) should be monitored across the 47-claim batch.",
+        "recommendation": "Clear to process. No individual fraud indicators."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE total loss under comprehensive coverage. Expedited processing per catastrophe protocol.",
+        "catastrophe_considerations": "This is one of 47 claims from CAT-2026-003. OMA should: (1) Deploy field adjusters to Dayton area, (2) Set up temporary claims center if volume warrants, (3) Monitor aggregate exposure across all 47 claims, (4) Notify reinsurance if aggregate exceeds treaty threshold.",
+        "payment_timeline": "Target: settlement within 10 business days per OMA catastrophe service standards."
+      },
+      "finance": {
+        "total_payout": 27250,
+        "calculation": "ACV $32,000 - comprehensive deductible $250 - salvage $4,500 = $27,250",
+        "payment_authority": "Standard catastrophe payment authority. No special approval needed (under $50,000).",
+        "aggregate_exposure": "Monitor CAT-2026-003 aggregate. Current claim adds $27,250 to catastrophe total.",
+        "reinsurance_note": "If aggregate CAT-2026-003 exposure exceeds $250,000, notify reinsurance treaty holder."
+      }
+    }
+  },
+  {
+    "id": "TC-061",
+    "name": "Regulatory Audit Scenario — Compliance-Critical Processing",
+    "difficulty": "hard",
+    "tags": ["secret_addition", "regulatory_audit", "compliance", "ohio_department_of_insurance", "documentation"],
+    "description": "Ohio Department of Insurance is conducting a market conduct examination of OMA. This claim must be processed with meticulous documentation and strict adherence to all regulatory timelines. Any processing deficiency could result in regulatory penalties.",
+    "input": {
+      "claimant_name": "Dorothy Chen",
+      "policy_number": "OMA-2024-78901",
+      "incident_date": "2026-02-10",
+      "incident_type": "collision",
+      "description": "I was driving through the intersection of Morse Road and Karl Road when a driver ran the red light and T-boned my vehicle on the passenger side. My car spun and hit a light pole. I have bruising from the seatbelt and some soreness. The other driver was cited by police. My vehicle has significant passenger-side damage and possible frame damage.",
+      "police_report": true,
+      "police_report_number": "2026-0210-COLLISION-4421",
+      "photos": ["passenger_side_damage.jpg", "light_pole_impact.jpg", "intersection_camera.jpg"],
+      "witnesses": 3,
+      "other_party_info": {
+        "name": "James Whitfield",
+        "insurance": "Progressive",
+        "policy": "PROG-2026-33221",
+        "fault_determination": "100% at fault (ran red light, cited by police)"
+      },
+      "regulatory_context": {
+        "audit_status": "Ohio Department of Insurance Market Conduct Examination in progress",
+        "audit_period": "2025-01-01 to 2026-06-30",
+        "claim_selected_for_review": true,
+        "examiner": "Ohio DOI Market Conduct Division"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-78901",
+      "insured_name": "Dorothy Chen",
+      "policy_start": "2024-08-01",
+      "policy_end": "2025-08-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-08-01",
+      "vehicle": {
+        "vin": "JTDKN3DU5A0123456",
+        "year": 2019,
+        "make": "Toyota",
+        "model": "Prius",
+        "actual_cash_value": 18000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 18000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 18000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "medical_payments": {
+          "limit": 5000,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim with minor bodily injury. Other party clearly at fault. Standard processing with ENHANCED DOCUMENTATION due to regulatory audit.",
+        "priority": "HIGH — Claim is flagged for potential regulatory review under active Ohio DOI market conduct examination.",
+        "compliance_requirements": "Document every step with timestamps. Acknowledge claim receipt within 15 days per Ohio Administrative Code 3901-1-54. Provide status updates to claimant every 30 days.",
+        "recommended_action": "Route to claims officer with audit compliance flag."
+      },
+      "claims_officer": {
+        "coverage_determination": "Collision and MedPay coverages apply. Other party at fault. Subrogation against Progressive.",
+        "regulatory_compliance": "CRITICAL: This claim may be reviewed by Ohio DOI examiners. Ensure: (1) Written acknowledgment of claim within 15 days of receipt, (2) Coverage determination communicated within 21 days, (3) All communications logged and timestamped, (4) If claim cannot be resolved in 30 days, send written status update to claimant, (5) Payment within 10 business days of settlement agreement.",
+        "ohio_unfair_claims_practices": "Comply with Ohio Revised Code 3901.21 (Unfair Claims Settlement Practices Act). No delays, no lowball offers, no unreasonable documentation demands.",
+        "recommendation": "Process expeditiously with meticulous documentation at every stage."
+      },
+      "assessor": {
+        "vehicle_inspection": "Passenger-side T-bone damage plus light pole secondary impact. Frame inspection required. Schedule within 5 business days.",
+        "estimate_range": "Estimated $10,000-$15,000. Possible total loss if frame damage is confirmed.",
+        "compliance_note": "Document inspection scheduling, completion, and results with dates and timestamps for regulatory file."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "VERY LOW FRAUD RISK. Police report with citation, multiple witnesses, intersection camera footage available. Straightforward fault determination.",
+        "compliance_note": "Document fraud screening process for regulatory file even though no fraud indicators exist. Show that SIU screening was performed per OMA procedures.",
+        "recommendation": "Clear to process. Document screening for audit file."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE collision and MedPay claims. Prioritize for compliance timeline.",
+        "regulatory_priority": "This claim must be a model of proper claims handling. Any deficiency will be highlighted in the DOI examination report.",
+        "timeline_requirements": "Acknowledgment: within 15 days. Coverage decision: within 21 days. Resolution: target 30 days. Payment: within 10 business days of settlement. Status updates: every 30 days if unresolved.",
+        "documentation": "Maintain complete audit trail: every communication, every decision, every date."
+      },
+      "finance": {
+        "collision_estimated_payout": 12000,
+        "collision_calculation": "Estimated repair $12,500 - deductible $500 = $12,000 (or total loss at ACV minus deductible if applicable)",
+        "medpay_payout": 1500,
+        "medpay_calculation": "Minor injury medical bills estimated at $1,500 (within $5,000 MedPay limit)",
+        "payment_timeline": "Issue payment within 10 business days of settlement agreement per Ohio regulatory requirements.",
+        "subrogation": true,
+        "subrogation_target": "Progressive (policy PROG-2026-33221)"
+      }
+    }
+  },
+  {
+    "id": "TC-062",
+    "name": "Reinsurance Threshold — High-Value Claim Requiring Special Approval",
+    "difficulty": "hard",
+    "tags": ["secret_addition", "reinsurance", "high_value", "special_approval", "threshold"],
+    "description": "Claimant was involved in a serious multi-vehicle accident with substantial bodily injury. The total claim exposure (vehicle damage + medical + UM bodily injury) approaches OMA's reinsurance threshold of $250,000. This requires escalation to management and reinsurance notification.",
+    "input": {
+      "claimant_name": "Dr. Richard Ames",
+      "policy_number": "OMA-2023-99999",
+      "incident_date": "2026-02-06",
+      "incident_type": "collision",
+      "description": "I was driving my 2025 Mercedes-Benz S-Class on I-71 when a wrong-way driver hit me head-on at highway speed. The collision was catastrophic. I suffered multiple fractures (both legs, pelvis, three ribs), a traumatic brain injury, and internal bleeding. I was airlifted to Cleveland Clinic where I underwent emergency surgery. I have been hospitalized for 10 days so far with additional surgeries planned. My medical bills are already over $185,000 and doctors estimate total treatment costs of $350,000-$400,000. The wrong-way driver was killed in the crash and had no insurance. My vehicle is a total loss.",
+      "police_report": true,
+      "police_report_number": "2026-0206-FATAL-0099",
+      "photos": ["head_on_collision.jpg", "vehicle_total_loss.jpg", "medevac_scene.jpg"],
+      "witnesses": 5,
+      "other_party_info": {
+        "name": "Deceased (Michael Torres)",
+        "insurance": "None — uninsured motorist",
+        "vehicle": "2015 Nissan Sentra, wrong-way on I-71",
+        "fault_determination": "100% at fault (wrong-way driver), deceased at scene"
+      },
+      "medical_info": {
+        "injuries": ["Bilateral leg fractures", "Pelvic fracture", "Three rib fractures", "Traumatic brain injury (moderate)", "Internal bleeding (spleen)"],
+        "hospitalization": "Cleveland Clinic, admitted 2/6, ongoing",
+        "surgeries": ["Emergency splenectomy", "ORIF bilateral tibial fractures", "Additional surgeries planned"],
+        "current_medical_bills": 185000,
+        "projected_total": 375000
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-99999",
+      "insured_name": "Dr. Richard Ames",
+      "policy_start": "2023-12-01",
+      "policy_end": "2024-12-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2025-12-01, then to 2026-12-01",
+      "vehicle": {
+        "vin": "W1K6G7GB8RA123456",
+        "year": 2025,
+        "make": "Mercedes-Benz",
+        "model": "S-Class S580",
+        "actual_cash_value": 120000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 500000,
+          "property_damage": 250000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 120000,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 120000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "medical_payments": {
+          "limit": 50000,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 500000,
+          "property_damage": 120000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "CATASTROPHIC CLAIM. Head-on collision with wrong-way uninsured driver. Severe bodily injury, ongoing hospitalization, massive medical bills. Vehicle is total loss. UM coverage triggered.",
+        "priority": "CRITICAL — Life-altering injuries, high-value claim, reinsurance threshold likely exceeded.",
+        "recommended_action": "IMMEDIATE escalation to senior management. Assign dedicated claims handler. Notify reinsurance department."
+      },
+      "claims_officer": {
+        "coverage_determination": "Multiple coverages triggered: (1) Collision for total loss ($120,000 ACV, $1,000 deductible), (2) MedPay for medical bills (up to $50,000), (3) UM Bodily Injury for injury claim (up to $500,000). At-fault driver is deceased and uninsured — UM is primary coverage for bodily injury.",
+        "total_exposure_estimate": "Collision: ~$119,000. MedPay: $50,000 (will be maxed). UM BI: projected demand $300,000-$500,000. Total potential OMA exposure: $469,000-$669,000.",
+        "reinsurance_notification": "MANDATORY — Total exposure exceeds $250,000 reinsurance attachment point. Notify reinsurance treaty holder immediately.",
+        "recommendation": "Assign senior claims handler. Process collision total loss and MedPay immediately. Reserve for UM BI claim at $350,000. Notify reinsurance."
+      },
+      "assessor": {
+        "vehicle_inspection": "TOTAL LOSS — Head-on highway speed collision. Vehicle is destroyed. Not repairable.",
+        "acv_confirmation": "2025 Mercedes-Benz S-Class S580 ACV: $120,000.",
+        "salvage_value": "Estimated salvage: $12,000-$15,000.",
+        "medical_review": "Injuries are catastrophic and consistent with head-on highway collision. Medical bills are within expected range for described injuries and treatments. Projected $350,000-$400,000 total is reasonable for bilateral leg fractures, pelvis fracture, TBI, and splenectomy with extended rehabilitation."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "VERY LOW FRAUD RISK. Fatal wrong-way driver collision on I-71 with multiple witnesses, police investigation, and medevac. Injuries verified by Cleveland Clinic hospitalization. No fraud indicators whatsoever.",
+        "recommendation": "Clear to process all claim components immediately."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE all claim components. Escalate to management for reinsurance notification.",
+        "claim_components": "(1) Collision total loss: APPROVE at ACV $120,000 minus $1,000 deductible. (2) MedPay: APPROVE up to $50,000 limit as bills are submitted. (3) UM BI: Reserve $350,000 pending medical treatment completion and demand.",
+        "reinsurance_escalation": "Total exposure exceeds $250,000 reinsurance attachment point. Notify reinsurer per treaty terms. Provide: claim summary, medical documentation, exposure estimate.",
+        "management_briefing": "Prepare executive summary for OMA senior management. This is the highest-value claim in current queue."
+      },
+      "finance": {
+        "collision_payout": 105500,
+        "collision_calculation": "ACV $120,000 - deductible $1,000 - salvage $13,500 = $105,500",
+        "medpay_payout": 50000,
+        "medpay_calculation": "Maximum limit $50,000 (will be exhausted given $185,000+ in current bills)",
+        "um_bi_reserve": 350000,
+        "um_bi_note": "Reserve only — UM BI claim will be resolved once medical treatment concludes and total damages are known. Projected settlement range: $300,000-$500,000.",
+        "total_current_disbursement": 155500,
+        "total_projected_exposure": 505500,
+        "reinsurance_notification": "REQUIRED — exceeds $250,000 attachment point",
+        "payment_authority": "Requires VP-level approval for claims exceeding $100,000. Requires reinsurance notification for aggregate exceeding $250,000."
+      }
+    }
+  },
+  {
+    "id": "TC-063",
+    "name": "Bad Faith Threat — Attorney Demand Letter for Slow Processing",
+    "difficulty": "hard",
+    "tags": ["secret_addition", "bad_faith", "demand_letter", "attorney", "litigation_threat"],
+    "description": "Claimant's attorney sends a demand letter alleging OMA is processing the claim in bad faith due to unreasonable delays. The claim has been pending for 60 days without resolution. The threat of a bad faith lawsuit changes the urgency and handling of the claim significantly.",
+    "input": {
+      "claimant_name": "Patricia Owens",
+      "policy_number": "OMA-2024-45678",
+      "incident_date": "2025-12-15",
+      "claim_date": "2025-12-16",
+      "incident_type": "collision",
+      "description": "Original claim filed December 16, 2025 for a collision on December 15th. Other driver ran a stop sign. Vehicle damage estimated at $18,000. MedPay claim for $8,000 in medical bills. Claim has been pending for 60+ days. Attorney James Hartwell has sent a demand letter dated February 14, 2026 alleging bad faith claim handling by OMA. The letter demands: (1) Immediate payment of $18,000 collision claim, (2) Immediate payment of $8,000 MedPay claim, (3) $50,000 in bad faith damages for unreasonable delay, (4) Attorney's fees of $15,000. Total demand: $91,000.",
+      "police_report": true,
+      "police_report_number": "2025-1215-COLLISION-9901",
+      "photos": ["front_damage.jpg", "intersection.jpg"],
+      "witnesses": 2,
+      "other_party_info": {
+        "name": "Steven Blake",
+        "insurance": "Allstate",
+        "policy": "ALL-2025-66789",
+        "fault_determination": "100% at fault"
+      },
+      "attorney_demand": {
+        "attorney": "James Hartwell, Esq., Hartwell & Associates",
+        "demand_date": "2026-02-14",
+        "demand_amount": 91000,
+        "bad_faith_allegation": "Unreasonable delay in processing a clear-liability claim. 60+ days without coverage determination or payment.",
+        "deadline": "14 days to respond (February 28, 2026)"
+      },
+      "claim_processing_history": {
+        "claim_filed": "2025-12-16",
+        "acknowledgment_sent": "2025-12-20",
+        "last_status_update_to_claimant": "2026-01-05",
+        "coverage_determination": "Not yet issued",
+        "reason_for_delay": "Assessor backlog during holiday season, reassignment of claims handler in January"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-45678",
+      "insured_name": "Patricia Owens",
+      "policy_start": "2024-04-01",
+      "policy_end": "2025-04-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-04-01",
+      "vehicle": {
+        "vin": "1N4BL4BV4LC123456",
+        "year": 2020,
+        "make": "Nissan",
+        "model": "Altima",
+        "actual_cash_value": 20000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 20000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 20000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "medical_payments": {
+          "limit": 10000,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "ESCALATION — Bad faith demand letter received from claimant's attorney. Claim has been pending 60+ days without resolution. This is no longer a routine claim.",
+        "priority": "URGENT — Bad faith litigation threat with 14-day deadline.",
+        "recommended_action": "IMMEDIATE escalation to senior management and legal department. This claim must be resolved within the 14-day demand deadline."
+      },
+      "claims_officer": {
+        "coverage_determination": "This should have been determined weeks ago. Clear-liability collision with police report and witnesses. Coverage is valid. Collision: $20,000 limit, $500 deductible. MedPay: $10,000 limit.",
+        "processing_failure": "OMA failed to: (1) Issue coverage determination within 21 days (Ohio regulatory requirement), (2) Provide status updates every 30 days, (3) Process a straightforward claim in a timely manner. The delay was internal (holiday backlog and handler reassignment) and not justified by claim complexity.",
+        "bad_faith_analysis": "The attorney's bad faith allegation has merit. Under Ohio law (Zoppo v. Homestead Insurance Co.), an insurer acts in bad faith when it fails to exercise good faith in processing a claim and lacks reasonable justification for delay. A 60-day delay on a clear-liability claim with no coverage questions is difficult to defend.",
+        "recommendation": "APPROVE and PAY the collision and MedPay claims IMMEDIATELY. Refer bad faith demand to legal department."
+      },
+      "assessor": {
+        "vehicle_inspection": "If not yet completed, expedite immediately. Given the bad faith threat, any further delay is indefensible.",
+        "estimate": "Based on photos and description: $16,000-$19,000 repair estimate. Not a total loss.",
+        "priority": "EMERGENCY — Complete within 48 hours."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. This is a legitimate claim that OMA failed to process timely. The bad faith allegation is directed at OMA's handling, not the claim's validity.",
+        "recommendation": "No fraud investigation needed. Process immediately."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE AND PAY IMMEDIATELY. Refer bad faith demand to legal.",
+        "internal_review": "The 60-day delay on a clear-liability claim is indefensible. OMA's internal processing failures (holiday backlog, handler reassignment) do not constitute reasonable justification for delay under Ohio law.",
+        "bad_faith_response": "Legal department should respond to attorney's demand within 14 days. Recommended response: (1) Pay the underlying claim in full immediately, (2) Acknowledge the processing delay, (3) Negotiate bad faith damages — the $50,000 demand is likely negotiable down to $10,000-$20,000 given that the underlying claim is now being paid, (4) Attorney's fees may be partially compensable.",
+        "corrective_action": "Internal review of claims handling procedures. Implement tracking for claims approaching 30-day and 60-day milestones."
+      },
+      "finance": {
+        "collision_payout": 17000,
+        "collision_calculation": "Repair estimate $17,500 - deductible $500 = $17,000",
+        "medpay_payout": 8000,
+        "medpay_calculation": "Documented medical bills $8,000 (within $10,000 MedPay limit)",
+        "bad_faith_reserve": 25000,
+        "bad_faith_note": "Reserve $25,000 for potential bad faith settlement. Attorney demanded $50,000 + $15,000 fees but negotiation expected.",
+        "total_immediate_disbursement": 25000,
+        "total_projected_exposure": 50000,
+        "payment_priority": "URGENT — Issue collision and MedPay payments within 48 hours.",
+        "subrogation": true,
+        "subrogation_target": "Allstate (policy ALL-2025-66789)"
+      }
+    }
+  },
+  {
+    "id": "TC-064",
+    "name": "Fraud Ring Referral — Multiple Claims Pointing to Same Repair Shop",
+    "difficulty": "hard",
+    "tags": ["secret_addition", "fraud_ring", "organized_fraud", "repair_shop", "siu_referral"],
+    "description": "During routine processing, the fraud analyst discovers that this claimant's preferred repair shop (Quick Fix Auto Body) has appeared in 6 different OMA claims in the past 3 months, all with inflated estimates and suspicious damage patterns. This triggers an organized fraud investigation.",
+    "input": {
+      "claimant_name": "Carlos Mendez",
+      "policy_number": "OMA-2025-56700",
+      "incident_date": "2026-02-11",
+      "incident_type": "collision",
+      "description": "I was driving on Cleveland Avenue and someone sideswiped my car and drove off. Hit and run. My passenger side is scraped and dented. I already took my car to Quick Fix Auto Body on Sullivant Avenue and they gave me an estimate of $11,500 for repairs. They said they can start work as soon as the claim is approved.",
+      "police_report": true,
+      "police_report_number": "2026-0211-HITRUN-7734",
+      "photos": ["passenger_side_scrape.jpg", "dent_closeup.jpg"],
+      "witnesses": 0,
+      "other_party_info": null,
+      "repair_shop": {
+        "name": "Quick Fix Auto Body",
+        "address": "2847 Sullivant Avenue, Columbus, OH 43204",
+        "estimate": 11500,
+        "owner": "Rafael Diaz"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-56700",
+      "insured_name": "Carlos Mendez",
+      "policy_start": "2025-09-01",
+      "policy_end": "2026-09-01",
+      "status": "active",
+      "vehicle": {
+        "vin": "3VW517AU0HM123456",
+        "year": 2019,
+        "make": "Volkswagen",
+        "model": "Jetta",
+        "actual_cash_value": 17000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 50000,
+          "property_damage": 25000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 17000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 17000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 50000,
+          "property_damage": 25000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Hit-and-run collision claim. Claimant has already obtained a repair estimate from Quick Fix Auto Body.",
+        "priority": "STANDARD at intake.",
+        "recommended_action": "Route to claims officer and fraud analyst."
+      },
+      "claims_officer": {
+        "initial_coverage": "Collision or UMPD coverage may apply for hit-and-run. Coverage is active.",
+        "post_fraud_update": "HOLD — Fraud analyst has flagged the repair shop (Quick Fix Auto Body) as part of a potential organized fraud ring. Suspend claim processing pending SIU investigation.",
+        "recommendation": "Do not authorize repairs at Quick Fix Auto Body. Require independent assessment."
+      },
+      "assessor": {
+        "independent_assessment": "OMA must obtain its own independent assessment, NOT rely on Quick Fix Auto Body's estimate. Send OMA-approved appraiser to inspect vehicle.",
+        "preliminary_concern": "Quick Fix estimate of $11,500 for a sideswipe on a $17,000 vehicle seems high. Independent assessment needed.",
+        "estimate_range": "Typical sideswipe (scrape and dent) on passenger side: $3,000-$6,000. Quick Fix estimate of $11,500 appears inflated by 2-3x."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "HIGH FRAUD RISK — ORGANIZED FRAUD PATTERN DETECTED.",
+        "pattern_analysis": "Quick Fix Auto Body (2847 Sullivant Ave) has appeared in 6 OMA claims in the past 3 months: (1) TC-QFAB-001: Hit and run, $9,800 estimate, (2) TC-QFAB-002: Parking lot damage, $12,200 estimate, (3) TC-QFAB-003: Hit and run, $10,500 estimate, (4) TC-QFAB-004: Vandalism, $8,900 estimate, (5) TC-QFAB-005: Sideswipe, $11,000 estimate, (6) This claim: Hit and run, $11,500 estimate. All claims share: (a) No witnesses, (b) Inflated estimates (2-3x expected for described damage), (c) Claimants directed to same shop, (d) Minimal or no police evidence.",
+        "fraud_ring_hypothesis": "Quick Fix Auto Body appears to be the hub of an organized fraud ring. Possible schemes: (1) Staged or fabricated accidents with inflated repair estimates, (2) Kickback arrangement between shop and claimants, (3) Billing for repairs not performed or unnecessary.",
+        "recommendation": "REFER TO SIU immediately. Suspend this claim and re-open investigation on all 5 prior Quick Fix claims. File suspicious activity report with NICB. Coordinate with Columbus PD fraud unit."
+      },
+      "senior_reviewer": {
+        "decision": "SUSPEND claim pending SIU investigation of organized fraud ring.",
+        "rationale": "Pattern of 6 claims all routing to the same repair shop with inflated estimates and no witnesses constitutes a fraud ring pattern. Investigation must be completed before any payment is authorized.",
+        "investigation_scope": "SIU should: (1) Re-examine all 6 Quick Fix claims, (2) Investigate Rafael Diaz (shop owner), (3) Check for connections between the 6 claimants, (4) Conduct undercover assessment of Quick Fix repair quality vs. billing, (5) Coordinate with NICB and law enforcement.",
+        "claimant_handling": "Do NOT inform claimant of fraud investigation. Simply state that the claim requires additional review and an independent assessment."
+      },
+      "finance": {
+        "payout": 0,
+        "status": "SUSPENDED — SIU investigation in progress",
+        "fraud_ring_exposure": "If all 6 Quick Fix claims are fraudulent, total exposure avoided: approximately $65,000",
+        "notes": "No payment authorized until SIU investigation concludes. If claim is eventually found legitimate, pay based on OMA independent assessment only."
+      }
+    }
+  }
+]

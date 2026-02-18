@@ -1,0 +1,618 @@
+[
+  {
+    "id": "TC-053",
+    "name": "Unlicensed Driver — No Valid License at Time of Incident",
+    "difficulty": "medium",
+    "tags": ["exclusion", "unlicensed_driver", "policy_exclusion", "denial"],
+    "description": "Claimant's license was suspended at the time of the accident due to unpaid tickets. Policy requires a valid driver's license. Collision claim should be denied, but liability coverage still protects third parties under Ohio law.",
+    "input": {
+      "claimant_name": "Tyler Dunn",
+      "policy_number": "OMA-2025-44890",
+      "incident_date": "2026-02-11",
+      "incident_type": "collision",
+      "description": "I was driving on East Main Street in Columbus and ran into the back of a stopped delivery truck. My front end is badly damaged and the other vehicle has minor damage to its rear. The police arrived and when they ran my license, they told me it was suspended due to unpaid traffic tickets from last year. I honestly did not know my license was suspended — I never received the suspension notice. The delivery truck driver works for FedEx and their truck has minor bumper damage.",
+      "police_report": true,
+      "police_report_number": "2026-0211-COLLISION-5567",
+      "photos": ["front_end_damage.jpg", "fedex_truck_bumper.jpg"],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "FedEx Ground (driver: Michael Barnes)",
+        "vehicle": "2023 FedEx delivery van",
+        "damage": "Minor rear bumper dent and scrape",
+        "estimated_damage": 2500
+      },
+      "license_status": {
+        "status": "suspended",
+        "suspension_reason": "Unpaid traffic tickets (3 outstanding)",
+        "suspension_date": "2025-11-15",
+        "claimant_awareness": "Claims unaware of suspension"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-44890",
+      "insured_name": "Tyler Dunn",
+      "policy_start": "2025-04-01",
+      "policy_end": "2026-04-01",
+      "status": "active",
+      "vehicle": {
+        "vin": "1C4RJFBG1LC123456",
+        "year": 2021,
+        "make": "Jeep",
+        "model": "Grand Cherokee",
+        "actual_cash_value": 32000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 32000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 32000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "exclusions": ["unlicensed_driver"],
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim where claimant's license was suspended at time of incident. Policy has unlicensed driver exclusion. Third-party damage to FedEx vehicle.",
+        "priority": "HIGH - License exclusion and third-party liability.",
+        "recommended_action": "Route to claims officer. Flag suspended license and third-party damage."
+      },
+      "claims_officer": {
+        "collision_coverage": "DENY — Policy excludes coverage when the insured is operating the vehicle without a valid driver's license. Claimant's license was suspended since November 2025. Whether claimant knew about the suspension is immaterial to the policy exclusion.",
+        "liability_coverage": "Ohio law requires liability coverage to respond to third-party claims even when the insured was driving without a valid license. FedEx may file a property damage claim against OMA's liability coverage for the $2,500 truck damage.",
+        "recommendation": "Deny collision claim. Process third-party liability claim for FedEx truck damage."
+      },
+      "assessor": {
+        "claimant_vehicle": "Front-end collision damage. Assessment not needed since claim is denied.",
+        "third_party_damage": "FedEx delivery van: minor rear bumper dent and scrape. Estimated repair: $2,000-$3,000.",
+        "status": "Assess FedEx vehicle damage only."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. Not fraud — this is a coverage exclusion issue. Claimant was forthcoming about the accident circumstances.",
+        "note": "Claimant claims they were unaware of license suspension. This does not change the exclusion analysis.",
+        "recommendation": "No fraud investigation needed."
+      },
+      "senior_reviewer": {
+        "decision": "DENY collision claim. APPROVE third-party liability for FedEx damage.",
+        "rationale": "Unlicensed driver exclusion clearly applies. License was suspended 3 months prior to incident. Claimant's claimed ignorance of suspension does not void the exclusion.",
+        "liability_note": "Process FedEx property damage claim under liability coverage. Ohio mandates liability coverage respond regardless of driver's license status."
+      },
+      "finance": {
+        "collision_payout": 0,
+        "collision_status": "DENIED - unlicensed driver exclusion",
+        "liability_payout": 2500,
+        "liability_calculation": "FedEx truck repair estimate $2,500",
+        "payment_recipient": "FedEx Ground",
+        "subrogation": false
+      }
+    }
+  },
+  {
+    "id": "TC-054",
+    "name": "Vehicle Modification — Aftermarket Parts Not Covered",
+    "difficulty": "medium",
+    "tags": ["exclusion", "vehicle_modification", "aftermarket", "partial_coverage"],
+    "description": "Claimant's vehicle was in a collision. The vehicle has $15,000 in aftermarket modifications (lift kit, oversized tires, custom exhaust, light bar) that were not declared on the policy. Standard policy covers the vehicle at stock ACV only. Claimant demands full replacement value including modifications.",
+    "input": {
+      "claimant_name": "Jake Morrison",
+      "policy_number": "OMA-2024-99001",
+      "incident_date": "2026-02-09",
+      "incident_type": "collision",
+      "description": "I was T-boned at an intersection by a driver who ran a stop sign. My 2022 Ford F-150 has extensive damage to the driver side. The truck is heavily modified — I've put over $15,000 into upgrades: a 6-inch lift kit ($4,500 installed), 35-inch off-road tires on custom wheels ($3,200), a custom exhaust system ($2,800), LED light bar ($1,200), aftermarket bumpers ($2,000), and a bed liner with tonneau cover ($1,300). These mods make my truck worth significantly more than a stock F-150. I want Ohio Mutual to cover the full replacement value including all my modifications.",
+      "police_report": true,
+      "police_report_number": "2026-0209-COLLISION-6634",
+      "photos": ["driver_side_damage.jpg", "lift_kit_visible.jpg", "custom_wheels.jpg", "light_bar.jpg"],
+      "witnesses": 2,
+      "other_party_info": {
+        "name": "Robert Simmons",
+        "insurance": "Nationwide",
+        "policy": "NW-2025-55443",
+        "fault_determination": "100% at fault (ran stop sign)"
+      },
+      "modifications": {
+        "lift_kit": 4500,
+        "tires_wheels": 3200,
+        "exhaust": 2800,
+        "light_bar": 1200,
+        "bumpers": 2000,
+        "bed_liner_tonneau": 1300,
+        "total_modifications": 15000,
+        "declared_on_policy": false
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-99001",
+      "insured_name": "Jake Morrison",
+      "policy_start": "2024-09-01",
+      "policy_end": "2025-09-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-09-01",
+      "vehicle": {
+        "vin": "1FTFW1E82NFA12345",
+        "year": 2022,
+        "make": "Ford",
+        "model": "F-150 XLT",
+        "actual_cash_value": 38000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 38000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 38000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        },
+        "custom_equipment_endorsement": null
+      },
+      "exclusions": ["undeclared_modifications"],
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim with extensive undeclared aftermarket modifications. Policy covers stock vehicle ACV only. Claimant demands coverage for $15,000 in mods.",
+        "priority": "STANDARD - Coverage dispute anticipated.",
+        "recommended_action": "Route to claims officer. Flag undeclared modifications and lack of custom equipment endorsement."
+      },
+      "claims_officer": {
+        "coverage_determination": "PARTIAL COVERAGE — Policy covers the stock vehicle at ACV ($38,000). Aftermarket modifications ($15,000) were never declared and no custom equipment endorsement was purchased. OMA is not liable for undeclared modifications.",
+        "modification_analysis": "Claimant modified the vehicle after policy inception without notifying OMA or purchasing additional coverage. Standard personal auto policy covers the vehicle as described in the declarations page (stock 2022 F-150 XLT).",
+        "recommendation": "Process collision claim based on stock ACV of $38,000 only. Deny coverage for aftermarket modifications. Advise claimant that future modifications should be declared and a custom equipment endorsement purchased."
+      },
+      "assessor": {
+        "vehicle_inspection": "Extensive driver-side damage from T-bone collision. Frame damage likely. Must assess stock vehicle value separately from modifications.",
+        "total_loss_determination": "If repair cost exceeds 70% of stock ACV ($26,600), total loss. Driver-side frame damage from T-bone often exceeds threshold.",
+        "estimate_range": "Stock vehicle repairs estimated at $22,000-$28,000. Modification damage not assessed separately since not covered.",
+        "note": "Aftermarket lift kit and oversized tires may have contributed to handling characteristics during the accident. Document for file."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK for the collision itself. However, flag: (1) Undeclared modifications may indicate claimant was trying to avoid higher premiums, (2) Claimant may inflate stock vehicle value to recover modification costs indirectly. Verify ACV against stock F-150 comparables only.",
+        "recommendation": "Monitor for inflated stock value claims. Otherwise clear to process."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE collision claim at stock ACV. DENY coverage for aftermarket modifications.",
+        "rationale": "No custom equipment endorsement was purchased. Policy covers the vehicle as declared (stock). Modifications are the claimant's uninsured risk.",
+        "subrogation": "Pursue subrogation against Nationwide for the stock vehicle collision payout. Claimant may independently pursue Nationwide for modification losses as a tort claim against the at-fault driver."
+      },
+      "finance": {
+        "collision_payout": 37500,
+        "calculation": "Stock ACV $38,000 - deductible $500 = $37,500 (if total loss)",
+        "modification_payout": 0,
+        "modification_status": "DENIED - undeclared, no custom equipment endorsement",
+        "subrogation": true,
+        "subrogation_target": "Nationwide (policy NW-2025-55443)"
+      }
+    }
+  },
+  {
+    "id": "TC-055",
+    "name": "Racing Exclusion — Incident on Race Track",
+    "difficulty": "easy",
+    "tags": ["exclusion", "racing", "track_day", "policy_exclusion", "clear_denial"],
+    "description": "Claimant's vehicle was damaged during a track day event at Mid-Ohio Sports Car Course. Policy has a standard racing/competition exclusion. Clear-cut denial case.",
+    "input": {
+      "claimant_name": "Connor Phillips",
+      "policy_number": "OMA-2025-88234",
+      "incident_date": "2026-02-01",
+      "incident_type": "collision",
+      "description": "I was participating in a track day event at Mid-Ohio Sports Car Course in Lexington, Ohio. During the second session, I lost control in Turn 5 (a high-speed right-hander) and spun into the tire wall. My 2023 Chevrolet Corvette Z06 sustained significant front-end and driver-side damage from the tire wall impact. The car was towed off the track by the event safety crew. I'd like to file a collision claim for the damage. The track day was organized by NASA (National Auto Sport Association) and I paid $350 for the registration.",
+      "police_report": false,
+      "track_event": {
+        "organizer": "NASA (National Auto Sport Association)",
+        "venue": "Mid-Ohio Sports Car Course, Lexington, OH",
+        "event_type": "Track Day / HPDE (High Performance Driving Education)",
+        "registration_fee": 350
+      },
+      "photos": ["corvette_tire_wall.jpg", "front_damage.jpg", "track_incident_report.jpg"],
+      "witnesses": 5,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-88234",
+      "insured_name": "Connor Phillips",
+      "policy_start": "2025-08-01",
+      "policy_end": "2026-08-01",
+      "status": "active",
+      "vehicle": {
+        "vin": "1G1YK2D76P5123456",
+        "year": 2023,
+        "make": "Chevrolet",
+        "model": "Corvette Z06",
+        "actual_cash_value": 115000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 500000,
+          "property_damage": 250000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 115000,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 115000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 500000,
+          "status": "active"
+        }
+      },
+      "exclusions": ["racing", "speed_contests", "track_use"],
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim for vehicle damaged at a race track during an organized track day event. Policy has racing/track use exclusion. Clear denial case.",
+        "priority": "STANDARD - Straightforward exclusion.",
+        "recommended_action": "Route to claims officer for formal denial."
+      },
+      "claims_officer": {
+        "coverage_determination": "DENY — Policy explicitly excludes coverage for damage occurring during racing, speed contests, or organized track events. The incident occurred at Mid-Ohio Sports Car Course during a NASA HPDE event. This is unambiguously excluded.",
+        "policy_language": "Standard exclusion: 'We do not provide coverage for any vehicle while it is being used in or practicing for any prearranged or organized racing, speed contest, or competitive driving event.'",
+        "recommendation": "Issue formal denial. No ambiguity in this case."
+      },
+      "assessor": {
+        "status": "N/A — Claim is denied. No assessment needed.",
+        "note": "If assessment were needed: Corvette Z06 tire wall impact would likely result in $25,000-$40,000 in repairs (front-end, driver-side body panels, potential frame damage)."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "NO FRAUD. Claimant honestly disclosed the track day event. This is a straightforward exclusion case, not fraud.",
+        "recommendation": "No investigation needed."
+      },
+      "senior_reviewer": {
+        "decision": "DENY — Racing/track use exclusion applies unambiguously.",
+        "rationale": "Vehicle was being used in an organized track day event. Policy exclusion is clear and applicable. No coverage under collision or any other provision.",
+        "claimant_notification": "Issue formal denial letter. Advise claimant to purchase dedicated track day insurance for future events."
+      },
+      "finance": {
+        "payout": 0,
+        "status": "DENIED - racing/track use exclusion",
+        "notes": "No payment authorized. Claim file closed."
+      }
+    }
+  },
+  {
+    "id": "TC-056",
+    "name": "Attorney Represented Claimant — Communication Protocol Change",
+    "difficulty": "hard",
+    "tags": ["fraud_complexity", "attorney_represented", "communication_protocol", "legal_compliance"],
+    "description": "Claimant has retained an attorney after a collision. All communication must now go through the attorney. This changes the processing protocol for every stage of the pipeline. The claim itself is legitimate but the presence of an attorney signals potential litigation and requires careful documentation.",
+    "input": {
+      "claimant_name": "Sandra Mitchell",
+      "policy_number": "OMA-2024-67890",
+      "incident_date": "2026-02-03",
+      "incident_type": "collision",
+      "description": "I was hit by a driver who crossed the center line on State Route 42. I have injuries including a herniated disc at L4-L5 and a fractured left collarbone. I have retained attorney James Hartwell of Hartwell & Associates to represent me in this claim. All further communication should be directed to my attorney. Attorney contact: James Hartwell, Esq., Hartwell & Associates, 450 West Broad Street, Columbus, OH 43215, phone (614) 555-0192, email jhartwell@hartwelllaw.com. My medical bills are approximately $28,000 so far and treatment is ongoing.",
+      "police_report": true,
+      "police_report_number": "2026-0203-COLLISION-1198",
+      "photos": ["center_line_crossing.jpg", "vehicle_damage.jpg", "medical_records_summary.pdf"],
+      "witnesses": 2,
+      "other_party_info": {
+        "name": "Kevin Walsh",
+        "insurance": "State Farm",
+        "policy": "SF-2025-77654",
+        "fault_determination": "100% at fault (crossed center line)"
+      },
+      "attorney": {
+        "name": "James Hartwell, Esq.",
+        "firm": "Hartwell & Associates",
+        "address": "450 West Broad Street, Columbus, OH 43215",
+        "phone": "(614) 555-0192",
+        "email": "jhartwell@hartwelllaw.com",
+        "letter_of_representation": true
+      },
+      "medical_info": {
+        "injuries": ["Herniated disc L4-L5", "Fractured left collarbone"],
+        "treatment": "Orthopedic specialist, physical therapy, pain management",
+        "total_bills_to_date": 28000,
+        "treatment_ongoing": true
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-67890",
+      "insured_name": "Sandra Mitchell",
+      "policy_start": "2024-03-01",
+      "policy_end": "2025-03-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-03-01",
+      "vehicle": {
+        "vin": "WBAPH5C55BA123456",
+        "year": 2020,
+        "make": "BMW",
+        "model": "330i",
+        "actual_cash_value": 28000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 28000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 28000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "medical_payments": {
+          "limit": 25000,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 250000,
+          "property_damage": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim with serious bodily injury. Claimant has retained legal counsel. CRITICAL: All communication must now be directed to attorney James Hartwell. Do NOT contact claimant directly.",
+        "priority": "HIGH - Attorney represented, serious injuries, potential litigation.",
+        "communication_protocol": "ATTORNEY ONLY. Letter of representation received. Update all claim records to reflect attorney as point of contact. Flag in system.",
+        "recommended_action": "Route to claims officer and notify legal department of attorney representation."
+      },
+      "claims_officer": {
+        "coverage_determination": "Multiple coverages apply: (1) Collision for vehicle damage, (2) MedPay for medical bills up to $25,000, (3) Potential UM claim if at-fault party's coverage is insufficient.",
+        "attorney_protocol": "ALL correspondence, settlement offers, and requests for documentation must go through James Hartwell, Esq. Direct contact with Sandra Mitchell is prohibited once letter of representation is on file.",
+        "claim_tracks": "Open three claim components: (1) Collision for vehicle repair, (2) MedPay for medical expenses, (3) Reserve for potential bodily injury claim through UM if needed.",
+        "litigation_risk": "Attorney involvement with $28,000+ in medical bills suggests potential demand will exceed MedPay limits. Prepare for UM bodily injury claim or third-party recovery negotiations.",
+        "next_step": "Send acknowledgment to attorney. Request all medical records and bills through attorney. Schedule vehicle inspection."
+      },
+      "assessor": {
+        "vehicle_inspection": "Schedule inspection and coordinate through attorney for vehicle access. Head-on/offset collision damage assessment needed.",
+        "estimate_range": "Estimated repair: $8,000-$14,000 depending on frame involvement.",
+        "total_loss": false,
+        "medical_review": "Medical bills ($28,000) should be reviewed for reasonableness. Herniated disc and fractured collarbone are consistent with head-on collision mechanics. Treatment plan appears appropriate."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW-MODERATE RISK. Attorney representation alone is not a fraud indicator. However, attorney involvement early in the process with significant medical bills warrants monitoring for: (1) Treatment inflation, (2) Prolonged treatment beyond medical necessity, (3) Pre-existing conditions being attributed to this accident.",
+        "verification": "Verify medical records independently. Confirm herniated disc is acute (from this accident) vs. pre-existing degenerative condition. MRI dating will be key.",
+        "recommendation": "No fraud at this stage. Monitor claim development and medical billing patterns."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE collision and MedPay claims. Reserve for potential UM bodily injury claim.",
+        "attorney_handling": "All settlement discussions, offers, and negotiations must go through attorney. Document all communications meticulously. Do not make verbal agreements.",
+        "reserve_recommendation": "Set claim reserve at $75,000-$100,000 to account for potential bodily injury settlement demand. Attorney involvement with serious injuries typically results in demand well above medical specials.",
+        "litigation_preparation": "Begin assembling litigation file: police report, medical records, witness statements, vehicle inspection. If demand exceeds policy limits, notify reinsurance."
+      },
+      "finance": {
+        "collision_estimated_payout": 10500,
+        "collision_calculation": "Estimated repair $11,000 - deductible $500 = $10,500",
+        "medpay_current_payout": 25000,
+        "medpay_calculation": "Medical bills $28,000 exceed MedPay limit of $25,000. Pay up to limit.",
+        "reserve_amount": 85000,
+        "reserve_note": "Reserve set for potential UM bodily injury claim. Attorney represented claim with serious injuries likely to result in significant demand.",
+        "subrogation": true,
+        "subrogation_target": "State Farm (policy SF-2025-77654)"
+      }
+    }
+  },
+  {
+    "id": "TC-057",
+    "name": "Prior Total Loss Not Disclosed — Rebuilt Title Vehicle",
+    "difficulty": "hard",
+    "tags": ["fraud_complexity", "prior_total_loss", "rebuilt_title", "material_misrepresentation", "policy_rescission"],
+    "description": "Claimant's vehicle was previously totaled and rebuilt but this was not disclosed when the policy was purchased. The vehicle has a rebuilt/salvage title. During assessment of a new collision claim, the assessor discovers evidence of prior repairs and a rebuilt title. This constitutes material misrepresentation at policy inception.",
+    "input": {
+      "claimant_name": "Victor Reeves",
+      "policy_number": "OMA-2025-34567",
+      "incident_date": "2026-02-13",
+      "incident_type": "collision",
+      "description": "I was rear-ended at a traffic light on Cleveland Avenue. The other driver hit me at about 25 mph. My rear bumper, trunk, and quarter panel are damaged. The other driver's insurance (Geico) is accepting fault. I need this fixed quickly.",
+      "police_report": true,
+      "police_report_number": "2026-0213-COLLISION-8845",
+      "photos": ["rear_damage.jpg", "trunk_bent.jpg", "quarter_panel.jpg"],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Ashley Cooper",
+        "insurance": "GEICO",
+        "policy": "GEI-2025-44321",
+        "fault_determination": "100% at fault (rear-end collision)"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-34567",
+      "insured_name": "Victor Reeves",
+      "policy_start": "2025-05-01",
+      "policy_end": "2026-05-01",
+      "status": "active",
+      "vehicle": {
+        "vin": "JN1TANT31U0123456",
+        "year": 2021,
+        "make": "Nissan",
+        "model": "Altima",
+        "actual_cash_value": 22000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 22000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 22000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "application_declarations": {
+        "title_type_declared": "clean",
+        "prior_total_loss_declared": false,
+        "salvage_history_declared": false
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Routine rear-end collision claim. Other party at fault. No obvious complications at intake.",
+        "priority": "STANDARD",
+        "recommended_action": "Route to claims officer and assessor for standard processing."
+      },
+      "claims_officer": {
+        "initial_determination": "Coverage appears valid. Standard collision claim with subrogation potential against GEICO.",
+        "post_assessment_update": "CRITICAL FINDING: Assessor discovered vehicle has a rebuilt/salvage title and evidence of prior total loss repairs. This was not disclosed on the policy application. Material misrepresentation at inception.",
+        "material_misrepresentation": "Claimant declared a clean title on the application. Vehicle actually has a rebuilt title (Ohio BMV records confirm prior total loss in 2023). If OMA had known about the rebuilt title, the vehicle would have been insured at a significantly lower ACV ($14,000-$16,000 instead of $22,000) or potentially declined for coverage altogether.",
+        "recommendation": "DENY claim and consider policy rescission. Refer to special investigations unit (SIU) for material misrepresentation review."
+      },
+      "assessor": {
+        "vehicle_inspection": "During rear-end damage assessment, discovered: (1) Prior repair evidence on front end (different paint texture, non-OEM parts, visible Bondo under paint), (2) VIN check reveals Ohio rebuilt title issued 2023, (3) Vehicle was previously totaled in a front-end collision in 2023 and rebuilt with aftermarket parts.",
+        "critical_finding": "REBUILT TITLE NOT DISCLOSED. Vehicle's actual cash value as a rebuilt title vehicle is $14,000-$16,000, not the $22,000 stated on the policy.",
+        "current_damage": "Rear-end damage from this incident: bumper, trunk, quarter panel. Estimated repair: $4,500-$6,000.",
+        "recommendation": "Halt claim processing until material misrepresentation is resolved."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "HIGH FRAUD RISK. Material misrepresentation on policy application. Claimant concealed rebuilt/salvage title to obtain coverage at clean-title ACV. This inflated the insured value by $6,000-$8,000.",
+        "investigation_findings": "VIN history shows: (1) Vehicle totaled in front-end collision March 2023, (2) Rebuilt title issued by Ohio BMV July 2023, (3) Claimant purchased vehicle August 2023 at rebuilt-title price, (4) Policy application in May 2025 declared clean title.",
+        "fraud_determination": "Material misrepresentation. Whether intentional or negligent, the non-disclosure is material because it affected underwriting decisions (ACV, premium, and coverage eligibility).",
+        "recommendation": "Refer to SIU. Recommend policy rescission and claim denial."
+      },
+      "senior_reviewer": {
+        "decision": "DENY claim. Initiate policy rescission proceedings.",
+        "rationale": "Material misrepresentation at policy inception. Rebuilt/salvage title was not disclosed. This misrepresentation is material because: (1) It affected the ACV used for coverage limits, (2) OMA may not have issued the policy at all for a rebuilt title vehicle, (3) The premium charged was based on a clean-title valuation.",
+        "ohio_law": "Under Ohio insurance law, an insurer may void a policy ab initio (from the beginning) if the insured made material misrepresentations in the application that affected the insurer's decision to issue the policy or the terms of coverage.",
+        "action_items": "Issue formal denial. Initiate rescission proceedings. Refund premiums paid (minus administrative costs). Advise claimant to pursue recovery from GEICO (at-fault party) directly."
+      },
+      "finance": {
+        "collision_payout": 0,
+        "status": "DENIED - material misrepresentation, policy rescission",
+        "rescission_refund": "Premiums paid since inception to be refunded minus administrative costs",
+        "notes": "Claimant may pursue GEICO directly for the collision damage as a third-party claim against the at-fault driver."
+      }
+    }
+  },
+  {
+    "id": "TC-058",
+    "name": "Policy Stacking Attempt — Multiple Policies for Same Loss",
+    "difficulty": "hard",
+    "tags": ["fraud_complexity", "policy_stacking", "duplicate_claim", "coordination_of_benefits"],
+    "description": "Claimant has filed identical claims with two different insurers for the same incident, attempting to collect double payment. During processing, OMA discovers the duplicate claim through an industry database (ISO ClaimSearch). This is insurance fraud.",
+    "input": {
+      "claimant_name": "Raymond Foster",
+      "policy_number": "OMA-2025-23456",
+      "incident_date": "2026-02-05",
+      "incident_type": "collision",
+      "description": "I was driving on I-270 when I hit a large piece of debris (tire tread) in the road. The debris struck my undercarriage and caused damage to my oil pan, exhaust, and front bumper. I swerved to avoid it and scraped the guardrail as well, damaging my passenger side. Total damage is significant. I need this processed quickly.",
+      "police_report": true,
+      "police_report_number": "2026-0205-DEBRIS-2234",
+      "photos": ["undercarriage_damage.jpg", "guardrail_scrape.jpg", "bumper_damage.jpg"],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-23456",
+      "insured_name": "Raymond Foster",
+      "policy_start": "2025-02-05",
+      "policy_end": "2026-02-05",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2027-02-05",
+      "vehicle": {
+        "vin": "WAULT68E95A123456",
+        "year": 2022,
+        "make": "Audi",
+        "model": "A6",
+        "actual_cash_value": 42000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 42000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 42000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 250000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision/comprehensive claim for road debris damage and guardrail contact. No other party involved.",
+        "priority": "STANDARD",
+        "recommended_action": "Route to claims officer for standard processing."
+      },
+      "claims_officer": {
+        "initial_coverage": "Collision coverage applies for guardrail contact. Comprehensive may apply for road debris. Coverage is active.",
+        "duplicate_claim_discovery": "ISO ClaimSearch reveals an identical claim filed with Erie Insurance (policy ER-2025-99887) for the SAME vehicle, SAME incident date, SAME description. Claimant holds two active policies on the same vehicle and has filed claims with both insurers for the same loss.",
+        "legal_analysis": "Under the principle of indemnity, the insured cannot profit from a loss. Collecting from two insurers for the same loss is insurance fraud. Additionally, most policies contain an 'other insurance' clause requiring disclosure of duplicate coverage.",
+        "recommendation": "SUSPEND claim processing. Refer to SIU for fraud investigation. Coordinate with Erie Insurance."
+      },
+      "assessor": {
+        "status": "HOLD — Assessment suspended pending fraud investigation.",
+        "preliminary_note": "If assessed: Undercarriage and passenger-side damage consistent with debris strike and guardrail contact. Estimated $8,000-$12,000."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "HIGH FRAUD RISK — CONFIRMED DUPLICATE CLAIM. Claimant filed identical claims with OMA and Erie Insurance for the same incident.",
+        "evidence": "(1) ISO ClaimSearch match: same VIN, same date, same incident description, (2) Claimant holds two active policies on the same vehicle (OMA and Erie), (3) Claimant did not disclose the Erie policy to OMA, (4) Same police report number cited in both claims.",
+        "fraud_type": "Policy stacking / duplicate claim fraud. Claimant is attempting to collect double indemnity.",
+        "recommendation": "DENY claim. File fraud referral with Ohio Department of Insurance. Coordinate with Erie Insurance. Consider policy rescission for failure to disclose other insurance."
+      },
+      "senior_reviewer": {
+        "decision": "DENY claim. Refer to SIU and Ohio Department of Insurance.",
+        "rationale": "Insurance fraud through policy stacking. Claimant attempted to collect from two insurers for the same loss. This violates the principle of indemnity, the policy's other-insurance clause, and Ohio insurance fraud statutes.",
+        "action_items": "(1) Deny claim, (2) File fraud referral, (3) Notify Erie Insurance, (4) Consider policy rescission, (5) Refer to law enforcement if warranted.",
+        "ohio_fraud_statute": "Ohio Revised Code 2913.47 — Insurance fraud is a felony offense."
+      },
+      "finance": {
+        "payout": 0,
+        "status": "DENIED - insurance fraud (policy stacking)",
+        "fraud_referral": "Filed with Ohio Department of Insurance and NICB (National Insurance Crime Bureau)",
+        "notes": "No payment authorized. Claim file flagged and closed pending SIU investigation."
+      }
+    }
+  }
+]

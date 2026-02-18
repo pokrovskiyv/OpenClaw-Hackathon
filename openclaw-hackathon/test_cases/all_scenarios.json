@@ -1,0 +1,3167 @@
+[
+  {
+    "id": "TC-001",
+    "name": "Standard Collision - Happy Path",
+    "difficulty": "easy",
+    "description": "Straightforward two-car collision, clear liability, valid policy, moderate damage",
+    "input": {
+      "claimant_name": "John Miller",
+      "policy_number": "OMA-2025-44210",
+      "incident_date": "2026-02-10",
+      "incident_type": "collision",
+      "description": "I was stopped at a red light on Oak Street when another vehicle rear-ended me. The other driver admitted fault. Police report filed (#PR-2026-1142). My rear bumper, trunk lid, and tail lights are damaged.",
+      "police_report": true,
+      "police_report_number": "PR-2026-1142",
+      "photos": [
+        "rear_bumper_damage.jpg",
+        "trunk_dent.jpg",
+        "broken_taillight.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Sarah Chen",
+        "insurance": "State Farm",
+        "policy": "SF-88321"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-44210",
+      "holder": "John Miller",
+      "status": "active",
+      "effective_date": "2025-06-01",
+      "expiry_date": "2026-06-01",
+      "vehicle": {
+        "year": 2022,
+        "make": "Toyota",
+        "model": "Camry",
+        "vin": "4T1BF1FK5CU123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": true
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "exclusions": false
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          3000,
+          7000
+        ]
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 20
+      },
+      "senior_reviewer": {
+        "decision": "approved"
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "State Farm"
+      }
+    }
+  },
+  {
+    "id": "TC-002",
+    "name": "Suspicious Claim - Fraud Indicators",
+    "difficulty": "medium",
+    "description": "New policy, night accident, no witnesses, inflated injuries, financial stress",
+    "input": {
+      "claimant_name": "Marcus Webb",
+      "policy_number": "OMA-2026-00187",
+      "incident_date": "2026-02-08",
+      "incident_type": "collision",
+      "description": "I was driving on Route 33 around 11:30 PM when a deer ran onto the road. I swerved to avoid it and hit a guardrail. My car is pretty badly damaged. I also hurt my neck and back and have been seeing a chiropractor daily since the accident. I need this resolved quickly as I have medical bills piling up.",
+      "police_report": false,
+      "photos": [
+        "front_damage.jpg"
+      ],
+      "witnesses": 0,
+      "medical_claims": {
+        "type": "chiropractic",
+        "visits": 8,
+        "total_billed": 12000,
+        "provider": "QuickCare Chiropractic"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2026-00187",
+      "holder": "Marcus Webb",
+      "status": "active",
+      "effective_date": "2026-01-15",
+      "expiry_date": "2027-01-15",
+      "vehicle": {
+        "year": 2019,
+        "make": "BMW",
+        "model": "330i",
+        "vin": "WBA5R1C50KA123789"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 75000,
+          "deductible": 1000
+        },
+        "comprehensive": {
+          "limit": 75000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000
+        },
+        "medical_payments": {
+          "limit": 25000
+        }
+      },
+      "claims_history": [
+        {
+          "date": "2024-08-12",
+          "type": "collision",
+          "amount": 8500,
+          "insurer": "Progressive"
+        },
+        {
+          "date": "2023-11-03",
+          "type": "theft",
+          "amount": 15000,
+          "insurer": "Geico"
+        }
+      ],
+      "premium_paid": true,
+      "notes": "Policy opened 24 days before incident. High coverage limits selected."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "moderate_to_high",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 1000,
+        "exclusions": false,
+        "flag": "new_policy"
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          5000,
+          15000
+        ]
+      },
+      "fraud_analyst": {
+        "risk_level": "high",
+        "fraud_score_min": 65,
+        "flags_expected": [
+          "new_policy",
+          "no_witnesses",
+          "no_police_report",
+          "night_incident",
+          "inflated_medical",
+          "prior_claims",
+          "pressure_for_quick_settlement"
+        ]
+      },
+      "senior_reviewer": {
+        "decision": "investigate"
+      },
+      "finance": {
+        "action": "hold_pending_investigation"
+      }
+    }
+  },
+  {
+    "id": "TC-003",
+    "name": "Total Loss - Comprehensive",
+    "difficulty": "medium",
+    "description": "Tree fell on parked car during storm, total loss scenario, valid policy",
+    "input": {
+      "claimant_name": "Linda Okafor",
+      "policy_number": "OMA-2025-31890",
+      "incident_date": "2026-02-05",
+      "incident_type": "comprehensive",
+      "description": "During the ice storm on February 5th, a large oak tree in my neighbor's yard fell onto my car while it was parked in my driveway. The roof is completely crushed, windshield shattered, and the frame appears bent. The car is not drivable. My neighbor's homeowner insurance is Allstate. I have photos and a statement from my neighbor confirming the tree was from their property.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0987",
+      "photos": [
+        "crushed_roof.jpg",
+        "shattered_windshield.jpg",
+        "bent_frame.jpg",
+        "tree_on_car.jpg",
+        "full_view.jpg"
+      ],
+      "witnesses": 2,
+      "weather_event": "ice_storm_feb5",
+      "neighbor_info": {
+        "name": "Robert Dawson",
+        "insurance": "Allstate",
+        "policy": "ALL-77432"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-31890",
+      "holder": "Linda Okafor",
+      "status": "active",
+      "effective_date": "2025-03-15",
+      "expiry_date": "2026-03-15",
+      "vehicle": {
+        "year": 2018,
+        "make": "Honda",
+        "model": "Civic",
+        "vin": "2HGFC2F53JH567890"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 30000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 30000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        },
+        "rental_reimbursement": {
+          "daily_limit": 40,
+          "max_days": 30
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "high",
+        "priority": "high"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 250,
+        "coverage_type": "comprehensive"
+      },
+      "assessor": {
+        "total_loss": true,
+        "vehicle_market_value_range": [
+          14000,
+          18000
+        ],
+        "reason": "structural_frame_damage"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 10
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "payout_type": "total_loss"
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "Allstate",
+        "rental_reimbursement": true
+      }
+    }
+  },
+  {
+    "id": "TC-004",
+    "name": "Coverage Denial - Expired Policy",
+    "difficulty": "easy",
+    "description": "Claimant has expired policy, should be denied at claims officer stage",
+    "input": {
+      "claimant_name": "David Kim",
+      "policy_number": "OMA-2024-55010",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was backing out of a parking spot at the grocery store and hit another parked car. Minor damage to both vehicles. The other car owner wants me to pay for their repairs. My bumper has some scratches.",
+      "police_report": false,
+      "photos": [
+        "rear_bumper_scratch.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": {
+        "name": "Amy Torres",
+        "insurance": "Liberty Mutual",
+        "policy": "LM-44521"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-55010",
+      "holder": "David Kim",
+      "status": "expired",
+      "effective_date": "2024-01-01",
+      "expiry_date": "2025-01-01",
+      "vehicle": {
+        "year": 2020,
+        "make": "Hyundai",
+        "model": "Sonata",
+        "vin": "5NPE34AF1LH123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 40000,
+          "deductible": 750
+        },
+        "comprehensive": {
+          "limit": 40000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": false,
+      "notes": "Policy lapsed. Renewal notices sent 2024-11-01 and 2024-12-15. No response."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": false,
+        "denial_reason": "policy_expired",
+        "pipeline_action": "deny_and_notify"
+      },
+      "assessor": {
+        "action": "skip",
+        "reason": "no_coverage"
+      },
+      "fraud_analyst": {
+        "action": "skip",
+        "reason": "no_coverage"
+      },
+      "senior_reviewer": {
+        "decision": "denied",
+        "reason": "no_active_coverage"
+      },
+      "finance": {
+        "action": "no_payment",
+        "letter": "denial_notification"
+      }
+    }
+  },
+  {
+    "id": "TC-005",
+    "name": "Staged Accident - Organized Fraud Ring",
+    "difficulty": "hard",
+    "description": "Classic swoop-and-squat with multiple phantom passengers claiming injuries",
+    "input": {
+      "claimant_name": "Tony Vargas",
+      "policy_number": "OMA-2025-67234",
+      "incident_date": "2026-02-01",
+      "incident_type": "collision",
+      "description": "I was driving on Highway 42 when the car in front of me suddenly braked. I couldn't stop in time and rear-ended them. There were 4 people in the other car, all complaining of neck and back pain. They were taken by ambulance to the hospital. The driver of the other car gave me his information and was very calm about the whole thing.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0543",
+      "photos": [
+        "front_damage_minor.jpg",
+        "other_car_rear.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": {
+        "name": "Carlos Mendez",
+        "insurance": "Uninsured",
+        "passengers": [
+          {
+            "name": "Maria Reyes",
+            "injury": "neck_pain",
+            "treatment": "ER_visit_plus_chiropractic"
+          },
+          {
+            "name": "Juan Delgado",
+            "injury": "back_pain",
+            "treatment": "ER_visit_plus_chiropractic"
+          },
+          {
+            "name": "Rosa Vargas",
+            "injury": "whiplash",
+            "treatment": "ER_visit_plus_chiropractic"
+          }
+        ]
+      },
+      "medical_claims": {
+        "total_billed": 87000,
+        "providers": [
+          "CityHealth ER",
+          "SpineFirst Chiropractic",
+          "PainRelief Medical Group"
+        ],
+        "treatments_ongoing": true
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-67234",
+      "holder": "Tony Vargas",
+      "status": "active",
+      "effective_date": "2025-09-01",
+      "expiry_date": "2026-09-01",
+      "vehicle": {
+        "year": 2021,
+        "make": "Ford",
+        "model": "Explorer",
+        "vin": "1FMSK8DH5MGA12345"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 300000,
+          "property_damage": 100000
+        },
+        "pip": {
+          "limit": 50000
+        },
+        "uninsured_motorist": true
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision_with_injury",
+        "severity": "high",
+        "priority": "high"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "flag": "high_liability_exposure"
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          2000,
+          5000
+        ],
+        "flag": "damage_inconsistent_with_claimed_injuries"
+      },
+      "fraud_analyst": {
+        "risk_level": "critical",
+        "fraud_score_min": 85,
+        "flags_expected": [
+          "damage_injury_mismatch",
+          "multiple_passengers_same_injury",
+          "uninsured_other_party",
+          "same_surname_claimant_and_passenger",
+          "excessive_medical_relative_to_damage",
+          "chiropractic_mill_pattern",
+          "sudden_braking_pattern"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "action": "refer_to_SIU"
+      },
+      "finance": {
+        "action": "hold_all_payments"
+      }
+    }
+  },
+  {
+    "id": "TC-006",
+    "name": "Partial Approval - Excluded Coverage",
+    "difficulty": "medium",
+    "description": "Valid policy but using personal vehicle for commercial delivery, partial exclusion applies",
+    "input": {
+      "claimant_name": "Rachel Nguyen",
+      "policy_number": "OMA-2025-28100",
+      "incident_date": "2026-02-14",
+      "incident_type": "collision",
+      "description": "I was making a food delivery for DoorDash when another car ran a stop sign and hit my driver side. I have the dashcam footage showing the other car clearly running the stop sign. The impact damaged my driver door, fender, and side mirror. I couldn't complete my remaining deliveries that evening.",
+      "police_report": true,
+      "police_report_number": "PR-2026-1205",
+      "photos": [
+        "driver_door_damage.jpg",
+        "bent_fender.jpg",
+        "dashcam_screenshot.jpg"
+      ],
+      "witnesses": 1,
+      "dashcam_available": true,
+      "other_party_info": {
+        "name": "Chris Martin",
+        "insurance": "USAA",
+        "policy": "USAA-99123"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-28100",
+      "holder": "Rachel Nguyen",
+      "status": "active",
+      "effective_date": "2025-05-01",
+      "expiry_date": "2026-05-01",
+      "vehicle": {
+        "year": 2023,
+        "make": "Kia",
+        "model": "Forte",
+        "vin": "3KPF24AD5NE123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 40000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 40000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "exclusions": [
+        "commercial_use",
+        "rideshare_delivery"
+      ],
+      "notes": "Standard personal auto policy. No rideshare/delivery endorsement."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": "partial",
+        "exclusion_triggered": "commercial_use",
+        "notes": "Vehicle was being used for commercial delivery (DoorDash) at time of incident. Standard personal policy excludes commercial use."
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          4000,
+          8000
+        ]
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 15,
+        "notes": "Not fraud, but coverage exclusion applies"
+      },
+      "senior_reviewer": {
+        "decision": "partial_denial",
+        "reason": "commercial_use_exclusion",
+        "recommendation": "Deny under own collision. Advise claimant to pursue claim against other driver's insurance (USAA) since other party at fault."
+      },
+      "finance": {
+        "action": "no_direct_payment",
+        "subrogation": false,
+        "advisory": "direct_claimant_to_other_party_insurer"
+      }
+    }
+  },
+  {
+    "id": "TC-007",
+    "name": "Edge Case - Hit and Run with Uninsured Motorist",
+    "difficulty": "hard",
+    "description": "Hit and run, no other party info, uninsured motorist coverage applies, emotional claimant",
+    "input": {
+      "claimant_name": "Sarah Johnson",
+      "policy_number": "OMA-2025-19450",
+      "incident_date": "2026-02-16",
+      "incident_type": "hit_and_run",
+      "description": "Someone hit my car in the Target parking lot while I was shopping. When I came out, my entire passenger side was scraped and dented. No note was left. A store employee told me they saw a white pickup truck leave the spot next to mine in a hurry but didn't get the plate number. I'm so upset - this car is only 6 months old and now it looks terrible. I need this fixed ASAP, I have a job interview next week and I can't show up in a wrecked car.",
+      "police_report": true,
+      "police_report_number": "PR-2026-1298",
+      "photos": [
+        "passenger_side_scrapes.jpg",
+        "dented_door.jpg",
+        "scraped_fender.jpg"
+      ],
+      "witnesses": 1,
+      "witness_statement": "Store employee saw white pickup truck leave quickly, no plate noted",
+      "security_camera": "requested_from_Target"
+    },
+    "policy": {
+      "policy_number": "OMA-2025-19450",
+      "holder": "Sarah Johnson",
+      "status": "active",
+      "effective_date": "2025-08-15",
+      "expiry_date": "2026-08-15",
+      "vehicle": {
+        "year": 2025,
+        "make": "Mazda",
+        "model": "CX-50",
+        "vin": "JM3KFBCM1S0123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 60000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 60000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": true,
+        "uninsured_motorist_property": {
+          "limit": 25000,
+          "deductible": 250
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "hit_and_run",
+        "severity": "moderate",
+        "priority": "standard",
+        "coverage_path": "uninsured_motorist_or_collision"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "recommended_coverage": "uninsured_motorist_property",
+        "deductible": 250,
+        "notes": "UMPD lower deductible than collision. Advise claimant on best option."
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          3000,
+          6000
+        ]
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 20,
+        "notes": "Police report filed, witness exists, security camera requested - consistent with legitimate hit and run"
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "coverage_used": "uninsured_motorist_property"
+      },
+      "finance": {
+        "payment_amount_range": [
+          2750,
+          5750
+        ],
+        "deductible_applied": 250,
+        "subrogation": false,
+        "rental_reimbursement": false
+      }
+    }
+  },
+  {
+    "id": "TC-010",
+    "name": "Rear-end collision at traffic light",
+    "difficulty": "easy",
+    "tags": [
+      "approval",
+      "collision",
+      "other_party_at_fault"
+    ],
+    "description": "Tests standard rear-end collision with clear liability and moderate damage. Other party has insurance. Validates straightforward collision claim processing.",
+    "input": {
+      "claimant_name": "Jennifer Martinez",
+      "policy_number": "OMA-2023-47582",
+      "incident_date": "2026-02-15",
+      "incident_type": "collision",
+      "description": "I was stopped at a red light on Riverside Drive near Main Street in Columbus around 2:45 PM when a white sedan hit me from behind without any warning. The impact was pretty hard \u2014 it pushed me forward into the intersection. The other driver apologized immediately and admitted they didn't see me stop. We both pulled over right there and exchanged insurance information. My back bumper and trunk have some significant damage, the bumper cover is cracked and there's a dent in the trunk panel. My neck is sore but I'm okay.",
+      "police_report": true,
+      "police_report_number": "PR-2026-089234",
+      "photos": [
+        "rear_bumper_damage.jpg",
+        "trunk_dent.jpg",
+        "vehicle_position.jpg"
+      ],
+      "witnesses": 2,
+      "other_party_info": {
+        "name": "Robert Chen",
+        "insurance": "State Farm",
+        "policy": "SF-2025-92847"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-47582",
+      "holder": "Jennifer Martinez",
+      "status": "active",
+      "effective_date": "2023-03-15",
+      "expiry_date": "2027-03-15",
+      "vehicle": {
+        "year": 2024,
+        "make": "Honda",
+        "model": "CR-V",
+        "vin": "2HRCF7H52LH634819"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        },
+        "medical_payments": 5000
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "liability_clear": true,
+        "other_party_liable": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          4800,
+          6200
+        ],
+        "repair_timeline": "5-7 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 8,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 5500,
+        "subrogation_potential": true
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "State Farm",
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-011",
+    "name": "Side-swipe in parking garage",
+    "difficulty": "easy",
+    "tags": [
+      "approval",
+      "collision",
+      "split_liability"
+    ],
+    "description": "Tests minor collision with split liability in constrained environment. Both parties have insurance. Validates comparative fault handling.",
+    "input": {
+      "claimant_name": "Marcus Johnson",
+      "policy_number": "OMA-2022-31847",
+      "incident_date": "2026-02-14",
+      "incident_type": "collision",
+      "description": "I was driving through the parking garage at Riverside Commons shopping center on Saturday afternoon, it was crowded and tight. I was exiting a row when another vehicle came from the opposite direction. We didn't see each other until we were pretty close, and we both swerved but our side mirrors and driver-side panels made contact. The impact wasn't hard, mostly cosmetic damage. The other driver and I agreed it was a mutual thing. No police report but we exchanged contact information and insurance details. Just some scrapes and a dent on my door.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "driver_side_panel_damage.jpg",
+        "mirror_scratch.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Sarah Williams",
+        "insurance": "Geico",
+        "policy": "GEICO-2024-56091"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2022-31847",
+      "holder": "Marcus Johnson",
+      "status": "active",
+      "effective_date": "2022-07-20",
+      "expiry_date": "2026-07-20",
+      "vehicle": {
+        "year": 2021,
+        "make": "Chevrolet",
+        "model": "Malibu",
+        "vin": "1G1TB1SM5F5103847"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 750,
+        "liability_clear": false,
+        "comparative_fault": "50/50"
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          1800,
+          2400
+        ],
+        "repair_timeline": "3-4 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 5,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 825,
+        "note": "Split liability. Claimant pays $750 deductible, insurer covers 50% of $3300 estimate minus deductible."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-012",
+    "name": "Deer strike on rural highway",
+    "difficulty": "medium",
+    "tags": [
+      "approval",
+      "comprehensive",
+      "animal_strike"
+    ],
+    "description": "Tests comprehensive claim for animal strike with significant front-end damage. Validates collision with wildlife processing.",
+    "input": {
+      "claimant_name": "David Keller",
+      "policy_number": "OMA-2024-52109",
+      "incident_date": "2026-02-10",
+      "incident_type": "comprehensive",
+      "description": "I was driving on Route 23 heading north around 6:30 PM, just as it was getting dark. A large deer ran out from the tree line on the left side of the road and I couldn't swerve in time. I hit it head-on at about 55 miles per hour. The impact was hard \u2014 the windshield cracked, the hood is severely buckled, and I'm pretty sure there's damage to the radiator and engine compartment. The deer didn't survive. I pulled over immediately and called the sheriff's non-emergency line. An officer came by about 20 minutes later and documented the incident. My airbags did not deploy which is good. I'm fine but my car is definitely not drivable right now.",
+      "police_report": true,
+      "police_report_number": "PR-2026-078453",
+      "photos": [
+        "frontal_impact_damage.jpg",
+        "cracked_windshield.jpg",
+        "hood_buckling.jpg",
+        "radiator_damage.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2024-52109",
+      "holder": "David Keller",
+      "status": "active",
+      "effective_date": "2024-05-10",
+      "expiry_date": "2025-05-10",
+      "vehicle": {
+        "year": 2023,
+        "make": "Subaru",
+        "model": "Outback",
+        "vin": "4S4BTACD2P3253489"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 75000,
+          "deductible": 250
+        },
+        "comprehensive": {
+          "limit": 75000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 75000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "high",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 250,
+        "incident_type_valid": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          8500,
+          11200
+        ],
+        "major_repairs": [
+          "windshield",
+          "hood",
+          "radiator",
+          "engine_bay"
+        ],
+        "repair_timeline": "10-14 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 12,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 9750,
+        "note": "Comprehensive claim for animal strike. Police report supports incident details."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-013",
+    "name": "Hail damage during spring storm",
+    "difficulty": "easy",
+    "tags": [
+      "approval",
+      "comprehensive",
+      "weather_damage"
+    ],
+    "description": "Tests comprehensive claim for weather-related damage. Multiple vehicles affected validates typical hail scenario.",
+    "input": {
+      "claimant_name": "Patricia Sullivan",
+      "policy_number": "OMA-2023-65238",
+      "incident_date": "2026-02-08",
+      "incident_type": "comprehensive",
+      "description": "We had a severe hail storm roll through the area on Saturday afternoon around 3 PM. I parked my truck in the driveway and went inside. The hail was huge \u2014 some of the stones looked bigger than golf balls. When it stopped about 20 minutes later, I went out and saw my truck covered in dents. The roof has multiple dents, the hood is dimpled all over, and I have some damage to the windshield too. Several of my neighbors had the same damage. I took photos right away and called your company on Sunday morning to report the claim.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "roof_hail_damage.jpg",
+        "hood_hail_damage.jpg",
+        "windshield_pitting.jpg",
+        "overall_damage.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2023-65238",
+      "holder": "Patricia Sullivan",
+      "status": "active",
+      "effective_date": "2023-09-01",
+      "expiry_date": "2026-09-01",
+      "vehicle": {
+        "year": 2022,
+        "make": "Ford",
+        "model": "F-150",
+        "vin": "1FTFW1ET6CF23456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "weather_event_confirmed": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          6200,
+          8100
+        ],
+        "major_repairs": [
+          "roof",
+          "hood",
+          "windshield"
+        ],
+        "repair_timeline": "7-10 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 6,
+        "flags": [],
+        "notes": "Regional hail event confirmed via weather service"
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 6900,
+        "note": "Comprehensive claim for weather damage. Multiple vehicle reports in area support event legitimacy."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-014",
+    "name": "T-bone collision at intersection",
+    "difficulty": "medium",
+    "tags": [
+      "approval",
+      "collision",
+      "dashcam_evidence",
+      "clear_liability"
+    ],
+    "description": "Tests collision claim with dashcam evidence proving other party fault. Significant damage requires assessor review.",
+    "input": {
+      "claimant_name": "Angela Thompson",
+      "policy_number": "OMA-2023-44291",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was driving on Parsons Avenue approaching the intersection with Goodale Street around 10:15 AM on Wednesday. I had a green light and was proceeding through the intersection when a pickup truck ran the red light from my right. He hit the passenger side of my vehicle directly. The impact was violent \u2014 my car spun and hit a utility pole. The pickup driver fled the scene initially but was caught about a block away. Police responded and took a full report. I have dashcam footage that clearly shows the truck running the red light and the impact. My right side is crushed, the frame is likely damaged, and I'm worried the car might be totaled. I was taken to the ER but thankfully no serious injuries.",
+      "police_report": true,
+      "police_report_number": "PR-2026-091847",
+      "photos": [
+        "passenger_side_crush.jpg",
+        "frame_damage.jpg",
+        "utility_pole_impact.jpg",
+        "vehicle_after_spinout.jpg"
+      ],
+      "dashcam_video": "dashcam_footage_pr2026091847.mp4",
+      "witnesses": 3,
+      "other_party_info": {
+        "name": "Kevin Rodriguez",
+        "insurance": "Allstate",
+        "policy": "AS-2024-88234",
+        "hit_and_run": false,
+        "police_citation": true
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-44291",
+      "holder": "Angela Thompson",
+      "status": "active",
+      "effective_date": "2023-01-15",
+      "expiry_date": "2026-01-15",
+      "vehicle": {
+        "year": 2020,
+        "make": "Toyota",
+        "model": "RAV4",
+        "vin": "2T1BYRFE6LC082942"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        },
+        "medical_payments": 5000
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "high",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "liability_clear": true,
+        "other_party_liable": true,
+        "police_citation_issued": true
+      },
+      "assessor": {
+        "total_loss": true,
+        "actual_cash_value": 18500,
+        "estimated_damage_range": [
+          18500,
+          21000
+        ],
+        "assessment_notes": "Passenger side crush, frame damage, deemed total loss"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 5,
+        "flags": [],
+        "evidence_quality": "excellent",
+        "dashcam_validation": true
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 18000,
+        "note": "T-bone collision with clear liability via dashcam and police citation. Vehicle total loss approved. Claimant entitled to medical payments additional benefit."
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "Allstate",
+        "total_loss_settlement": true,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-015",
+    "name": "Vandalism in apartment parking lot",
+    "difficulty": "medium",
+    "tags": [
+      "approval",
+      "vandalism",
+      "criminal_activity"
+    ],
+    "description": "Tests comprehensive vandalism claim with police report. Validates deliberate damage claim processing.",
+    "input": {
+      "claimant_name": "James Liu",
+      "policy_number": "OMA-2024-38847",
+      "incident_date": "2026-02-09",
+      "incident_type": "vandalism",
+      "description": "I came out to my car in the parking lot of my apartment complex on Sunday morning and discovered someone had vandalized it overnight. The entire driver's side is keyed with deep scratches, and both the driver and passenger side tires have been slashed with a knife or something sharp. The perpetrator really did a number on the paint. There's also a dent on the driver's door like they kicked it. I reported it to building management and the police. An officer came and took photos and filed a police report. There was some kind of party in the complex Saturday night, so security thinks it might have been random vandalism by someone in a neighboring unit.",
+      "police_report": true,
+      "police_report_number": "PR-2026-082956",
+      "photos": [
+        "keyed_paint_driver_side.jpg",
+        "slashed_tire_1.jpg",
+        "slashed_tire_2.jpg",
+        "door_dent.jpg",
+        "overall_vandalism.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2024-38847",
+      "holder": "James Liu",
+      "status": "active",
+      "effective_date": "2024-11-01",
+      "expiry_date": "2025-11-01",
+      "vehicle": {
+        "year": 2025,
+        "make": "Tesla",
+        "model": "Model 3",
+        "vin": "5YJ3E1EA3PF012345"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 250
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "vandalism",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 250,
+        "incident_type_valid": true,
+        "police_report_filed": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          4200,
+          5800
+        ],
+        "damage_items": [
+          "paint_repair_driver_side",
+          "door_dent_repair",
+          "tire_replacement_2"
+        ],
+        "repair_timeline": "5-7 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 9,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 4950,
+        "note": "Comprehensive vandalism claim. Police report filed. Vehicle newly purchased (2025 model), clean claims history."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-016",
+    "name": "Multi-vehicle chain reaction on highway",
+    "difficulty": "medium",
+    "tags": [
+      "approval",
+      "collision",
+      "chain_reaction",
+      "weather_related"
+    ],
+    "description": "Tests collision claim in chain reaction scenario with rain conditions. Claimant is second vehicle. Validates causation analysis.",
+    "input": {
+      "claimant_name": "Robert Williams",
+      "policy_number": "OMA-2023-29384",
+      "incident_date": "2026-02-11",
+      "incident_type": "collision",
+      "description": "I was driving on I-270 northbound around 4:30 PM during moderate to heavy rain on Tuesday. Traffic was moving at about 45 mph when the car in front of me suddenly braked hard. I couldn't stop in time and hit the back of that car. The impact pushed me forward a bit and then the car behind me hit me. So we had four cars involved total. The roads were wet and visibility wasn't great but I was keeping a reasonable following distance I thought. The initial vehicle that braked had suddenly swerved to avoid a piece of debris on the road. The police came and took statements from everyone. My front bumper and hood have damage, and there's frame damage underneath. I'm the second car in the chain.",
+      "police_report": true,
+      "police_report_number": "PR-2026-085736",
+      "photos": [
+        "front_bumper_damage.jpg",
+        "hood_crumple.jpg",
+        "accident_scene.jpg",
+        "rain_conditions.jpg"
+      ],
+      "witnesses": 4,
+      "other_party_info": {
+        "name": "Michelle Brown",
+        "insurance": "Nationwide",
+        "policy": "NW-2023-74821",
+        "position": "vehicle_in_front"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-29384",
+      "holder": "Robert Williams",
+      "status": "active",
+      "effective_date": "2023-04-01",
+      "expiry_date": "2026-04-01",
+      "vehicle": {
+        "year": 2023,
+        "make": "Mazda",
+        "model": "CX-5",
+        "vin": "JM2BL2S97K0703149"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 750,
+        "chain_reaction": true,
+        "comparative_liability": "proportional",
+        "liability_partial": true,
+        "estimated_claimant_fault": "30%"
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          5100,
+          7200
+        ],
+        "damage_items": [
+          "front_bumper",
+          "hood",
+          "frame_inspection"
+        ],
+        "repair_timeline": "8-10 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 11,
+        "flags": [],
+        "environmental_factor": "rain",
+        "debris_confirmed": true
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 4725,
+        "note": "Chain reaction collision. Claimant has partial liability (30%) but covered under collision policy. Weather and debris conditions documented. Vehicle in front responsible for initial event."
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "Nationwide",
+        "subrogation_percentage": "70%",
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-017",
+    "name": "Backing into pole at gas station",
+    "difficulty": "easy",
+    "tags": [
+      "approval",
+      "collision",
+      "claimant_at_fault",
+      "low_damage"
+    ],
+    "description": "Tests collision claim where claimant is at fault. Single-vehicle minor damage. Validates at-fault claim acceptance and processing.",
+    "input": {
+      "claimant_name": "Thomas Garcia",
+      "policy_number": "OMA-2021-19473",
+      "incident_date": "2026-02-16",
+      "incident_type": "collision",
+      "description": "I was backing out of a parking spot at the Shell station on Main Street on Monday afternoon and I misjudged the distance. I backed into a light pole that was closer than I thought. The backup camera showed the area was clear but I didn't notice the pole wasn't directly behind me \u2014 it was at an angle. The impact was minor, just some damage to my rear bumper. The pole is fine, no damage to it. I was alone so there were no witnesses. I reported the damage to the gas station attendant and then called your company. Honestly, this was totally my fault for not paying closer attention.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "rear_bumper_damage.jpg",
+        "damage_close_up.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2021-19473",
+      "holder": "Thomas Garcia",
+      "status": "active",
+      "effective_date": "2021-10-12",
+      "expiry_date": "2026-10-12",
+      "vehicle": {
+        "year": 2019,
+        "make": "Nissan",
+        "model": "Altima",
+        "vin": "1N4AL3AP0KC234567"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 1000
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 1000
+        },
+        "liability": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 1000,
+        "claimant_at_fault": true,
+        "liability_acknowledged": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          650,
+          950
+        ],
+        "damage_items": [
+          "rear_bumper_cover"
+        ],
+        "repair_timeline": "1-2 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 3,
+        "flags": [],
+        "claimant_acknowledgment": "full_liability"
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 0,
+        "note": "At-fault collision. Estimated repair cost of $800 is below the $1000 deductible. No payment to claimant. Claim filed for record but no payout due. Rates subject to at-fault surcharge."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "n/a",
+        "note": "No payment required. Damage cost below deductible threshold."
+      }
+    }
+  },
+  {
+    "id": "TC-020",
+    "name": "Owner Give-Up - Recent Luxury Purchase",
+    "difficulty": "medium",
+    "tags": [
+      "fraud",
+      "staged_theft",
+      "financial_distress",
+      "new_policy"
+    ],
+    "description": "Recently purchased luxury vehicle with maximum theft coverage. Policy is 45 days old. Vehicle financed with loan balance exceeding market value (upside-down). Vehicle reported stolen from busy shopping mall with limited surveillance visibility. Classic owner give-up pattern where claimant needs to eliminate underwater asset.",
+    "input": {
+      "claimant_name": "Marcus Wellington",
+      "policy_number": "OMA-2025-47823",
+      "incident_date": "2026-02-15",
+      "incident_type": "theft",
+      "description": "I parked my 2024 Mercedes-AMG C63 at Kenwood Towne Centre around 2:15 PM. I was shopping for about 45 minutes. When I came back to the vehicle, it was gone. I immediately called 911 and filed a police report. The car has GPS but it appears to have been disabled or the battery removed from the device. I don't understand how this happened in broad daylight. My car was locked and the alarm system didn't trigger any alerts. I'm very upset about this situation.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0847",
+      "photos": [],
+      "witnesses": 0,
+      "other_party_info": null,
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-47823",
+      "holder": "Marcus Wellington",
+      "status": "active",
+      "effective_date": "2026-01-01",
+      "expiry_date": "2027-01-01",
+      "vehicle": {
+        "year": 2024,
+        "make": "Mercedes-Benz",
+        "model": "C63 AMG",
+        "vin": "WDDWF7EB2RG123456"
+      },
+      "coverage": {
+        "comprehensive": {
+          "limit": 65000,
+          "deductible": 250
+        },
+        "collision": {
+          "limit": 65000,
+          "deductible": 500
+        },
+        "theft": {
+          "limit": 65000,
+          "deductible": 250
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Policy purchased January 1, 2026. Vehicle loan amount: $68,500. Current market value: $62,000. Customer financed through third-party lender."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "theft",
+        "severity": "high",
+        "priority": "investigate"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "new_policy_theft",
+          "upside_down_loan",
+          "no_witnesses",
+          "gps_disabled",
+          "45_days_old_policy"
+        ]
+      },
+      "assessor": {
+        "total_loss": true,
+        "estimated_value": 62000,
+        "flag": "verify_market_value_vs_loan_amount"
+      },
+      "fraud_analyst": {
+        "risk_level": "high",
+        "fraud_score_min": 72,
+        "flags_expected": [
+          "new_policy_short_duration",
+          "luxury_vehicle_theft",
+          "upside_down_loan_situation",
+          "gps_device_disabled",
+          "no_independent_witnesses",
+          "high_coverage_limits",
+          "financial_motive_present"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "New policy on luxury vehicle with financial motive and unusual circumstances warrant full SIU investigation"
+      },
+      "finance": {
+        "action": "hold_pending_investigation"
+      }
+    }
+  },
+  {
+    "id": "TC-021",
+    "name": "Inflated Repair Bill - Just Under Threshold",
+    "difficulty": "medium",
+    "tags": [
+      "fraud",
+      "repair_fraud",
+      "shop_collusion",
+      "cost_manipulation"
+    ],
+    "description": "Legitimate minor fender bender collision. Repair estimate from in-network shop is 3x the expected cost for this type of damage. Shop has history of overcharges but remains in network. Claim amount strategically calculated to be just under total loss threshold, avoiding mandatory scrutiny. Suggests shop collusion.",
+    "input": {
+      "claimant_name": "Jennifer Kozlowski",
+      "policy_number": "OMA-2024-32156",
+      "incident_date": "2026-02-10",
+      "incident_type": "collision",
+      "description": "I was backing out of a parking spot at the Kroger on Vine Street when another vehicle backed into my passenger side rear fender. It was a minor impact but left a noticeable dent and some paint damage. The other driver and I exchanged information and both called our insurers. I took photos at the scene. I got an estimate from Lakeside Auto Body, which is recommended by Ohio Mutual, and they quoted $8,200 for the repair work including parts and labor. The damage looks like it's just the rear fender and door, but they said there could be frame damage that needs assessment after teardown.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "rear_fender_damage_1.jpg",
+        "rear_fender_damage_2.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Robert Chen",
+        "insurer": "State Farm",
+        "claimed_liability": true
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2024-32156",
+      "holder": "Jennifer Kozlowski",
+      "status": "active",
+      "effective_date": "2024-06-15",
+      "expiry_date": "2025-06-15",
+      "vehicle": {
+        "year": 2018,
+        "make": "Honda",
+        "model": "Accord",
+        "vin": "1HGCV1F32JA123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [
+        {
+          "date": "2024-09-20",
+          "type": "comprehensive",
+          "amount": 1200,
+          "status": "paid"
+        }
+      ],
+      "premium_paid": true,
+      "notes": "Vehicle market value: $9,500. Total loss threshold: $8,550 (90% of value). Lakeside Auto Body flagged in company database for 12 overcharge complaints in past 24 months. Still in network due to geographic coverage."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "medium",
+        "priority": "review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "estimate_significantly_high",
+          "just_under_total_loss",
+          "problematic_shop_history",
+          "frame_damage_speculative"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          2400,
+          3100
+        ],
+        "actual_estimate_received": 8200,
+        "flag": "obtain_independent_estimate"
+      },
+      "fraud_analyst": {
+        "risk_level": "moderate",
+        "fraud_score_min": 65,
+        "flags_expected": [
+          "estimate_exceeds_typical_3x",
+          "strategically_under_total_loss",
+          "shop_known_overcharger",
+          "speculative_frame_damage",
+          "potential_collusion",
+          "estimate_lacks_detail"
+        ],
+        "recommendation": "enhanced_documentation"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Obtain independent estimate before authorizing repair. Flag shop for potential collusion pattern."
+      },
+      "finance": {
+        "action": "hold_pending_independent_assessment"
+      }
+    }
+  },
+  {
+    "id": "TC-022",
+    "name": "Phantom Injuries - Soft Tissue Cascade",
+    "difficulty": "hard",
+    "tags": [
+      "fraud",
+      "medical_fraud",
+      "soft_tissue",
+      "clinic_collusion"
+    ],
+    "description": "Real low-speed parking lot collision (minimal vehicle damage). Three passengers suddenly all file injury claims requiring extensive chiropractic treatment. All patients are seeing the same clinic. No emergency medical reports from scene. Soft tissue injuries are classic fraud pattern when genuine damage is minimal. Suggests organized medical fraud ring.",
+    "input": {
+      "claimant_name": "David Thornton",
+      "policy_number": "OMA-2025-61234",
+      "incident_date": "2026-02-08",
+      "incident_type": "collision",
+      "description": "I was pulling into a parking spot at the Home Depot on Route 42 when a car backed out of a spot next to mine. The impact was at low speed, maybe 5 mph. We both pulled to the side and took photos. The damage to my front bumper is minimal - maybe a small crack. However, my neck started hurting within a few hours, and the two passengers in my car, my brother-in-law Kevin and my sister Susan, also reported neck and back pain. We all went to see a chiropractor, Dr. Marcus Chen at Wellness Plus Clinic, the next day. He examined us and said we all have whiplash and strain injuries that will require ongoing treatment. I've been going twice a week and my brother-in-law and sister have similar treatment schedules.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "bumper_damage_minor.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Linda Morrison",
+        "insurer": "Progressive",
+        "claimed_liability": true
+      },
+      "medical_claims": {
+        "claimant": {
+          "treatment_type": "chiropractic",
+          "provider": "Wellness Plus Clinic",
+          "visits_to_date": 6,
+          "treatment_cost_to_date": 2100,
+          "estimated_ongoing": 5400,
+          "chief_complaint": "whiplash, neck strain, lower back pain"
+        },
+        "additional_claimants": [
+          {
+            "name": "Kevin Thornton",
+            "relationship": "brother-in-law",
+            "treatment_type": "chiropractic",
+            "provider": "Wellness Plus Clinic",
+            "visits_to_date": 5,
+            "treatment_cost_to_date": 1750,
+            "estimated_ongoing": 5200
+          },
+          {
+            "name": "Susan Thornton",
+            "relationship": "sister",
+            "treatment_type": "chiropractic",
+            "provider": "Wellness Plus Clinic",
+            "visits_to_date": 6,
+            "treatment_cost_to_date": 2100,
+            "estimated_ongoing": 5400
+          }
+        ]
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-61234",
+      "holder": "David Thornton",
+      "status": "active",
+      "effective_date": "2025-10-15",
+      "expiry_date": "2026-10-15",
+      "vehicle": {
+        "year": 2016,
+        "make": "Toyota",
+        "model": "Camry",
+        "vin": "4T1BF1AK5CU123456"
+      },
+      "coverage": {
+        "medical_payments": {
+          "limit": 10000,
+          "deductible": 0
+        },
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Vehicle damage estimate: $350. Wellness Plus Clinic flagged in fraud database: 47 related injury claims in past 12 months. Patients often report cascading family injuries at same clinic. Dr. Chen's license is current but clinic under investigation by state board."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision_with_injury",
+        "severity": "high",
+        "priority": "fraud_review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "low_impact_multiple_injuries",
+          "same_clinic_all_patients",
+          "no_emergency_treatment",
+          "all_soft_tissue",
+          "delayed_symptom_onset",
+          "suspicious_clinic_pattern"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_vehicle_damage": 350,
+        "flag": "medical_claims_disproportionate_to_impact"
+      },
+      "fraud_analyst": {
+        "risk_level": "critical",
+        "fraud_score_min": 88,
+        "flags_expected": [
+          "low_impact_collision_high_injury_claims",
+          "multiple_claimants_same_incident",
+          "all_patients_at_same_clinic",
+          "soft_tissue_only_injuries",
+          "delayed_symptom_reporting",
+          "excessive_ongoing_treatment",
+          "clinic_known_fraud_pattern",
+          "no_emergency_care_sought",
+          "family_relationship_claimants",
+          "disproportionate_medical_to_property_damage"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Classic organized medical fraud pattern. SIU investigation mandatory before any medical payment. Contact state medical board regarding clinic."
+      },
+      "finance": {
+        "action": "hold_all_payments"
+      }
+    }
+  },
+  {
+    "id": "TC-023",
+    "name": "Past-Posting - Date Manipulation",
+    "difficulty": "hard",
+    "tags": [
+      "fraud",
+      "date_manipulation",
+      "policy_exception",
+      "documentation_forgery"
+    ],
+    "description": "Claimant describes accident that actually occurred 3 days before policy effective date. However, claimant claims incident happened 2 days after policy started. Police report date is intentionally ambiguous or handwritten in manner that could be misread. Claimant is attempting to fraudulently backdate coverage. Requires careful timeline reconciliation.",
+    "input": {
+      "claimant_name": "Patricia Hernandez",
+      "policy_number": "OMA-2026-78451",
+      "incident_date": "2025-12-26",
+      "incident_type": "collision",
+      "description": "I had an accident on December 26th at approximately 3:00 PM on I-71 near the Norwood exit. I was changing lanes and clipped another vehicle. My front left side has damage to the fender and door. The other driver and I exchanged information and both reported it to our insurers. I have the other party's insurance information and a police report number. This happened just a couple days after my policy started with Ohio Mutual.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0423",
+      "photos": [
+        "front_left_damage_1.jpg",
+        "front_left_damage_2.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Thomas Bradley",
+        "insurer": "Allstate",
+        "claimed_liability": false,
+        "police_report_reference": "PR-2026-0423"
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2026-78451",
+      "holder": "Patricia Hernandez",
+      "status": "active",
+      "effective_date": "2025-12-29",
+      "expiry_date": "2026-12-29",
+      "vehicle": {
+        "year": 2019,
+        "make": "Nissan",
+        "model": "Altima",
+        "vin": "1N4AL3AP7KC123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Claimant called agent on December 26th morning requesting quick policy activation. Agent notes indicate she had previous cancellation with Geico on December 24th due to non-payment."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "high",
+        "priority": "immediate_review"
+      },
+      "claims_officer": {
+        "coverage_valid": false,
+        "flags": [
+          "incident_before_policy_effective",
+          "date_discrepancy",
+          "timeline_inconsistency",
+          "past_posting_attempt",
+          "recent_policy_activation"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          2800,
+          4200
+        ],
+        "flag": "coverage_issue_prevents_assessment"
+      },
+      "fraud_analyst": {
+        "risk_level": "critical",
+        "fraud_score_min": 92,
+        "flags_expected": [
+          "incident_before_coverage_effective",
+          "claimant_date_discrepancy",
+          "recent_previous_cancellation",
+          "quick_policy_activation_same_day",
+          "urgent_activation_request",
+          "possible_documentation_manipulation",
+          "financial_motive_prior_cancellation",
+          "timeline_reconstruction_required"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "denied",
+        "rationale": "Claim is outside coverage period. Incident occurred December 26, 2025. Policy effective December 29, 2025. Past-posting attempt. Coverage denial is appropriate. Potential insurance fraud charge."
+      },
+      "finance": {
+        "action": "deny_claim"
+      }
+    }
+  },
+  {
+    "id": "TC-024",
+    "name": "Friendly Fire - Staged Collision Across Insurers",
+    "difficulty": "medium",
+    "tags": [
+      "fraud",
+      "staged_accident",
+      "collusion",
+      "multi_insurer"
+    ],
+    "description": "Two acquaintances stage a collision. Both file claims with different insurers. Addresses are in same apartment complex. Both recently purchased new policies (within 30 days). Incident occurred in isolated location with no independent witnesses. Claimants coordinated their stories but small inconsistencies emerge upon comparison. Requires cross-carrier investigation.",
+    "input": {
+      "claimant_name": "Anthony Russo",
+      "policy_number": "OMA-2026-55678",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was driving on Valley Road near the industrial park around 5:45 PM when another car ran a red light at the intersection of Valley and Riverside. I tried to brake but couldn't avoid the collision. The other car hit my front right side pretty hard. There was no traffic and no other witnesses, but I immediately called 911 to report the accident. The other driver was cooperative and we exchanged information. My vehicle sustained significant front-right damage including the bumper, fender, and headlight.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0534",
+      "photos": [
+        "front_right_damage_1.jpg",
+        "front_right_damage_2.jpg",
+        "accident_scene_1.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": {
+        "name": "Marcus Jackson",
+        "insurer": "Geico",
+        "claimed_liability": true,
+        "address": "2847 Riverside Apartments, Unit 12B"
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2026-55678",
+      "holder": "Anthony Russo",
+      "status": "active",
+      "effective_date": "2026-01-15",
+      "expiry_date": "2027-01-15",
+      "vehicle": {
+        "year": 2015,
+        "make": "Ford",
+        "model": "Focus",
+        "vin": "1FADP5AU8F5123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Customer address: 2847 Riverside Apartments, Unit 8F. Lives in same complex as other party. Policy activated January 15, 2026 (28 days before incident). Recent customer, no prior insurance history with OMA."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "medium",
+        "priority": "review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "no_independent_witnesses",
+          "other_party_admitted_liability",
+          "isolated_location",
+          "new_policy_recent_activation",
+          "same_apartment_complex",
+          "cross_insurer_claim"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          3500,
+          5200
+        ],
+        "flag": "low_impact_area_no_witnesses"
+      },
+      "fraud_analyst": {
+        "risk_level": "moderate",
+        "fraud_score_min": 68,
+        "flags_expected": [
+          "no_independent_witnesses",
+          "isolated_location",
+          "new_policies_both_parties",
+          "same_apartment_complex",
+          "admitted_liability_unusual",
+          "no_traffic_observation",
+          "coordinated_story_elements",
+          "cross_insurer_coordination"
+        ],
+        "recommendation": "investigate"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Request Geico cross-carrier information on other claim. Verify addresses, policy dates, and witness details. Check for coordinated story elements."
+      },
+      "finance": {
+        "action": "hold_pending_investigation"
+      }
+    }
+  },
+  {
+    "id": "TC-025",
+    "name": "Jump-In - Phantom Passenger Injury Claim",
+    "difficulty": "hard",
+    "tags": [
+      "fraud",
+      "phantom_passenger",
+      "medical_fraud",
+      "inconsistent_narrative"
+    ],
+    "description": "Real accident with legitimate driver claim. However, a person who was not in the vehicle at time of impact suddenly claims to be a passenger with injuries. Story details don't align precisely with driver's account (vehicle position, impact direction, seating location). Medical treatment initiated immediately by previously unknown medical provider. Claimant and driver deny prior relationship but financial connection may exist.",
+    "input": {
+      "claimant_name": "Jessica Matthews",
+      "policy_number": "OMA-2025-44912",
+      "incident_date": "2026-02-09",
+      "incident_type": "collision",
+      "description": "I was a passenger in a vehicle driven by Michael Chen. We were on Vine Street when Michael turned left at the light and a car on the opposite side didn't stop and hit us on the passenger side where I was sitting. The impact was pretty severe on my side. I hit my head on the window and felt sharp pain in my shoulder and ribs. Michael called 911 and paramedics came but I declined transport to the hospital because I wasn't sure about the extent of my injuries. The next day the pain was worse so I went to see my doctor who referred me to an orthopedic specialist.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0512",
+      "photos": [],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Robert Zhang",
+        "insurer": "State Farm",
+        "claimed_liability": true
+      },
+      "medical_claims": {
+        "treatment_type": "orthopedic",
+        "provider": "Pinnacle Sports Medicine",
+        "visits_to_date": 3,
+        "treatment_cost_to_date": 1850,
+        "estimated_ongoing": 8500,
+        "chief_complaint": "shoulder pain, rib contusion, possible rotator cuff injury, head trauma"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-44912",
+      "holder": "Michael Chen",
+      "status": "active",
+      "effective_date": "2025-09-10",
+      "expiry_date": "2026-09-10",
+      "vehicle": {
+        "year": 2017,
+        "make": "Honda",
+        "model": "Civic",
+        "vin": "2HGFC2F58HH123456"
+      },
+      "coverage": {
+        "medical_payments": {
+          "limit": 10000,
+          "deductible": 0
+        },
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Police report lists driver Michael Chen and indicates 'possible passenger' but doesn't specify names or confirm occupancy. Medical provider Pinnacle Sports Medicine has history of high injury claim processing. Jessica Matthews has no prior relationship with Michael Chen on record, but financial investigation reveals shared bank account at Credit Union, suggesting possible relationship or financial arrangement. Claimant initially not mentioned in driver's incident call to police."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision_with_injury",
+        "severity": "high",
+        "priority": "fraud_review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "passenger_not_mentioned_initially",
+          "story_inconsistencies",
+          "medical_claims_delayed",
+          "high_injury_estimate",
+          "unknown_passenger_relationship"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_vehicle_damage": 6800,
+        "flag": "medical_claims_under_investigation"
+      },
+      "fraud_analyst": {
+        "risk_level": "high",
+        "fraud_score_min": 81,
+        "flags_expected": [
+          "passenger_not_in_police_initial_report",
+          "narrative_inconsistencies",
+          "claimant_story_details_mismatch",
+          "delayed_injury_claim",
+          "unknown_passenger_relationship",
+          "high_medical_cost_estimate",
+          "suspicious_medical_provider",
+          "financial_connection_driver",
+          "no_initial_emergency_care",
+          "injury_severity_vs_impact_mismatch"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Verify passenger occupancy through police investigation and independent witnesses. Obtain medical records and review relationship between claimant and driver. Financial investigation warranted."
+      },
+      "finance": {
+        "action": "hold_all_payments"
+      }
+    }
+  },
+  {
+    "id": "TC-026",
+    "name": "Serial Claimant - Pattern Across Carriers",
+    "difficulty": "medium",
+    "tags": [
+      "fraud",
+      "serial_claims",
+      "pattern_fraud",
+      "multiple_carriers"
+    ],
+    "description": "Claimant with 5 claims over 3 years across 3 different insurers. Each individual claim appears plausible on surface. Current low-speed rear-ending claim seems minor. However, cumulative pattern suggests either extremely poor driving or claims farming. No convictions for traffic violations, but pattern warrants carrier coordination investigation.",
+    "input": {
+      "claimant_name": "Gerald Hutchins",
+      "policy_number": "OMA-2025-88743",
+      "incident_date": "2026-02-11",
+      "incident_type": "collision",
+      "description": "I was stopped at a red light on Madison Avenue when the car behind me didn't see me stop and hit my rear bumper. It was a pretty minor impact at low speed, maybe 10 mph. Both vehicles had light damage. The other driver admitted fault and we exchanged insurance information. I have the other party's insurance details and police report number. My neck has been a bit sore since the incident but nothing serious.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0598",
+      "photos": [
+        "rear_bumper_damage.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "David Kim",
+        "insurer": "Liberty Mutual",
+        "claimed_liability": true
+      },
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-88743",
+      "holder": "Gerald Hutchins",
+      "status": "active",
+      "effective_date": "2025-11-01",
+      "expiry_date": "2026-11-01",
+      "vehicle": {
+        "year": 2014,
+        "make": "Hyundai",
+        "model": "Sonata",
+        "vin": "5NPEB4AC9EH123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 250
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 250
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "CLUE report shows 5 claims in 36 months: (1) 2023-04-15 Allstate - Comprehensive, animal strike, $2,100; (2) 2023-08-22 Allstate - Collision, parking lot damage, $950; (3) 2024-02-10 Geico - Collision, rear-end, $3,200; (4) 2024-11-05 Geico - Comprehensive, water damage, $1,800; (5) Current claim 2026-02-11 OMA. No traffic violations on record. Three different insurers. Claims averaging $2,410. Pattern appears deliberate."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "multiple_prior_claims",
+          "multiple_carriers",
+          "short_policy_duration",
+          "frequent_claim_pattern"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [
+          400,
+          800
+        ],
+        "flag": "disproportionate_damage_to_low_impact"
+      },
+      "fraud_analyst": {
+        "risk_level": "moderate",
+        "fraud_score_min": 64,
+        "flags_expected": [
+          "5_claims_in_3_years",
+          "multiple_insurers",
+          "pattern_concentration",
+          "claims_farming_signature",
+          "low_speed_rear_end_typical",
+          "no_traffic_violations",
+          "short_policy_with_new_carrier",
+          "average_claim_amounts_consistent",
+          "wide_variety_claim_types",
+          "possible_deliberate_pattern"
+        ],
+        "recommendation": "enhanced_documentation"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Request CLUE report analysis. Coordinate with Allstate and Geico regarding claim patterns. Monitor for additional claims. Consider fraud ring involvement."
+      },
+      "finance": {
+        "action": "hold_pending_investigation"
+      }
+    }
+  },
+  {
+    "id": "TC-027",
+    "name": "Exaggerated Comprehensive - Hail Damage Mixing",
+    "difficulty": "hard",
+    "tags": [
+      "fraud",
+      "comprehensive_fraud",
+      "damage_mixing",
+      "exaggeration"
+    ],
+    "description": "Real hail storm occurred in area on date of claim. Vehicle genuinely has hail damage. However, claimant has mixed in pre-existing body damage from prior incidents into the claim. Some damage patterns inconsistent with hail (straight dents, not round; located only on one side of vehicle). Repair estimate inflates claim by including unrelated damage. Requires detailed damage analysis and pattern matching.",
+    "input": {
+      "claimant_name": "Rebecca Sullivan",
+      "policy_number": "OMA-2025-71956",
+      "incident_date": "2026-02-06",
+      "incident_type": "comprehensive",
+      "description": "We experienced a severe hailstorm on the evening of February 6th. My vehicle was parked in my driveway and took significant hail damage. The roof, hood, and both sides of the vehicle have dents from the hailstones. I also noticed damage to my rear quarter panel and some previous damage on the driver's side that may have been made worse. I got an estimate from Reliable Auto Repair and they quote $9,400 for full repair. The hail damage is substantial and I need this repaired soon since the vehicle is beginning to show rust around some of the dents.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "roof_damage_hail_1.jpg",
+        "roof_damage_hail_2.jpg",
+        "hood_damage_1.jpg",
+        "driver_side_damage.jpg",
+        "rear_quarter_damage.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null,
+      "medical_claims": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-71956",
+      "holder": "Rebecca Sullivan",
+      "status": "active",
+      "effective_date": "2025-03-20",
+      "expiry_date": "2026-03-20",
+      "vehicle": {
+        "year": 2016,
+        "make": "Subaru",
+        "model": "Outback",
+        "vin": "4S4BS8KD7G8123456"
+      },
+      "coverage": {
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "collision": {
+          "limit": 50000,
+          "deductible": 1000
+        }
+      },
+      "claims_history": [
+        {
+          "date": "2024-07-15",
+          "type": "collision",
+          "amount": 3200,
+          "description": "side-swipe parking lot incident"
+        }
+      ],
+      "premium_paid": true,
+      "notes": "Hail event confirmed 2026-02-06 evening in area. Weather service records indicate hail 0.75-1.25 inches. Claimant's prior collision claim 2024-07-15 involved driver's side damage. Current photos show damage patterns inconsistent with hail: (1) Driver's side shows linear dent patterns typical of side-swipe, not round hail pocks. (2) Rear quarter damage appears older, possible previous incident. (3) Damage concentrated on driver's side and rear, not uniform hail pattern. Repair estimate dated 2026-02-07, submitted same day as claim, lacks itemized breakdown."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "medium",
+        "priority": "review"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "flags": [
+          "mixed_damage_types",
+          "hail_genuine_but_exaggerated",
+          "prior_collision_damage",
+          "estimate_lacks_detail",
+          "damage_pattern_inconsistencies"
+        ]
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_hail_damage_only": 4200,
+        "estimated_total_repair": 9400,
+        "flag": "separate_hail_from_prior_damage"
+      },
+      "fraud_analyst": {
+        "risk_level": "high",
+        "fraud_score_min": 77,
+        "flags_expected": [
+          "mixing_hail_and_prior_damage",
+          "damage_pattern_inconsistent_with_hail",
+          "linear_dents_suggest_collision",
+          "concentrated_damage_one_side",
+          "prior_collision_claim_overlapping_area",
+          "inflated_repair_estimate",
+          "lack_of_itemized_breakdown",
+          "rush_estimate_submission",
+          "asymmetric_damage_distribution",
+          "rear_quarter_damage_appears_older"
+        ],
+        "recommendation": "enhanced_documentation"
+      },
+      "senior_reviewer": {
+        "decision": "investigate",
+        "rationale": "Obtain independent assessment separating hail damage from prior damage. Cross-reference 2024 collision claim photos. Request detailed repair estimate with line items. Consider partial claim payment for legitimate hail damage only."
+      },
+      "finance": {
+        "action": "hold_pending_independent_assessment"
+      }
+    }
+  },
+  {
+    "id": "TC-040",
+    "name": "Flood Damage \u2014 Acts of God with Negligence",
+    "difficulty": "hard",
+    "tags": [
+      "edge_case",
+      "acts_of_god",
+      "environmental",
+      "reasonable_person",
+      "coverage_denial"
+    ],
+    "description": "Flash flood submerged claimant's car in an underpass with visible standing water and road closure barricades. Engine hydrolocked, total loss. The key complexity: claimant drove around barricades into flooded area. Does the act of deliberately entering a dangerous area void comprehensive coverage for the resulting environmental damage, or is flood coverage unaffected by the claimant's risky decision?",
+    "input": {
+      "claimant_name": "Marcus Chen",
+      "policy_number": "OMA-2024-07834",
+      "incident_date": "2026-02-15",
+      "incident_type": "flood",
+      "description": "I was driving home from work on Route 71 when I encountered heavy rainfall from the storm system that passed through earlier that evening. The underpass near mile marker 12 had about 2 feet of standing water. I could see orange barricades were set up on both the eastbound and westbound lanes, and a police car was parked nearby with lights flashing. However, I was trying to avoid the detour that would have added 20 minutes to my commute. I carefully drove around the barricades on the shoulder and attempted to cross the flooded section. My 2023 Honda Accord stalled about halfway through. The water was deeper than I expected. I had to call a tow truck, and they got me out safely, but the engine won't turn over now. The repair shop says the engine is likely hydrolocked and would need complete replacement.",
+      "police_report": true,
+      "police_report_number": "2026-0215-FLOOD-4471",
+      "photos": [
+        "underpass_flooded.jpg",
+        "vehicle_submerged.jpg",
+        "barricades_visible.jpg",
+        "engine_damage.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2024-07834",
+      "insured_name": "Marcus Chen",
+      "policy_start": "2024-02-15",
+      "policy_end": "2025-02-14",
+      "status": "active",
+      "vehicle": {
+        "vin": "JH2RC5304KM200456",
+        "year": 2023,
+        "make": "Honda",
+        "model": "Accord",
+        "actual_cash_value": 22500
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 22500,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 22500,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 250000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Comprehensive claim for flood damage filed within 24 hours. Claimant is responsive and has documentation.",
+        "coverage_concern": "Note: Claimant drove around road closure barricades. Route to claims officer with flag for potential negligence/coverage limitation review.",
+        "recommended_action": "Route to claims officer for coverage determination"
+      },
+      "claims_officer": {
+        "coverage_determination": "CONDITIONAL APPROVAL - Comprehensive covers flood damage, but claimant's deliberate entry into closed area creates ambiguity. Policy language regarding acts of God and claimant negligence must be reviewed. Ohio law does not typically void comprehensive coverage for environmental damage based on claimant conduct, but circumstances are material to the claim.",
+        "decision_path": "Consult policy language and Ohio regulatory guidance. Reasonable person standard: Would a reasonable person attempt to drive through a barricaded, visibly flooded underpass to save 20 minutes? Likely no. However, comprehensive coverage typically covers flood regardless of proximity to negligence.",
+        "next_step": "If policy language permits, approve comprehensive claim with full deductible applied. Obtain detailed police report to confirm witness statements about barricade visibility."
+      },
+      "assessor": {
+        "vehicle_inspection": "Vehicle cannot be driven. Tow to authorized repair facility for inspection. Engine hydro-lock damage confirmed. Complete engine replacement required: estimated $8,500-$10,200.",
+        "total_loss_determination": "Engine replacement cost plus body/interior water damage (estimated $3,000-$4,500) likely exceeds 70% threshold of $22,500 ACV. Total loss threshold: $15,750. Estimated total repair: $11,500-$14,700. Borderline case pending detailed inspection.",
+        "inspection_priority": "URGENT - Schedule within 48 hours. Verify whether hidden transmission/electrical damage exists. If total loss, recommend totaling out."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK overall. Claimant's decision to drive into flooded area is risky but appears honest (not staged). Police report corroborates timeline. However, note: Is claimant trying to claim this was unavoidable? This could indicate inflating the claim. Recommend verifying police witness statement against claimant's account.",
+        "red_flags": "Claimant's account emphasizes 'carefully drove' and 'water deeper than expected' \u2014 possible understatement of risk awareness. Police presence at scene should have been clear notice.",
+        "recommendation": "No fraud indicators at this stage. Monitor for inconsistencies in supplemental statements."
+      },
+      "senior_reviewer": {
+        "key_issue": "Coverage determination hinges on policy language and Ohio's treatment of comprehensive claims when claimant conduct is negligent. Acts of God are typically covered under comprehensive regardless of claimant negligence, but barricade-breach is fact-specific.",
+        "policy_interpretation": "Standard comprehensive coverage for flood is NOT voided by claimant's risky behavior unless policy explicitly excludes 'loss resulting from claimant's violation of traffic laws' or similar. Most policies do not have this exclusion.",
+        "decision": "RECOMMEND APPROVAL subject to verification that: (1) Comprehensive coverage was active and unexcluded, (2) Police report confirms flooding and barricade presence, (3) Total loss assessment completed.",
+        "amount": "If approved: ACV up to $22,500 minus comprehensive deductible ($250). If total loss confirmed: Settle at ACV minus deductible minus salvage value estimate."
+      },
+      "finance": {
+        "estimated_payout": 19500,
+        "calculation": "ACV $22,500 - comprehensive deductible $250 - salvage value (estimate $2,750 for flooded Accord) = $19,500",
+        "payment_authority": "Standard check + lien payoff to any lienholder if applicable.",
+        "hold_status": "PENDING - Hold payment until assessor confirms total loss and senior reviewer verifies coverage decision. Expected resolution: 5-7 business days.",
+        "notes": "If partial claim approved instead: Deduct $250 deductible from repair estimate. Likely scenario: Full replacement/total loss claim."
+      }
+    }
+  },
+  {
+    "id": "TC-041",
+    "name": "Hit by Uninsured Government Vehicle",
+    "difficulty": "hard",
+    "tags": [
+      "edge_case",
+      "uninsured_motorist",
+      "government_immunity",
+      "sovereign_immunity",
+      "subrogation"
+    ],
+    "description": "Claimant hit by city garbage truck that ran a red light. Government vehicle is self-insured. UM coverage should apply, but sovereign immunity complicates recovery and subrogation. Question: Does government self-insurance status change UM claim handling? Can Ohio Mutual subrogate against a municipality?",
+    "input": {
+      "claimant_name": "Jessica Rodriguez",
+      "policy_number": "OMA-2023-12445",
+      "incident_date": "2026-02-10",
+      "incident_type": "collision",
+      "description": "I was driving through the intersection of 5th and Main at approximately 2:15 PM on a Tuesday afternoon. The light was green for my direction of travel (northbound). I had a clear view of the intersection and was traveling at normal speed (approximately 35 mph, the posted limit). A Columbus city garbage truck approached from the westbound direction and ran the red light completely. I had no time to brake. The truck hit my vehicle on the driver's side, pushing me into a nearby parked car. The garbage truck driver admitted fault at the scene and provided his information: he stated he didn't see the red light due to sun glare and didn't hear his spotter's warning. Police arrived and documented everything. The garbage truck had no commercial liability insurance placard visible \u2014 the officer told me it's a city vehicle so it's 'self-insured.' My vehicle is badly damaged (driver's side door, frame damage, airbags deployed), and I have injuries: broken left wrist and back pain.",
+      "police_report": true,
+      "police_report_number": "2026-0210-COLLISION-5233",
+      "photos": [
+        "garbage_truck_impact.jpg",
+        "driver_side_damage.jpg",
+        "intersection_view.jpg",
+        "airbag_deployment.jpg"
+      ],
+      "witnesses": 3,
+      "other_party_info": {
+        "at_fault_driver_name": "James Kowalski",
+        "at_fault_driver_employer": "City of Columbus, Ohio - Department of Public Works",
+        "vehicle_type": "2020 Freightliner garbage truck",
+        "vehicle_identification": "City of Columbus fleet vehicle #GC-447",
+        "insurance_carrier": "Self-insured (municipality)",
+        "police_fault_finding": "100% at fault - ran red light"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-12445",
+      "insured_name": "Jessica Rodriguez",
+      "policy_start": "2023-02-10",
+      "policy_end": "2024-02-09",
+      "status": "expired",
+      "renewal_status": "auto-renewed to 2025-02-09",
+      "vehicle": {
+        "vin": "5TDJKRFH5LS123456",
+        "year": 2019,
+        "make": "Toyota",
+        "model": "Highlander",
+        "actual_cash_value": 28000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 28000,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 28000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "medical_payments": {
+          "limit": 5000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim with bodily injury, third-party involvement (city of Columbus). At-fault party is government entity with self-insurance. Police report clearly assigns fault to other party. UM coverage is active and applicable.",
+        "complexity_flag": "ESCALATE - Sovereign immunity and government self-insurance require senior handling. Multiple coverage triggers (collision, medical payments, UM). Injuries require medical documentation.",
+        "recommended_action": "Route to claims officer immediately; coordinate with legal/subrogation team"
+      },
+      "claims_officer": {
+        "coverage_determination": "Multiple coverages apply: (1) Collision for vehicle damage, (2) Medical Payments for claimant's injuries, (3) UM for both property and bodily injury (since at-fault party is uninsured, government self-insurance is treated as uninsured for UM purposes). This is the critical determination.",
+        "uninsured_status_decision": "Under Ohio law, government vehicles that are self-insured are treated as uninsured motorists for UM coverage purposes. The fact that the city is self-insured does NOT negate UM coverage applicability. UM applies here.",
+        "claim_structure": "File three separate claim components: (1) Collision claim for vehicle damage ($28,000 limit, $1,000 deductible), (2) Medical Payments for claimant's documented injuries (up to $5,000), (3) UM bodily injury claim for pain/suffering and wage loss beyond med-pay (up to $100,000 limit).",
+        "next_step": "Obtain full police report, medical records from ER/treatment providers, and written statement from claimant. Notify legal department regarding sovereign immunity implications and subrogation strategy."
+      },
+      "assessor": {
+        "vehicle_inspection": "Schedule comprehensive inspection. Damage includes: driver's side door crushed, frame damage (likely bent B-pillar or rocker), dual airbag deployment, interior trim damage. Estimate to be prepared for collision claim.",
+        "repair_vs_total_loss": "If repairs are feasible and under $21,000 (80% of ACV), approve repair authorization. Frame damage may make repair uneconomical despite ACV. Recommend obtaining repair shop estimate within 48 hours.",
+        "priority": "EXPEDITED - Safety-critical frame damage. Inspect for structural integrity.",
+        "estimate_range": "Likely $12,000-$18,000 for repairs; potential total loss if frame damage is extensive."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "VERY LOW FRAUD RISK. Police report confirms accident, witnesses present, other party admitted fault and provided information. Claimant injuries (broken wrist, back pain) are consistent with collision mechanics. No red flags.",
+        "verification_needed": "Confirm medical treatment was sought immediately post-accident (within hours). Verify that treatment aligns with injury claims. Monitor for claim inflation but no reason to suspect fraud.",
+        "recommendation": "Clear to proceed with full claim processing."
+      },
+      "senior_reviewer": {
+        "key_legal_issue": "Sovereign immunity is a significant issue. Ohio municipalities enjoy sovereign immunity for governmental functions, but may be liable for negligence of employees in non-governmental functions. Waste management arguably falls into gray area. City may invoke immunity to block traditional civil recovery.",
+        "um_advantage": "However, UM coverage is SPECIFICALLY designed to protect insured parties when the liable party lacks sufficient insurance or is uninsured. Self-insured governmental entities are treated as uninsured under UM. This is claimant's strongest avenue for recovery from Ohio Mutual.",
+        "subrogation_challenge": "If Ohio Mutual pays the UM claim, subrogation against the city is complicated by sovereign immunity. City may refuse subrogation. Ohio's Tort Reform Act (HB 95 may apply). Consult state-specific statute on municipal liability caps.",
+        "recommendation": "APPROVE UM claim in full. Recognize that subrogation against city may be limited or impossible. This is the reason the claimant has UM coverage.",
+        "coverage_limits": "Vehicle damage: collision limit $28,000. Bodily injury: UM limit $100,000. Medical Payments: $5,000. Likely outcome: full vehicle repair/replacement plus UM bodily injury settlement."
+      },
+      "finance": {
+        "estimated_payout": 45000,
+        "calculation": "Collision repair estimate $15,000 minus deductible $1,000 = $14,000. Medical Payments $5,000 (for documented ER/treatment). UM bodily injury estimate (broken wrist, back pain, wage loss, pain/suffering) $26,000-$30,000 (structured settlement).",
+        "immediate_payment": "Medical Payments: $5,000 (to support ongoing treatment). Collision damage: $14,000 after deductible. UM settlement (pending valuation): $15,000-$25,000 as negotiations proceed.",
+        "payment_authority": "Collision payment to claimant or repair facility. Medical Payments to claimant or healthcare providers. UM settlement requires release agreement.",
+        "special_conditions": "Do NOT attempt subrogation against City of Columbus without legal review. City will likely invoke sovereign immunity. UM claim structure should be optimized to maximize recovery within policy limits.",
+        "hold_status": "CONDITIONAL - Approve vehicle damage immediately upon assessor report. Hold UM bodily injury settlement pending: (1) Full medical records from all treatment providers, (2) Verification of all past/future medical expenses, (3) Wage loss documentation from claimant's employer, (4) Third-party subrogation letter from city (which may deny responsibility)."
+      }
+    }
+  },
+  {
+    "id": "TC-042",
+    "name": "Borderline Total Loss \u2014 74% vs 75% Threshold",
+    "difficulty": "medium",
+    "tags": [
+      "edge_case",
+      "total_loss",
+      "threshold",
+      "hidden_damage",
+      "assessor_judgment"
+    ],
+    "description": "Repair estimate is exactly 74% of ACV ($21,945 on $29,660 vehicle). Total loss threshold is typically 75% ($22,245). Claim sits just below threshold, but collision assessor suspects hidden frame/structural damage that would push repairs over threshold. Does the assessor escalate this to total loss, or does the claimant get stuck with a partial claim?",
+    "input": {
+      "claimant_name": "David Thompson",
+      "policy_number": "OMA-2022-45012",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was hit in a parking lot by another vehicle that didn't stop. I was parked at the Strip District Market on a Saturday morning, and someone backed into my car hard enough to damage the rear quarter panel, bumper, and what I think is the trunk lid. No other cars were involved that I could identify. The other driver left the scene without providing information. I took photos and called the non-emergency police line; they sent an officer to document the scene and file a report, but said it was a hit-and-run with no way to identify the other party. My vehicle was towed by the market's security, and I got an initial estimate from a repair shop that came to about $21,945 for the damage. The shop mentioned they'd need to do more inspection once they get the car on a lift, because there might be frame damage underneath, but they couldn't confirm without further work.",
+      "police_report": true,
+      "police_report_number": "2026-0212-HIT-AND-RUN-3821",
+      "photos": [
+        "rear_quarter_damage.jpg",
+        "bumper_crushed.jpg",
+        "trunk_area_damage.jpg",
+        "parking_lot_scene.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2022-45012",
+      "insured_name": "David Thompson",
+      "policy_start": "2022-02-12",
+      "policy_end": "2023-02-11",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-02-11",
+      "vehicle": {
+        "vin": "2G1FB1E39D1211689",
+        "year": 2013,
+        "make": "Chevrolet",
+        "model": "Malibu",
+        "actual_cash_value": 29660
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 29660,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 29660,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist_property": {
+          "limit": 29660,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Hit-and-run collision with unidentified at-fault party. Comprehensive/Uninsured Motorist Property damage claim. Police report filed. Claimant has photos and repair estimate.",
+        "coverage_status": "UM Property Damage coverage applies (uninsured at-fault party). Comprehensive also potentially applies depending on policy wording for hit-and-run.",
+        "recommended_action": "Route to claims officer and assessor. Flag for potential total loss determination."
+      },
+      "claims_officer": {
+        "coverage_determination": "Uninsured Motorist Property Damage coverage applies (at-fault party is unknown, hence uninsured). Comprehensive also covers hit-and-run under Ohio standard policies. Use most favorable coverage.",
+        "threshold_analysis": "Repair estimate $21,945 is 73.95% of ACV $29,660. This is BELOW the standard 75% total loss threshold of $22,245. However, repair shop notes 'possible frame damage' requiring further inspection.",
+        "critical_decision": "Must order full damage inspection by certified assessor BEFORE deciding total loss vs. repair. Shop's estimate may be incomplete.",
+        "next_step": "Obtain authorized repair facility comprehensive inspection and damage report. If frame damage confirmed, reassess total loss determination."
+      },
+      "assessor": {
+        "inspection_requirement": "MANDATORY COMPREHENSIVE INSPECTION. This is a threshold case. Visible damage (quarter panel, bumper, trunk) is clear, but hidden structural damage is suspected.",
+        "inspection_scope": "Lift vehicle fully. Inspect: (1) Frame rails and rocker panels for bending/crumpling, (2) Trunk floor for structural damage, (3) Suspension attachment points, (4) Electrical/fuel system integrity after impact",
+        "possible_outcomes": "Scenario A (no hidden damage): Frame intact, repair estimate $21,945 confirmed, approved for repair, claimant keeps vehicle. Scenario B (frame damage found): Estimated repair $23,000-$26,000, exceeds 75% threshold, vehicle totaled, claimant receives ACV settlement.",
+        "assessor_authority": "If hidden structural damage is discovered during inspection, assessor has authority to reclassify as total loss, even if initial estimate was below threshold.",
+        "timeline": "Inspection within 48 hours. Final determination within 5 business days."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. Hit-and-run with police documentation. Claimant has no motive to inflate damage (better to have vehicle repaired). However, repair shop's 'possible frame damage' note is somewhat generic and unconfirmed.",
+        "verification": "Confirm that claimant did not cause damage themselves (hit-and-run story is corroborated by police). Police report details should match claimant account and damage pattern.",
+        "recommendation": "No fraud red flags. Proceed with assessment."
+      },
+      "senior_reviewer": {
+        "threshold_decision": "This case highlights the importance of thorough inspection before total loss determination. The 75% threshold is a guideline, not a hard rule. If assessor discovers structural frame damage during detailed inspection, total loss determination is appropriate even if estimate started below 75%.",
+        "policy_consideration": "Most Ohio Mutual policies use 75% threshold, but some use 80%. Verify policy language. If this policy uses 75%, current estimate of 73.95% is still below threshold, but inspection may change this.",
+        "recommendation": "Do NOT make total loss decision yet. Require certified assessor inspection. The assessor's finding regarding frame damage is material and determinative.",
+        "expected_outcome": "Scenario A (likely 60%): No hidden damage, approved for repair at $21,945 estimate. Scenario B (likely 40%): Frame damage found, total loss approved at ACV $29,660 minus deductible $500 = $29,160."
+      },
+      "finance": {
+        "scenario_a_payout": 21445,
+        "scenario_a_calculation": "Repair estimate $21,945 minus collision deductible $500 = $21,445 (assuming comprehensive/UM Property Damage used instead of collision; deductible may be $250)",
+        "scenario_b_payout": 29160,
+        "scenario_b_calculation": "ACV $29,660 minus deductible $500 = $29,160 (if collision deductible applies) OR $29,410 (if comprehensive deductible $250 applies)",
+        "payment_hold": "CONDITIONAL - Hold payment pending assessor inspection report. Once inspection is complete, immediate payment authorization.",
+        "deductible_clarity": "Clarify with claims officer whether claim is being processed under Collision ($500 ded) or Comprehensive/UM Property ($250 ded). This affects net payout.",
+        "timeline": "Inspection report expected within 5 business days. Payment authorization within 1 business day of inspection report."
+      }
+    }
+  },
+  {
+    "id": "TC-043",
+    "name": "Dual Claim \u2014 Both Parties Are OMA Policyholders",
+    "difficulty": "hard",
+    "tags": [
+      "edge_case",
+      "dual_claim",
+      "conflicting_accounts",
+      "coverage_dispute",
+      "subrogation_internal"
+    ],
+    "description": "Two-car accident. Both claimants are Ohio Mutual policyholders. Each blames the other. No dashcam, no witnesses, conflicting police report (officer wrote 'both parties at fault' or 'fault undetermined'). One claimant says they had green light; the other says the same. Who pays? How does Ohio Mutual handle internal subrogation?",
+    "input": {
+      "claimant_name": "Sarah Mitchell",
+      "policy_number": "OMA-2024-53721",
+      "incident_date": "2026-02-08",
+      "incident_type": "collision",
+      "description": "I was driving through the intersection of Route 23 and Riverside Drive at approximately 4:45 PM on a Friday. I had a green light for my direction (westbound). I was in the left lane preparing to turn left onto Riverside Drive when a blue sedan approached from the east (opposite direction). The other driver did not slow down and appeared to run the red light. I had no time to brake or avoid the collision. The impact was on my left front quarter panel. After the accident, the other driver claimed that THEY had a green light and that I ran a red light, which is completely untrue. The police officer who responded seemed confused about the signal timing and wrote in the report that fault was 'to be determined' or something like that. I have dashcam footage from my car but it's corrupt or wasn't recording \u2014 I'm not sure what happened. The other driver told the officer they also have a dashcam but haven't provided it. I'm certain I had the green light.",
+      "police_report": true,
+      "police_report_number": "2026-0208-COLLISION-1847",
+      "photos": [
+        "vehicle_damage_front_left.jpg",
+        "intersection_view.jpg",
+        "other_vehicle_damage.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": {
+        "at_fault_driver_name": "Robert Chen",
+        "at_fault_driver_contact": "Available via police report",
+        "vehicle": "2022 Subaru Outback, blue",
+        "insurance_carrier": "Ohio Mutual Auto",
+        "insurance_policy": "OMA-2023-18556",
+        "claim_status": "Claim filed by other party (parallel claim TC-043-DUAL)"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-53721",
+      "insured_name": "Sarah Mitchell",
+      "policy_start": "2024-02-08",
+      "policy_end": "2025-02-07",
+      "status": "active",
+      "vehicle": {
+        "vin": "1HGCV1F32GA123456",
+        "year": 2016,
+        "make": "Honda",
+        "model": "Civic",
+        "actual_cash_value": 18500
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 18500,
+          "deductible": 750,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 18500,
+          "deductible": 250,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Two-vehicle collision, Route 23 and Riverside Drive. Claimant (Sarah Mitchell, OMA-2024-53721) claims she had green light; other driver claims they had green light. Police report shows fault 'to be determined' or conflicting. CRITICAL FLAG: Other driver is also an Ohio Mutual policyholder (OMA-2023-18556).",
+        "dual_claim_alert": "THIS IS A DUAL OMA CLAIM. Both parties are our policyholders. This creates internal conflict of interest and unusual subrogation scenario.",
+        "recommended_action": "ESCALATE to senior claims management immediately. Assign separate claims officers to each claimant. Do NOT allow one claims officer to handle both sides. Request police report immediately to review officer's assessment."
+      },
+      "claims_officer": {
+        "conflict_of_interest_note": "Standard disclaimer: Ohio Mutual cannot represent both parties in a dispute. Separate claims officers assigned to OMA-2024-53721 (Sarah Mitchell) and OMA-2023-18556 (Robert Chen). This response covers Sarah Mitchell's claim only.",
+        "coverage_analysis": "Sarah Mitchell's collision coverage is active and applies. Deductible is $750. Her liability coverage also applies (if she is determined to be at fault, we pay other party's damages up to $50,000 PD limit).",
+        "fault_determination_challenge": "Without dashcam footage, witness statements, or police clarity on signal timing, fault is difficult to establish. Both parties claim to have had green light. Police report states 'to be determined.'",
+        "investigation_requirement": "Must obtain: (1) Complete police report with officer's notes on signal timing investigation, (2) Intersection camera footage (if available from traffic control system or nearby businesses), (3) Expert analysis of damage patterns (may indicate vehicle direction/impact angle), (4) Request for other party's dashcam footage (formal demand through their claims officer)",
+        "preliminary_assessment": "Insufficient evidence to determine fault. Pending investigation outcomes.",
+        "next_step": "Open investigation file. Assign investigator to interview officer, check for traffic cameras, obtain damage photos for pattern analysis."
+      },
+      "assessor": {
+        "vehicle_condition": "2016 Honda Civic with front-left damage (left quarter panel, likely left fender, possibly frame). Request tow to authorized facility for comprehensive inspection.",
+        "damage_analysis": "Impact zone on left side suggests vehicle was struck from the right (east) side. This is consistent with Sarah's claim that vehicle was northbound/westbound and struck by eastbound vehicle.",
+        "caveat": "Damage pattern analysis is NOT definitive proof of fault. Other vehicle (blue Subaru) also has damage; comparing damage patterns of both vehicles may help establish relative positions/directions.",
+        "estimate": "Estimated repair $8,500-$12,000 depending on frame inspection results.",
+        "timeline": "Inspection and estimate within 5 business days."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK for either party in obvious sense, but MEDIUM RISK for exaggeration. Both claimants have clear financial incentive to claim fault was on other party.",
+        "verification_priority": "Verify that both claimants sought medical evaluation if injuries are claimed (none mentioned yet, good sign). Monitor for claim inflation or inflated repair estimates.",
+        "red_flag": "Claimant mentions dashcam 'wasn't recording' or footage 'corrupt.' Is this convenient excuse, or genuine equipment failure? Request technical verification if dashcam is available.",
+        "recommendation": "No fraud indicators at this stage. Monitor investigation."
+      },
+      "senior_reviewer": {
+        "key_challenge": "Dual OMA claim creates unusual situation. Standard rule: We cannot favor one policyholder over another. Both are entitled to fair claims processing regardless of coverage limits or policy renewal status.",
+        "fault_determination": "Without clear evidence (dashcam, witnesses, traffic camera), fault cannot be determined based on claimant statements alone. Court proceeding would likely result in comparative fault (both parties partially at fault).",
+        "ohio_comparative_fault": "Ohio follows comparative negligence rule (not pure comparative negligence). If Sarah is found more than 50% at fault, she cannot recover. If less than 50% at fault, her recovery is reduced by her percentage of fault. If fault is 50/50, neither recovers from the other.",
+        "subrogation_complication": "If Sarah is 60% at fault, our collision coverage pays her (minus deductible) because her policy covers her vehicle. If Robert is 40% at fault, technically Robert's liability coverage should pay part of Sarah's damages. But we are Robert's insurer. So we would be paying out of one pocket (collision) and recovering in another (Robert's liability). Net effect: Ohio Mutual eats the loss.",
+        "recommendation": "Pursue investigation aggressively to establish actual fault distribution. If fault determination proves impossible, consider: (a) Both parties' coverage is primary for their own vehicles; each party receives collision benefit regardless of fault, minus deductible; (b) Internal subrogation is complex and may be washed at 50/50 split; (c) Recommend early mediation or expert damage analysis before payment.",
+        "decision_framework": "DO NOT make fault determination without investigation. Approve both claimants' coverage for collision claim purposes, but hold payment pending fault investigation. If investigation inconclusive, apply comparative negligence principles fairly."
+      },
+      "finance": {
+        "scenario_analysis": "Scenario A (Sarah 100% at fault): Pay Robert's damages from Sarah's liability coverage (up to $50,000). Sarah receives collision benefit for her damage ($8,500-$12,000 minus $750 ded). Net OMA payment: ~$8,000-$12,000 to Sarah (collision benefit minus ded) plus ~$8,000-$12,000 to Robert (from Sarah's liability), roughly $16,000-$24,000 total out.",
+        "scenario_b": "Scenario B (Robert 100% at fault): Pay Sarah's damages from Robert's liability coverage. Robert receives collision benefit for his damage. Mirror of Scenario A, ~$16,000-$24,000 total out.",
+        "scenario_c": "Scenario C (50/50 comparative fault): Sarah receives collision benefit for her vehicle ($8,000-$12,000 minus $750 ded = ~$7,250-$11,250). Robert receives collision benefit for his vehicle similarly. Robert's liability coverage pays toward Sarah's damages, but Robert's same liability coverage is also liable to Sarah, creating internal offset. Net OMA payment likely ~$14,500-$22,500 (both parties' collision benefits minus deductibles, with internal liability/collision wash).",
+        "payment_hold": "HOLD ALL PAYMENTS pending investigation and fault determination. Do not advance funds until fault is established or presumed.",
+        "investigation_budget": "Allocate $2,000-$3,000 for investigator, damage expert, and potential traffic camera FOIA request."
+      }
+    }
+  },
+  {
+    "id": "TC-044",
+    "name": "Rental Car Accident \u2014 Extended Coverage Question",
+    "difficulty": "medium",
+    "tags": [
+      "edge_case",
+      "rental_coverage",
+      "auto_endorsement",
+      "coverage_extension",
+      "supplemental_claim"
+    ],
+    "description": "Claimant's insured vehicle was in the repair shop from a previous approved claim. While waiting, claimant rented a car. Got into accident in the rental. Question: Does personal auto insurance extend to rental vehicles? Does it matter that the rental was obtained due to an earlier OMA claim?",
+    "input": {
+      "claimant_name": "Michelle Gonzalez",
+      "policy_number": "OMA-2023-89342",
+      "incident_date": "2026-02-14",
+      "incident_type": "collision",
+      "description": "My car was hit two weeks ago (January 31st) while parked in a parking lot, and I filed a claim with Ohio Mutual. The claim was approved, and my 2022 Subaru Outback was sent to the repair shop. I was told it would take 2-3 weeks to repair. Since I needed transportation, I rented a car from Enterprise on February 5th \u2014 a 2024 Hyundai Elantra. The rental was charged to my personal credit card, and I purchased the additional damage waiver (CDW) from Enterprise for about $15 per day. On February 14th, while driving the rental car, I was involved in a collision at an intersection. Another vehicle turned left in front of me. I had minimal time to brake. The rental car sustained moderate damage to the front end (hood, bumper, headlights). I reported the accident to Enterprise immediately and filed a police report. Enterprise is saying that the CDW I purchased covers the damage, so I shouldn't owe anything for the rental car damage. However, I'm also wondering whether my Ohio Mutual policy covers this accident, since I was driving a rental vehicle that was obtained because of an earlier Ohio Mutual claim.",
+      "police_report": true,
+      "police_report_number": "2026-0214-COLLISION-2640",
+      "photos": [
+        "rental_car_damage.jpg",
+        "intersection_damage.jpg",
+        "other_vehicle_damage.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "at_fault_driver_name": "Available from police report",
+        "vehicle": "Not specified in claimant statement",
+        "insurance": "To be determined"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-89342",
+      "insured_name": "Michelle Gonzalez",
+      "policy_start": "2023-02-14",
+      "policy_end": "2024-02-13",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2025-02-13",
+      "vehicle": {
+        "vin": "JF2SKADC0G9123456",
+        "year": 2022,
+        "make": "Subaru",
+        "model": "Outback",
+        "actual_cash_value": 32000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 32000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 32000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "rental_reimbursement": {
+          "limit": 600,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 250000,
+          "status": "active"
+        }
+      },
+      "endorsements": [
+        "Rental Reimbursement Endorsement (covers daily rental car costs up to $600 aggregate, $30/day)"
+      ],
+      "claims_history": [
+        {
+          "claim_id": "TC-044-PRIOR",
+          "date": "2026-01-31",
+          "type": "Hit and run",
+          "status": "approved and paid",
+          "repair_shop": "ABC Auto Body, Columbus, OH"
+        }
+      ]
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim filed by claimant for accident in a rental vehicle. Claimant's own vehicle is currently in repair from a previous claim. Claimant has rental damage waiver (CDW) from car rental company. Question: Does OMA policy cover the rental car accident?",
+        "coverage_question": "This is a rental car coverage determination issue. Standard personal auto policies may or may not extend to rental vehicles. Policy review required.",
+        "recommended_action": "Route to claims officer with instruction to review policy language on rental coverage and verify whether claimant's policy includes rental car coverage endorsement."
+      },
+      "claims_officer": {
+        "coverage_determination": "CONDITIONAL. Policy review required. Standard OMA Personal Auto policies typically include Personal Auto Coverage that applies to 'hired or rented vehicles' for temporary replacement use. However, policy must be reviewed for specific language.",
+        "policy_check": "Claimant's policy shows 'Rental Reimbursement Endorsement' active for $30/day up to $600 aggregate. This endorsement covers the COST of rental car, not damage to the rental. Determine whether policy also includes 'Hired Vehicle Coverage' or similar endorsement that covers liability/collision while driving rented vehicles.",
+        "common_scenario": "Many personal auto policies automatically extend coverage to rental vehicles used for temporary transportation due to a covered loss (like the hit-and-run claim on 2/1). However, coverage typically applies only if: (1) Rental is for temporary replacement of a disabled vehicle, (2) Rental is obtained with policy reasonable, (3) Coverage applies only up to limits of named insured's policy on their own vehicle.",
+        "critical_determination": "If policy covers rental vehicles under collision: Claimant can file collision claim against OMA for rental car damage, minus $500 deductible. If policy does NOT cover rental vehicles: Claimant is limited to Enterprise's CDW coverage and direct recovery from at-fault party (if identifiable).",
+        "investigation": "Obtain complete policy document and endorse pages. Search for: 'hired vehicle', 'rented vehicle', 'temporary substitute vehicle', 'coverage for non-owned vehicles'.",
+        "next_step": "Policy review within 48 hours. Advise claimant of coverage determination."
+      },
+      "assessor": {
+        "rental_vehicle_inspection": "IF coverage is approved: Schedule inspection of 2024 Hyundai Elantra rental damage. Assess: front-end damage (hood, bumper, headlights, radiator). Estimate likely $4,000-$7,000.",
+        "damage_documentation": "Obtain Enterprise damage assessment and photos for comparison. Determine whether damage is consistent with accident description.",
+        "priority": "PENDING coverage determination. If coverage applies, expedite inspection."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. Claimant reported accident to Enterprise immediately, filed police report, and is transparent about rental and CDW. No obvious red flags.",
+        "verification": "Confirm: (1) Accident occurred as described in police report, (2) Claimant was not at fault (claims other vehicle turned left in front), (3) Rental was obtained legitimately due to prior claim.",
+        "recommendation": "No fraud indicators. Proceed with assessment."
+      },
+      "senior_reviewer": {
+        "policy_interpretation": "Rental vehicle coverage in personal auto policies is governed by specific policy language. Ohio's Insurance Code does not mandate rental coverage on all personal auto policies. Coverage depends on whether policy includes explicit rental endorsement or 'hired vehicle' coverage.",
+        "standard_industry_practice": "Most insurers offer rental coverage as optional endorsement. Some include it by default under 'coverage for non-owned vehicles.' Must verify policy document.",
+        "recommendation_pending_review": "If policy language permits: Approve collision coverage for rental car accident, subject to claimant's collision deductible ($500). Net OMA coverage: estimated repair of $4,000-$7,000 minus $500 deductible = $3,500-$6,500.",
+        "if_no_rental_coverage": "If policy does not cover rental vehicles: Deny coverage for rental car damage. Advise claimant that Enterprise CDW and recovery from at-fault party are their remedies.",
+        "policy_doc_critical": "This determination hinges entirely on policy language. The existence of 'Rental Reimbursement' endorsement suggests claimant's policy has some rental protections, but Rental Reimbursement only covers costs, not damage. Separate hired vehicle coverage or extension needed."
+      },
+      "finance": {
+        "if_coverage_approved": 3500,
+        "calculation_if_approved": "Estimated rental car repair $4,500 (midpoint estimate) minus collision deductible $500 = $4,000. However, coverage may be limited to policy limits (same limits as claimant's own vehicle, $32,000 collision limit).",
+        "if_coverage_denied": 0,
+        "explanation_if_denied": "OMA has no obligation to pay. Claimant recovers from Enterprise CDW and pursues at-fault party for damages.",
+        "payment_authority": "CONDITIONAL on policy review and coverage determination.",
+        "special_note": "Also verify: If at-fault party is identified and insured, can claimant recover rental damage through their liability claim? This is separate from OMA coverage question."
+      }
+    }
+  },
+  {
+    "id": "TC-045",
+    "name": "Diminished Value Claim \u2014 Post-Repair Resale Loss",
+    "difficulty": "hard",
+    "tags": [
+      "edge_case",
+      "diminished_value",
+      "resale_value",
+      "economic_loss",
+      "state-specific_doctrine"
+    ],
+    "description": "Claimant's 2025 Porsche Cayenne was properly repaired after a collision (approved claim, high-quality repair). Vehicle drives normally. However, claimant now claims the car's resale value has diminished due to the accident history appearing on CarFax. They want compensation for the loss in market value. This is a legitimate concept but not all states/policies cover it. Does Ohio allow diminished value claims?",
+    "input": {
+      "claimant_name": "Victoria Ashford",
+      "policy_number": "OMA-2024-22187",
+      "incident_date": "2026-01-20",
+      "incident_type": "collision",
+      "description": "On January 20th, I was hit by another vehicle at a red light while stopped. The at-fault driver admitted fault and provided their insurance information. My 2025 Porsche Cayenne sustained damage to the front-right corner, including bumper, right fender, hood, and right headlight. The accident was reported to police. The claim was approved, and the vehicle was repaired at a Porsche-certified repair facility using OEM parts. The repair was completed to pre-accident specifications, and the vehicle now drives and looks exactly as it did before the accident. However, when I checked CarFax to see the service history, I discovered that the accident (collision) is now showing in the vehicle history report. This will negatively impact the resale value of my vehicle. According to used car pricing guides, a 2025 Porsche Cayenne with a clean history might resell for $68,000, but the same vehicle with a collision history on CarFax might resell for only $62,000-$64,000 \u2014 a loss of $4,000-$6,000. I believe Ohio Mutual should compensate me for this diminished value, since the vehicle has been fully restored to pre-accident condition and the loss is directly caused by the accident.",
+      "police_report": true,
+      "police_report_number": "2026-0120-COLLISION-1205",
+      "photos": [
+        "vehicle_damage_pre_repair.jpg",
+        "vehicle_repaired.jpg",
+        "carfax_report.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": {
+        "at_fault_driver_name": "James Williams",
+        "vehicle_insurance": "Progressive Insurance",
+        "at_fault_determination": "100% liable per police report"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-22187",
+      "insured_name": "Victoria Ashford",
+      "policy_start": "2024-01-20",
+      "policy_end": "2025-01-19",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-01-19",
+      "vehicle": {
+        "vin": "WP1AB2A56LLA55555",
+        "year": 2025,
+        "make": "Porsche",
+        "model": "Cayenne",
+        "actual_cash_value": 68000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 500000,
+          "property_damage": 250000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 68000,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 68000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 500000,
+          "status": "active"
+        }
+      },
+      "claims_history": [
+        {
+          "claim_id": "TC-045-PRIOR",
+          "date": "2026-01-20",
+          "type": "Collision",
+          "status": "approved and paid",
+          "repair_cost": 12800,
+          "payout_amount": 11800
+        }
+      ]
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Claimant is filing a supplemental claim requesting compensation for diminished value following repair of collision damage. Original collision claim was paid on 1/20/2026. Vehicle was repaired to pre-accident specifications.",
+        "claim_type": "Supplemental/Economic Loss claim for diminished value.",
+        "complication": "Diminished value claims are NOT typically covered under standard auto insurance policies. This is an economic loss claim that some states allow, but many do not. Ohio's position on this is important.",
+        "recommended_action": "Route to claims officer and senior reviewer. Policy review needed. Legal consultation recommended."
+      },
+      "claims_officer": {
+        "policy_review": "Standard Ohio Mutual Personal Auto policies do NOT explicitly cover diminished value. The collision coverage covers physical repair of the vehicle, not loss in resale value after proper repair.",
+        "coverage_analysis": "Claimant's collision claim (original claim for physical damage) was properly paid. The vehicle was repaired to pre-accident condition. Claimant is now seeking additional compensation for intangible economic loss (resale value reduction).",
+        "policy_language": "Typical personal auto policy states: 'We will pay for damage to covered vehicles caused by collision, up to the actual cash value or repair cost, whichever is less.' This covers repair costs, not post-repair economic losses.",
+        "diminished_value_concept": "Diminished value is a real economic loss in auto transactions. A vehicle with collision history is worth less than one with clean history, regardless of repair quality. However, insurance policies do not typically cover this loss.",
+        "ohio_legal_position": "Ohio does NOT have a statutory right to diminished value recovery in insurance contracts. Unlike some states (e.g., Georgia, which has a specific diminished value statute), Ohio does not mandate that insurance policies cover diminished value.",
+        "recommendation": "DENY the supplemental diminished value claim. Claimant's original collision claim was paid in full for repairs. Additional compensation for diminished value is not covered under the policy."
+      },
+      "assessor": {
+        "assessment_needed": "Vehicle inspection is not necessary for this claim determination, as the issue is not about physical damage but about economic loss post-repair.",
+        "status": "N/A - policy determination takes precedence."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. Claimant's claim is legitimate in concept (diminished value does occur), but it is a coverage question, not a fraud question. Claimant is not falsifying damage or inflating repair costs; they are making a claim for a type of loss not covered by their policy.",
+        "carfax_documentation": "Claimant has provided CarFax report showing collision history. This is accurate and verifiable.",
+        "recommendation": "No fraud indicators. This is a policy/coverage issue, not fraud."
+      },
+      "senior_reviewer": {
+        "key_issue": "Diminished value claims are philosophically valid (loss is real and quantifiable), but insurance policy coverage is a matter of contract and state law. The question is whether OMA has any obligation to pay.",
+        "contract_analysis": "OMA's policy covers 'repair or replacement' of damaged property. Once vehicle is repaired to pre-accident condition, OMA's obligation under the collision coverage is satisfied. Diminished value is a separate economic loss caused by the accident, but it is not a type of loss that personal auto collision insurance is designed to cover.",
+        "state_law_consideration": "Ohio follows the principle that insurance policies are interpreted according to their plain language and terms. If the policy does not explicitly cover diminished value (and standard policies do not), OMA is not obligated to pay.",
+        "however_note": "Some jurisdictions have created legal doctrine around diminished value (e.g., Georgia Statute O.C.G.A. \u00a7 34-37-12.2 mandates diminished value coverage). Ohio has not adopted such a statute. OMA is not required to cover diminished value under Ohio law.",
+        "recommendation": "DENY the diminished value claim. Explain to claimant that: (1) The original collision damage claim was paid in full, (2) Personal auto insurance covers physical repair, not post-repair economic losses, (3) Diminished value is not covered under the policy, (4) Claimant may pursue other remedies if they wish (e.g., small claims court, civil suit against at-fault party for consequential damages, though this is difficult).",
+        "customer_service_note": "Claimant is upset about diminished value, which is understandable. However, OMA has fulfilled its contractual obligation. A sympathetic but firm denial is appropriate."
+      },
+      "finance": {
+        "supplemental_claim_payout": 0,
+        "explanation": "Diminished value is not a covered loss under OMA's standard personal auto policy. No payment is authorized.",
+        "original_claim_status": "Original collision claim (TC-045-PRIOR) was paid on 1/20/2026 in the amount of $11,800 (repair estimate $12,800 minus collision deductible $1,000). That claim is closed.",
+        "supplemental_denial": "The supplemental diminished value claim is DENIED. No additional payment is made."
+      }
+    }
+  },
+  {
+    "id": "TC-046",
+    "name": "Delayed Discovery \u2014 Vandalism Claim, 22-Day Gap",
+    "difficulty": "medium",
+    "tags": [
+      "edge_case",
+      "delayed_reporting",
+      "vandalism",
+      "discovery_rule",
+      "timeliness"
+    ],
+    "description": "Claimant was on a 3-week vacation. Returned to find car vandalized (spray paint, broken windows) in their driveway. Filing claim 22 days after incident occurred. Neighbors confirm vandalism happened around day 3 of vacation. Is the late reporting a problem? Does the delay trigger policy exclusions or fraud suspicion?",
+    "input": {
+      "claimant_name": "Robert Patterson",
+      "policy_number": "OMA-2023-76543",
+      "incident_date": "2026-01-25",
+      "incident_type": "vandalism",
+      "claim_date": "2026-02-16",
+      "description": "I left for a 3-week vacation on January 23rd. I drive to Florida to visit my family each winter. My 2020 Toyota Camry was parked in my driveway at my home in Cleveland, Ohio, where it would normally sit while I was away. I have a garage but chose to park outside. When I returned home on February 15th (after 23 days), I discovered that someone had vandalized my vehicle. The entire passenger side had been spray-painted with graffiti (red spray paint, approximately 12-15 linear feet of coverage). Additionally, both the front passenger window and rear passenger window had been broken out. The interior was exposed to the elements for approximately 2 weeks (from discovery date backward). I immediately filed a police report on February 16th and contacted Ohio Mutual the same day to file a claim. The police report number is 2026-0216-VANDALISM-9847. My neighbor, Karen Thompson, confirmed that she noticed the vandalism approximately 3 days after I left (around January 26-27) and meant to call me but lost my phone number. She saw red graffiti and broken windows at that time. My insurance question: Will the 22-day delay between the incident and my claim filing cause issues with my claim? Should I have called in immediately when I was out of state?",
+      "police_report": true,
+      "police_report_number": "2026-0216-VANDALISM-9847",
+      "photos": [
+        "vandalism_spray_paint.jpg",
+        "broken_window_front.jpg",
+        "broken_window_rear.jpg",
+        "interior_damage_water.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2023-76543",
+      "insured_name": "Robert Patterson",
+      "policy_start": "2023-01-25",
+      "policy_end": "2024-01-24",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2025-01-24",
+      "vehicle": {
+        "vin": "2T1BRFE30JC123456",
+        "year": 2020,
+        "make": "Toyota",
+        "model": "Camry",
+        "actual_cash_value": 24500
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 24500,
+          "deductible": 750,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 24500,
+          "deductible": 500,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Comprehensive claim for vandalism. Vehicle was vandalized (spray paint, broken windows) on approximately 1/25 or 1/26. Claimant discovered damage on 2/15 upon returning from vacation. Claim filed 2/16 (one day after discovery). Delay from incident to discovery: 22 days.",
+        "timeliness_concern": "Claim was filed promptly after DISCOVERY (same day). However, incident occurred 22 days prior. Question: Does the delay trigger policy exclusions or fraud suspicion?",
+        "recommended_action": "Route to claims officer. Request: (1) Policy language regarding duty to report/notice timing, (2) Neighbor statement confirming approximate vandalism date, (3) Police report review."
+      },
+      "claims_officer": {
+        "coverage_determination": "Comprehensive covers vandalism. Coverage is active and unexcluded. Claimant has a valid comprehensive claim.",
+        "duty_to_report_analysis": "Most insurance policies require claimant to report losses 'promptly' or 'as soon as practicable.' The question is whether a 22-day delay violates this duty.",
+        "reasonableness_standard": "Claimant was out of state on vacation. They reported the loss the day after discovering it (2/16, one day after return on 2/15). This is prompt reporting AFTER discovery. The delay was not caused by claimant's negligence or intentional concealment; it was caused by claimant's absence from the property.",
+        "ohio_legal_standard": "Ohio insurance law requires notice 'as soon as practicable.' Courts interpret this as notice within a reasonable time given the circumstances. Claimant's vacation absence is a reasonable circumstance affecting discovery.",
+        "mitigating_factors": "(1) Claimant reported loss immediately upon discovery, (2) Neighbor witness confirms approximate date of vandalism (establishes incident occurred), (3) Police report filed promptly, (4) Claimant had no way to discover damage while away, (5) 22 days is not extreme delay in context of vacation absence.",
+        "fraud_suspicion": "Delayed reporting CAN indicate fraud (e.g., claimant damaged own vehicle for insurance money). However, in this case: (a) Claimant was documented to be out of state, (b) Neighbor independently confirmed vandalism, (c) Police report corroborates incident, (d) No obvious motive for claimant to stage vandalism while away, (e) Graffiti and broken windows are not easily explainable as pre-existing damage.",
+        "recommendation": "APPROVE the comprehensive claim. Delayed discovery is not a basis for denial. Claimant reported promptly after discovering loss."
+      },
+      "assessor": {
+        "vehicle_inspection": "Schedule immediate inspection. Vehicle sustained: (1) Spray paint coverage over 12-15 linear feet on passenger side, (2) Front passenger window broken, (3) Rear passenger window broken, (4) Water intrusion damage to interior (carpet, seat fabric, electronics) due to open windows for ~14 days before discovery.",
+        "damage_assessment": "Spray paint: Will require professional graffiti removal or full exterior repaint of affected panels (likely passenger side door, fender, rear door, rear quarter panel). Cost: $3,500-$5,500.",
+        "window_replacement": "Two windows broken: Front and rear passenger windows. Replacement and reglazing: $800-$1,200.",
+        "water_damage": "Interior exposure for ~2 weeks. Potential mold, damage to upholstery, electronics. Detailed inspection required. Could range $1,500-$4,000.",
+        "total_estimate": "Likely $5,800-$10,700 depending on interior water damage extent.",
+        "total_loss_consideration": "If estimate exceeds 70-75% of ACV ($24,500), consider total loss. Unlikely given estimate range, but water damage could push it.",
+        "priority": "EXPEDITED - Vehicle is exposed to weather. Mitigation (temporary window cover) may be necessary."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK, with caveats. Delayed reporting is a red flag, but circumstances are reasonable.",
+        "evidence_supporting_legitimacy": "(1) Neighbor witness corroborates incident timing (day 3-4 of vacation), (2) Claimant was documented out of state, (3) Police report filed, (4) Claimant reported promptly upon discovery, (5) Graffiti and broken windows are consistent with random vandalism, not staged damage.",
+        "red_flags_to_monitor": "(1) Why was vehicle parked in driveway rather than garage (makes it more vulnerable)? Claimant's explanation is reasonable (choice during vacation), but monitor for pattern of risky behavior. (2) Is the 22-day delay being used to fabricate damage that occurred earlier? Neighbor statement and police report mitigate this risk. (3) Could claimant have damaged their own vehicle prior to vacation for insurance money? Unlikely given neighbor witness.",
+        "recommendation": "APPROVED for processing. Delayed discovery is explained and corroborated. Monitor for fraud indicators during assessment, but no red flags at claim intake."
+      },
+      "senior_reviewer": {
+        "key_issue": "Delayed reporting is a legitimate claim concern, but timeliness is measured from discovery or reasonable discovery, not from incident occurrence date. Claimant was away and could not have discovered damage earlier.",
+        "policy_language_check": "Review policy's specific 'duty to report' language. Standard language: 'Claimant shall give notice of loss as soon as practicable.' This does NOT require notice of incident date; it requires notice of loss when known or reasonably discoverable.",
+        "ohio_law": "Ohio recognizes the 'discovery rule': Duty to report begins when loss is discovered or reasonably should have been discovered. Claimant was out of state and discovered loss upon return, then reported immediately.",
+        "comparative_authority": "This is standard insurance law across most states. Delayed discovery of loss due to absence does not breach duty to report.",
+        "recommendation": "APPROVE the comprehensive claim. Delayed discovery is not grounds for denial. Claimant's reporting was prompt upon discovery."
+      },
+      "finance": {
+        "estimated_payout": 7500,
+        "calculation": "Estimated repair cost $8,000 (midpoint of $5,800-$10,700 range) minus comprehensive deductible $500 = $7,500.",
+        "payment_authority": "Standard check to claimant or repair facility.",
+        "condition": "Approval contingent on assessor inspection confirming repair estimate is within expected range.",
+        "hold_status": "CONDITIONAL - Approve comprehensive claim subject to assessor report. Expected payment authorization within 5-7 business days of inspection."
+      }
+    }
+  }
+]

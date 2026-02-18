@@ -1,0 +1,242 @@
+[
+  {
+    "id": "TC-065",
+    "name": "Claimant Death During Claim — Estate Executor Takes Over",
+    "difficulty": "hard",
+    "tags": ["secret_addition", "claimant_death", "estate", "executor", "probate", "claim_continuity"],
+    "description": "Claimant filed a collision claim with bodily injury on January 20th. On February 10th, the claimant passed away from injuries sustained in the accident. The estate executor must now take over the claim. This changes the claim from a personal injury claim to a wrongful death/estate claim with different legal requirements.",
+    "input": {
+      "claimant_name": "Harold Jennings (deceased)",
+      "policy_number": "OMA-2024-33445",
+      "incident_date": "2026-01-20",
+      "incident_type": "collision",
+      "description": "Original claim filed January 21, 2026: Harold Jennings was driving on US-33 when struck head-on by a vehicle that crossed the center line. Mr. Jennings suffered severe injuries including traumatic brain injury, multiple fractures, and internal injuries. He was hospitalized at Grant Medical Center. UPDATE: Mr. Jennings passed away on February 10, 2026 from complications related to his injuries. His daughter, Margaret Jennings-Powell, has been appointed executor of his estate by Franklin County Probate Court. She is now the point of contact for this claim.",
+      "police_report": true,
+      "police_report_number": "2026-0120-COLLISION-0445",
+      "photos": ["head_on_collision.jpg", "vehicle_total_loss.jpg"],
+      "witnesses": 4,
+      "other_party_info": {
+        "name": "Steven Wallace",
+        "insurance": "Farmers Insurance",
+        "policy": "FARM-2025-12345",
+        "fault_determination": "100% at fault (crossed center line)",
+        "status": "Survived with minor injuries"
+      },
+      "death_info": {
+        "date_of_death": "2026-02-10",
+        "cause": "Complications from traumatic brain injury and internal injuries sustained in collision",
+        "death_certificate": "Filed with Franklin County",
+        "estate_executor": {
+          "name": "Margaret Jennings-Powell",
+          "relationship": "Daughter",
+          "probate_court": "Franklin County Probate Court",
+          "case_number": "2026-EST-00234",
+          "letters_testamentary": true
+        }
+      },
+      "medical_info": {
+        "injuries": ["Traumatic brain injury", "Multiple fractures", "Internal bleeding"],
+        "hospitalization_days": 21,
+        "total_medical_bills": 245000,
+        "treatment_outcome": "Deceased"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-33445",
+      "insured_name": "Harold Jennings",
+      "policy_start": "2024-07-01",
+      "policy_end": "2025-07-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-07-01",
+      "vehicle": {
+        "vin": "1GCGG25K571123456",
+        "year": 2020,
+        "make": "Chevrolet",
+        "model": "Silverado 1500",
+        "actual_cash_value": 35000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 35000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 35000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "medical_payments": {
+          "limit": 25000,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 250000,
+          "property_damage": 50000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "CRITICAL UPDATE — Claimant Harold Jennings has passed away from injuries sustained in the covered collision. Estate executor Margaret Jennings-Powell is now the claim contact. Claim transforms from injury claim to death benefit/estate claim.",
+        "priority": "CRITICAL — Death of insured. Legal department involvement required.",
+        "communication_protocol": "All communication now directed to estate executor Margaret Jennings-Powell. Verify letters testamentary from Franklin County Probate Court before releasing any information or payments.",
+        "recommended_action": "Escalate to senior management and legal department immediately."
+      },
+      "claims_officer": {
+        "claim_transformation": "This claim has changed fundamentally. Original claim components: (1) Collision for vehicle, (2) MedPay for injuries, (3) Potential UM BI. Now: (1) Collision for vehicle (payable to estate), (2) MedPay for medical bills incurred before death (payable to estate/providers), (3) UM BI becomes wrongful death claim (payable to estate).",
+        "legal_requirements": "(1) Verify executor authority (letters testamentary), (2) All payments must be made to 'Estate of Harold Jennings' or to the executor, (3) Medical bills incurred during hospitalization are estate obligations, (4) Wrongful death claim under Ohio law has different damages calculation than personal injury.",
+        "ohio_wrongful_death": "Under Ohio Revised Code 2125.02, wrongful death damages include: loss of support, loss of services, loss of companionship, mental anguish of next of kin, and funeral/burial expenses. These are separate from the deceased's medical bills.",
+        "recommendation": "Process collision and MedPay claims to estate. Reserve for wrongful death UM BI claim. Coordinate with legal department and estate attorney."
+      },
+      "assessor": {
+        "vehicle_inspection": "TOTAL LOSS — Head-on collision. Vehicle not repairable.",
+        "acv_confirmation": "ACV for 2020 Chevrolet Silverado 1500: $35,000.",
+        "salvage_value": "Estimated salvage: $5,000-$6,500.",
+        "medical_review": "21 days of hospitalization, multiple surgeries, $245,000 in medical bills. All treatment was for injuries from the covered collision. Bills are payable through MedPay (up to $25,000 limit) with remainder as estate obligation."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "NO FRAUD RISK. Claimant died from injuries sustained in a well-documented collision. Police report, multiple witnesses, hospital records, and death certificate all corroborate the claim. This is a tragic but straightforward claim.",
+        "recommendation": "Clear to process all components immediately."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE all claim components. Escalate wrongful death UM BI claim to management and legal.",
+        "claim_components": "(1) Collision total loss: APPROVE, pay to Estate of Harold Jennings. (2) MedPay: APPROVE up to $25,000 limit, pay to estate for distribution to medical providers. (3) UM BI wrongful death: RESERVE at $250,000 (policy limit) pending estate attorney demand.",
+        "legal_coordination": "Legal department must: (1) Verify executor authority, (2) Review wrongful death damages under Ohio law, (3) Coordinate with Farmers Insurance (at-fault party's insurer) on subrogation/contribution, (4) Ensure OMA's UM BI obligation is properly calculated.",
+        "reinsurance_note": "Total potential exposure (collision + MedPay + UM BI) may approach $310,000. If UM BI approaches policy limit, reinsurance notification required."
+      },
+      "finance": {
+        "collision_payout": 28500,
+        "collision_calculation": "ACV $35,000 - deductible $500 - salvage $6,000 = $28,500 to Estate of Harold Jennings",
+        "medpay_payout": 25000,
+        "medpay_calculation": "Medical bills $245,000 far exceed $25,000 MedPay limit. Pay maximum $25,000 to estate.",
+        "um_bi_reserve": 250000,
+        "um_bi_note": "Wrongful death UM BI claim reserved at policy limit ($250,000). Estate attorney will submit demand. Ohio wrongful death damages likely exceed policy limit.",
+        "total_immediate_disbursement": 53500,
+        "total_projected_exposure": 303500,
+        "payment_to": "Estate of Harold Jennings (via executor Margaret Jennings-Powell)",
+        "subrogation": true,
+        "subrogation_target": "Farmers Insurance (policy FARM-2025-12345)"
+      }
+    }
+  },
+  {
+    "id": "TC-066",
+    "name": "Total Loss Dispute — Claimant Challenges ACV with Own Appraisal",
+    "difficulty": "medium",
+    "tags": ["secret_addition", "total_loss_dispute", "acv_dispute", "appraisal", "arbitration"],
+    "description": "Claimant's vehicle was totaled. OMA's ACV determination is $18,500, but the claimant has obtained an independent appraisal valuing the vehicle at $23,000. Claimant disputes the ACV and invokes the policy's appraisal clause requesting binding arbitration.",
+    "input": {
+      "claimant_name": "Michelle Torres",
+      "policy_number": "OMA-2025-89012",
+      "incident_date": "2026-01-25",
+      "incident_type": "collision",
+      "description": "My 2021 Jeep Wrangler Rubicon was totaled in a collision on January 25th when another driver ran a red light. Ohio Mutual's assessor determined the ACV at $18,500 and offered me $17,500 after my $1,000 deductible. I believe this valuation is far too low. Wrangler Rubicons hold their value exceptionally well, and comparable vehicles in my area (Columbus, OH) are selling for $22,000-$24,000. I obtained an independent appraisal from a licensed Ohio appraiser who valued my vehicle at $23,000 based on condition, mileage, options, and local market comparables. I am disputing OMA's ACV and requesting the appraisal process outlined in my policy.",
+      "police_report": true,
+      "police_report_number": "2026-0125-COLLISION-3378",
+      "photos": ["vehicle_total_loss.jpg", "wrangler_condition.jpg"],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Dennis Park",
+        "insurance": "USAA",
+        "policy": "USAA-2025-44556",
+        "fault_determination": "100% at fault (ran red light)"
+      },
+      "acv_dispute": {
+        "oma_acv": 18500,
+        "claimant_appraisal": 23000,
+        "appraiser": "Central Ohio Auto Appraisals LLC",
+        "appraiser_license": "Ohio Licensed Appraiser #OA-2019-334",
+        "dispute_basis": "OMA's valuation tools undervalue Jeep Wranglers due to their unique market (high demand, limited depreciation). Comparable local listings support higher ACV.",
+        "appraisal_clause_invoked": true
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-89012",
+      "insured_name": "Michelle Torres",
+      "policy_start": "2025-01-25",
+      "policy_end": "2026-01-25",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2027-01-25",
+      "vehicle": {
+        "vin": "1C4HJXFG1MW123456",
+        "year": 2021,
+        "make": "Jeep",
+        "model": "Wrangler Rubicon",
+        "actual_cash_value": 18500
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 18500,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 18500,
+          "deductible": 500,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "appraisal_clause": {
+        "exists": true,
+        "process": "If insured and insurer cannot agree on the amount of loss, either party may invoke appraisal. Each party selects a competent appraiser. The two appraisers select an umpire. If they cannot agree, either party may request a judge to select an umpire. The appraisers state their differences and submit them to the umpire. An agreement by any two of the three determines the amount of loss."
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Total loss ACV dispute. Claimant challenges OMA's $18,500 ACV with independent appraisal of $23,000. Claimant has invoked the policy's appraisal clause.",
+        "priority": "HIGH — Appraisal clause invoked, formal dispute process required.",
+        "recommended_action": "Route to claims officer and senior reviewer. Legal department may need to coordinate appraisal process."
+      },
+      "claims_officer": {
+        "acv_review": "OMA's initial ACV of $18,500 should be reviewed. Jeep Wranglers, particularly Rubicon trims, are known to hold value better than typical vehicles. Standard valuation tools (CCC, Mitchell) may undervalue specialty vehicles. Claimant's independent appraisal of $23,000 deserves consideration.",
+        "comparable_analysis": "Research local Columbus-area listings for comparable 2021 Jeep Wrangler Rubicons with similar mileage and condition. If market data supports a higher value, adjust ACV before proceeding to formal appraisal.",
+        "appraisal_process": "If OMA and claimant cannot agree after ACV review, the appraisal clause requires: (1) OMA selects its appraiser, (2) Claimant has already selected their appraiser (Central Ohio Auto Appraisals), (3) The two appraisers select an umpire, (4) Binding decision by two of three.",
+        "recommendation": "Re-evaluate ACV using Wrangler-specific market data. If revised ACV is close to $23,000, settle directly. If significant gap remains, proceed with appraisal clause process."
+      },
+      "assessor": {
+        "acv_re_evaluation": "Reassess ACV using Wrangler-specific comparables. Standard valuation tools often undervalue Jeep Wranglers due to their unique market dynamics (strong off-road community, limited supply, high demand).",
+        "revised_estimate": "Based on Columbus-area comparable sales: (1) 2021 Wrangler Rubicon, 28K miles, clean: $22,500, (2) 2021 Wrangler Rubicon, 32K miles, clean: $21,800, (3) 2021 Wrangler Rubicon, 25K miles, clean: $23,200. Average comparable ACV: $22,500.",
+        "recommendation": "Revise ACV to $22,000-$22,500 based on comparable market data. This is closer to claimant's independent appraisal and may allow settlement without formal appraisal process."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "NO FRAUD. Claimant is exercising legitimate policy rights to dispute ACV. The independent appraisal appears professionally prepared. ACV disputes are common and not indicative of fraud.",
+        "recommendation": "No investigation needed. This is a valuation dispute."
+      },
+      "senior_reviewer": {
+        "decision": "REVISE ACV upward and attempt to settle. If unable to agree, proceed with appraisal clause.",
+        "rationale": "OMA's initial ACV of $18,500 appears low for a Jeep Wrangler Rubicon based on comparable market data. Revised ACV of $22,000-$22,500 is more defensible. Proceeding to formal appraisal will cost OMA $2,000-$3,000 in appraiser and umpire fees, making a negotiated settlement more cost-effective.",
+        "settlement_recommendation": "Offer claimant revised ACV of $22,000. This is a $3,500 increase from original offer and within $1,000 of claimant's appraisal. Most claimants will accept this without formal appraisal.",
+        "if_appraisal_proceeds": "If claimant insists on formal appraisal, OMA should select a qualified appraiser familiar with specialty vehicle markets. The umpire's decision is binding."
+      },
+      "finance": {
+        "original_offer": 17500,
+        "original_calculation": "Original ACV $18,500 - deductible $1,000 = $17,500",
+        "revised_offer": 21000,
+        "revised_calculation": "Revised ACV $22,000 - deductible $1,000 = $21,000",
+        "potential_appraisal_cost": 2500,
+        "appraisal_note": "If formal appraisal proceeds, OMA bears its own appraiser cost ($1,000-$1,500) and half the umpire fee ($500-$750).",
+        "settlement_recommendation": "Settle at revised ACV ($22,000) to avoid appraisal costs. Net savings vs. appraisal: $1,500-$2,500.",
+        "subrogation": true,
+        "subrogation_target": "USAA (policy USAA-2025-44556)"
+      }
+    }
+  }
+]

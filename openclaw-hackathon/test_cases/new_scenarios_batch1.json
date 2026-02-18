@@ -1,0 +1,639 @@
+[
+  {
+    "id": "TC-047",
+    "name": "PIP/MedPay Claim — Injury with Medical Payment Coverage",
+    "difficulty": "medium",
+    "tags": ["coverage_edge_case", "pip", "medpay", "bodily_injury", "medical_payments"],
+    "description": "Claimant was injured in a rear-end collision and needs medical payment coverage processed separately from the vehicle damage claim. PIP/MedPay coverage applies regardless of fault. The key issue: claimant has both collision damage and personal injuries, requiring two separate claim tracks.",
+    "input": {
+      "claimant_name": "Angela Torres",
+      "policy_number": "OMA-2025-33190",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was rear-ended at the intersection of Broad Street and High Street in Columbus while waiting at a red light. The impact was severe enough that my head snapped forward and back. I felt immediate neck and upper back pain. I went to the ER at Ohio State Wexner Medical Center the same day. The ER diagnosed me with cervical strain (whiplash) and prescribed muscle relaxants and physical therapy. I have been attending PT sessions 3 times per week since the accident. My medical bills so far: ER visit $2,800, imaging (X-ray and MRI) $1,950, physical therapy (6 sessions at $175 each) $1,050. Total medical expenses to date: $5,800. The other driver was at fault and has insurance through Allstate. My vehicle also sustained rear bumper, trunk, and tail light damage.",
+      "police_report": true,
+      "police_report_number": "2026-0212-COLLISION-3341",
+      "photos": ["rear_bumper_damage.jpg", "trunk_dent.jpg", "er_visit_receipt.jpg", "pt_referral.jpg"],
+      "witnesses": 2,
+      "medical_documentation": {
+        "er_visit": true,
+        "diagnosis": "Cervical strain (whiplash), Grade II",
+        "treatment_ongoing": true,
+        "total_medical_bills": 5800
+      },
+      "other_party_info": {
+        "name": "David Kim",
+        "insurance": "Allstate",
+        "policy": "ALL-2026-44521",
+        "fault_determination": "100% at fault"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-33190",
+      "insured_name": "Angela Torres",
+      "policy_start": "2025-03-01",
+      "policy_end": "2026-03-01",
+      "status": "active",
+      "vehicle": {
+        "vin": "1HGBH41JXMN109186",
+        "year": 2021,
+        "make": "Honda",
+        "model": "Civic",
+        "actual_cash_value": 22000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 22000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 22000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "medical_payments": {
+          "limit": 10000,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Dual-track claim: collision damage to vehicle AND bodily injury to claimant. MedPay coverage is active with $10,000 limit. Two claim components must be opened separately.",
+        "priority": "HIGH - Bodily injury present. Medical treatment is ongoing.",
+        "recommended_action": "Open two claim tracks: (1) Collision for vehicle damage, (2) MedPay for medical expenses. Route both to claims officer."
+      },
+      "claims_officer": {
+        "coverage_determination": "Two coverages apply: (1) Collision for vehicle damage ($22,000 limit, $500 deductible), (2) Medical Payments for claimant's injuries ($10,000 limit, no deductible). MedPay is no-fault coverage and pays regardless of who caused the accident.",
+        "medpay_processing": "MedPay pays claimant's medical bills up to $10,000 limit. Current bills total $5,800 and treatment is ongoing. Authorize payment of documented medical expenses as they are submitted. No deductible applies to MedPay.",
+        "collision_processing": "Standard collision claim for vehicle damage. Deductible of $500 applies.",
+        "subrogation_note": "Since other driver (David Kim / Allstate) is 100% at fault, subrogation should be pursued for both the collision payout and MedPay reimbursement.",
+        "next_step": "Authorize MedPay payments for documented medical bills. Schedule vehicle inspection for collision claim. Initiate subrogation demand to Allstate."
+      },
+      "assessor": {
+        "vehicle_inspection": "Rear-end collision damage: bumper, trunk lid, tail lights. Schedule inspection within 48 hours.",
+        "estimate_range": "Estimated repair cost: $3,500-$6,000. Not a total loss.",
+        "medical_review": "MedPay medical bills should be reviewed for reasonableness. ER visit, imaging, and PT are all consistent with whiplash diagnosis. No red flags in treatment plan.",
+        "total_loss": false
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. Rear-end collision with police report and witnesses. Medical treatment initiated same day at reputable hospital. Treatment plan (PT 3x/week for whiplash) is medically appropriate. No indicators of exaggeration.",
+        "medical_bill_review": "Bills are within expected ranges for ER visit, imaging, and PT in Columbus metro area.",
+        "recommendation": "Clear to process both claim tracks."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE both claim tracks. (1) Collision claim for vehicle repair, (2) MedPay for ongoing medical expenses up to $10,000 limit.",
+        "medpay_guidance": "Continue authorizing MedPay payments as medical bills are submitted. Monitor total against $10,000 limit. If treatment costs exceed MedPay limit, advise claimant to pursue additional recovery through Allstate (at-fault party's insurer).",
+        "subrogation": "Pursue full subrogation against Allstate for both collision and MedPay payouts."
+      },
+      "finance": {
+        "collision_estimated_payout": 4250,
+        "collision_calculation": "Estimated repair $4,750 minus $500 deductible = $4,250",
+        "medpay_current_payout": 5800,
+        "medpay_calculation": "Total documented medical bills $5,800 (within $10,000 MedPay limit). No deductible.",
+        "medpay_remaining": 4200,
+        "subrogation": true,
+        "subrogation_target": "Allstate (policy ALL-2026-44521)"
+      }
+    }
+  },
+  {
+    "id": "TC-048",
+    "name": "Gap Insurance — Total Loss with Loan Balance Exceeding ACV",
+    "difficulty": "hard",
+    "tags": ["coverage_edge_case", "gap_insurance", "total_loss", "loan_balance", "negative_equity"],
+    "description": "Claimant's vehicle is totaled in a collision. The loan balance ($32,000) exceeds the actual cash value ($24,500). Gap coverage on the policy covers the difference. Complexity: coordinating payment between claimant, lienholder, and gap coverage calculation.",
+    "input": {
+      "claimant_name": "Derek Washington",
+      "policy_number": "OMA-2025-55012",
+      "incident_date": "2026-02-08",
+      "incident_type": "collision",
+      "description": "I was driving on I-71 southbound near the Polaris exit when traffic stopped suddenly ahead of me. I braked hard but could not stop in time and rear-ended the vehicle in front of me at approximately 35 mph. My airbags deployed and the entire front end of my vehicle is crushed. The car is not drivable and was towed from the scene. I have a loan on this vehicle through Chase Auto Finance with a remaining balance of approximately $32,000. I purchased gap coverage when I bought the car because I put very little down. The vehicle is a 2024 Chevy Equinox that I purchased new 14 months ago for $35,500.",
+      "police_report": true,
+      "police_report_number": "2026-0208-COLLISION-7788",
+      "photos": ["front_end_crushed.jpg", "airbag_deployed.jpg", "tow_receipt.jpg"],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Patricia Moore",
+        "insurance": "Progressive",
+        "policy": "PROG-2025-11234",
+        "fault_determination": "Claimant is at fault (rear-ended other vehicle)"
+      },
+      "lienholder": {
+        "name": "Chase Auto Finance",
+        "loan_balance": 32000,
+        "account_number": "CHASE-AUTO-998877"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-55012",
+      "insured_name": "Derek Washington",
+      "policy_start": "2025-01-15",
+      "policy_end": "2026-01-15",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2027-01-15",
+      "vehicle": {
+        "vin": "3GNAXKEV5RS123456",
+        "year": 2024,
+        "make": "Chevrolet",
+        "model": "Equinox",
+        "actual_cash_value": 24500
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 24500,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 24500,
+          "deductible": 250,
+          "status": "active"
+        },
+        "gap_coverage": {
+          "status": "active",
+          "covers_difference": true,
+          "max_gap": 25000
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim with likely total loss. Claimant is at fault. Vehicle has a lienholder (Chase Auto Finance) and gap coverage is active. Multi-party payment coordination required.",
+        "priority": "HIGH - Total loss with lienholder involvement.",
+        "recommended_action": "Route to claims officer. Flag gap coverage and lienholder for payment coordination."
+      },
+      "claims_officer": {
+        "coverage_determination": "Collision coverage applies. Claimant is at fault so no subrogation. Vehicle is likely a total loss given front-end crush and airbag deployment.",
+        "gap_coverage_analysis": "ACV is $24,500. Loan balance is $32,000. Gap is $7,500. Gap coverage is active and will cover the difference between ACV payout and loan balance, up to $25,000 max gap.",
+        "payment_structure": "Collision payout: ACV ($24,500) minus deductible ($500) = $24,000. This goes to Chase Auto Finance as lienholder. Gap coverage pays remaining loan balance: $32,000 - $24,000 = $8,000 to Chase Auto Finance. Claimant receives $0 directly (entire payout goes to lienholder).",
+        "next_step": "Confirm total loss with assessor. Obtain loan payoff amount from Chase Auto Finance. Calculate final gap payment."
+      },
+      "assessor": {
+        "vehicle_inspection": "Front-end crush damage, airbag deployment, likely frame damage. Vehicle is not repairable economically.",
+        "total_loss_determination": "TOTAL LOSS CONFIRMED. Estimated repair cost exceeds 70% of ACV ($17,150 threshold). Front-end repairs alone estimated at $18,000-$22,000. Totaling the vehicle.",
+        "salvage_value": "Estimated salvage value: $3,500-$4,500.",
+        "acv_confirmation": "ACV confirmed at $24,500 based on comparable sales of 2024 Chevy Equinox with similar mileage in Ohio market."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW-MODERATE FRAUD RISK. Claimant has significant negative equity ($7,500 gap), which can be a motivator for intentional total loss. However: police report confirms sudden traffic stop, airbag deployment is consistent with 35 mph impact, and claimant self-reported being at fault (unusual for fraud).",
+        "red_flags": "Negative equity is a known fraud motivator. Monitor for: (1) Was claimant distracted or impaired? (2) Any history of gap claims? (3) Is vehicle's condition consistent with 14 months of ownership?",
+        "recommendation": "Process claim but flag for routine verification. No strong fraud indicators."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE total loss and gap coverage payout.",
+        "payment_authorization": "Authorize two payments: (1) Collision ACV minus deductible ($24,000) to Chase Auto Finance, (2) Gap coverage ($8,000) to Chase Auto Finance to fully satisfy loan.",
+        "claimant_note": "Claimant receives no direct payment. Entire payout satisfies loan obligation. Claimant should be informed that gap coverage has eliminated their negative equity exposure."
+      },
+      "finance": {
+        "collision_payout": 24000,
+        "collision_calculation": "ACV $24,500 - deductible $500 = $24,000 to Chase Auto Finance",
+        "gap_payout": 8000,
+        "gap_calculation": "Loan balance $32,000 - collision payout $24,000 = $8,000 gap coverage payment to Chase Auto Finance",
+        "total_disbursement": 32000,
+        "payment_recipients": "Chase Auto Finance (two-check process: collision + gap)",
+        "salvage_recovery": 4000,
+        "subrogation": false
+      }
+    }
+  },
+  {
+    "id": "TC-049",
+    "name": "Lienholder Present — Total Loss with Two-Party Check",
+    "difficulty": "medium",
+    "tags": ["coverage_edge_case", "lienholder", "total_loss", "two_party_check", "payment_coordination"],
+    "description": "Vehicle totaled in a deer strike (comprehensive claim). Car has a lienholder but loan balance is LESS than ACV, so payment goes to both lienholder and claimant. Two-party check or split payment required.",
+    "input": {
+      "claimant_name": "Maria Gonzalez",
+      "policy_number": "OMA-2024-41987",
+      "incident_date": "2026-02-14",
+      "incident_type": "comprehensive",
+      "description": "I was driving on State Route 13 near Mansfield at approximately 6:30 PM (dusk) when a large deer jumped in front of my vehicle. I had no time to brake or swerve. The deer struck my vehicle head-on, causing significant damage to the hood, grille, radiator, and front quarter panels. The deer went over the hood and cracked my windshield as well. My car is not drivable. I have a car loan through Huntington Bank with about $12,000 remaining on the balance.",
+      "police_report": true,
+      "police_report_number": "2026-0214-ANIMAL-6632",
+      "photos": ["deer_strike_hood.jpg", "grille_destroyed.jpg", "cracked_windshield.jpg", "radiator_exposed.jpg"],
+      "witnesses": 0,
+      "other_party_info": null,
+      "lienholder": {
+        "name": "Huntington National Bank",
+        "loan_balance": 12000,
+        "account_number": "HNB-AUTO-554433"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-41987",
+      "insured_name": "Maria Gonzalez",
+      "policy_start": "2024-06-01",
+      "policy_end": "2025-06-01",
+      "status": "active",
+      "renewal_status": "auto-renewed to 2026-06-01",
+      "vehicle": {
+        "vin": "1G1YY22G965123456",
+        "year": 2020,
+        "make": "Chevrolet",
+        "model": "Corvette",
+        "actual_cash_value": 45000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 45000,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 45000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 250000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Comprehensive claim for animal strike (deer). Vehicle likely totaled based on description of damage. Lienholder (Huntington Bank) is present on the policy.",
+        "priority": "STANDARD - Comprehensive claim, no injuries, no other party.",
+        "recommended_action": "Route to claims officer. Note lienholder for payment coordination."
+      },
+      "claims_officer": {
+        "coverage_determination": "Comprehensive coverage applies for animal strikes. Coverage is active. Deductible is $500.",
+        "total_loss_likely": "Based on damage description (hood, grille, radiator, quarter panels, windshield), repair costs will likely exceed 70% of ACV ($31,500 threshold). Total loss is probable.",
+        "lienholder_payment": "Loan balance ($12,000) is LESS than ACV ($45,000). Payment structure: Lienholder gets $12,000 to satisfy loan, claimant gets remainder (ACV minus deductible minus lienholder payoff minus salvage).",
+        "next_step": "Confirm total loss with assessor. Obtain exact loan payoff from Huntington Bank. Issue two-party settlement."
+      },
+      "assessor": {
+        "vehicle_inspection": "Extensive front-end damage from deer strike: hood buckled, grille destroyed, radiator punctured, both front quarter panels damaged, windshield cracked. Frame inspection needed.",
+        "total_loss_determination": "TOTAL LOSS CONFIRMED. Repair estimate: $28,000-$35,000 (hood, grille, radiator, quarter panels, windshield, potential frame damage). Exceeds 70% ACV threshold.",
+        "acv_confirmation": "ACV for 2020 Corvette in this condition and mileage: $45,000.",
+        "salvage_value": "Estimated salvage: $8,000-$10,000 (Corvette parts have high salvage demand)."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. Deer strikes are common in rural Ohio (State Route 13 near Mansfield is a known high-deer area). Damage pattern is consistent with animal strike. Police report filed. No red flags.",
+        "recommendation": "Clear to process."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE total loss under comprehensive coverage.",
+        "payment_structure": "ACV $45,000 minus comprehensive deductible $500 minus salvage value $9,000 = $35,500 net payout. Lienholder (Huntington) receives $12,000 loan payoff. Claimant receives remaining $23,500.",
+        "two_party_note": "Issue lienholder check directly to Huntington Bank. Issue claimant check separately to Maria Gonzalez."
+      },
+      "finance": {
+        "total_payout": 35500,
+        "calculation": "ACV $45,000 - deductible $500 - salvage $9,000 = $35,500",
+        "lienholder_payment": 12000,
+        "claimant_payment": 23500,
+        "payment_method": "Two separate checks: $12,000 to Huntington National Bank, $23,500 to Maria Gonzalez",
+        "salvage_disposition": "Salvage retained by OMA. Vehicle title transferred upon settlement.",
+        "subrogation": false
+      }
+    }
+  },
+  {
+    "id": "TC-050",
+    "name": "Diminished Value Claim — First-Party Demand",
+    "difficulty": "hard",
+    "tags": ["coverage_edge_case", "diminished_value", "first_party", "economic_loss", "ohio_law"],
+    "description": "Claimant's vehicle was repaired after an at-fault collision by the other driver. Claimant now demands diminished value compensation from their own insurer (first-party claim). Ohio law does not require first-party diminished value coverage. Different from TC-045 because here the claimant demands it from OMA rather than filing a supplemental claim.",
+    "input": {
+      "claimant_name": "Nathan Brooks",
+      "policy_number": "OMA-2025-67234",
+      "incident_date": "2026-01-15",
+      "incident_type": "collision",
+      "description": "My 2024 BMW X5 was hit by another driver who ran a red light on January 15th. The collision claim was processed and my vehicle was repaired at a BMW-certified body shop using all OEM parts. The repair cost was $14,200 and was paid by Ohio Mutual after my $1,000 deductible. The car looks and drives perfectly. However, I just received three trade-in offers from BMW dealerships and they are all $6,000-$8,000 below what a comparable X5 without accident history would fetch. The CarFax now shows the collision and my vehicle's market value has permanently decreased. I am demanding that Ohio Mutual compensate me for the diminished value of $7,000. I have obtained a professional diminished value appraisal from a licensed appraiser who confirms the loss at $7,200.",
+      "police_report": true,
+      "police_report_number": "2026-0115-COLLISION-2209",
+      "photos": ["vehicle_repaired.jpg", "carfax_report.jpg", "diminished_value_appraisal.pdf"],
+      "witnesses": 1,
+      "other_party_info": {
+        "at_fault_driver_name": "Lisa Chang",
+        "insurance": "GEICO",
+        "fault_determination": "100% at fault per police report"
+      },
+      "diminished_value_appraisal": {
+        "appraiser": "Ohio Vehicle Appraisal Services LLC",
+        "pre_accident_value": 58000,
+        "post_repair_value": 50800,
+        "diminished_value": 7200
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-67234",
+      "insured_name": "Nathan Brooks",
+      "policy_start": "2025-06-01",
+      "policy_end": "2026-06-01",
+      "status": "active",
+      "vehicle": {
+        "vin": "5UXCR6C05R9A12345",
+        "year": 2024,
+        "make": "BMW",
+        "model": "X5",
+        "actual_cash_value": 58000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 300000,
+          "property_damage": 100000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 58000,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 58000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 300000,
+          "status": "active"
+        }
+      },
+      "claims_history": [
+        {
+          "claim_id": "TC-050-PRIOR",
+          "date": "2026-01-15",
+          "type": "Collision",
+          "status": "approved and paid",
+          "repair_cost": 14200,
+          "payout_amount": 13200
+        }
+      ]
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Supplemental claim for diminished value. Original collision claim was already paid. Claimant is demanding first-party diminished value from OMA.",
+        "priority": "STANDARD - Policy/legal question, not emergency.",
+        "recommended_action": "Route to claims officer and senior reviewer for coverage determination. Legal consultation may be needed."
+      },
+      "claims_officer": {
+        "coverage_determination": "DENY - Ohio Mutual's standard personal auto policy covers physical damage repair, not post-repair diminished value. The collision claim was paid in full for vehicle repair. OMA's contractual obligation is satisfied.",
+        "ohio_law_analysis": "Ohio does NOT have a first-party diminished value statute. Claimant cannot recover diminished value from their own insurer unless the policy explicitly provides for it (OMA's does not).",
+        "third_party_alternative": "Claimant should pursue diminished value claim against the at-fault driver's insurer (GEICO) or directly against the at-fault driver in civil court. Third-party diminished value claims are recognized in Ohio tort law.",
+        "recommendation": "Deny first-party diminished value claim. Advise claimant of third-party recovery options."
+      },
+      "assessor": {
+        "status": "N/A - This is a coverage/policy determination, not a physical damage assessment. Vehicle was already repaired.",
+        "note": "Claimant's independent appraisal of $7,200 diminished value is not unreasonable for a 2024 BMW X5, but assessment of diminished value is not relevant to policy coverage."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "NO FRAUD. Claimant is making a legitimate demand for a type of coverage that does not exist in their policy. This is a coverage dispute, not fraud.",
+        "recommendation": "No fraud investigation needed."
+      },
+      "senior_reviewer": {
+        "decision": "DENY the first-party diminished value claim.",
+        "rationale": "OMA's personal auto policy covers 'direct physical loss or damage.' Diminished value is an indirect economic loss not covered by the policy. Ohio law does not mandate first-party diminished value coverage.",
+        "claimant_advisory": "Inform claimant: (1) OMA has fulfilled its obligation by paying for repairs, (2) First-party diminished value is not covered, (3) Claimant may pursue diminished value from GEICO or Lisa Chang directly, (4) The independent appraisal may support a third-party claim.",
+        "escalation_risk": "Claimant may threaten bad faith or file a complaint with Ohio Department of Insurance. OMA's position is legally sound."
+      },
+      "finance": {
+        "supplemental_payout": 0,
+        "explanation": "Diminished value is not a covered loss under first-party collision coverage. No payment authorized.",
+        "original_claim_status": "Original collision claim paid $13,200 ($14,200 repair - $1,000 deductible). Claim closed.",
+        "subrogation_note": "OMA should pursue subrogation against GEICO for the $13,200 collision payout. Claimant should independently pursue GEICO for diminished value."
+      }
+    }
+  },
+  {
+    "id": "TC-051",
+    "name": "Rental Car Coverage — Vehicle Not Drivable, Rental Reimbursement Cap",
+    "difficulty": "medium",
+    "tags": ["coverage_edge_case", "rental_reimbursement", "transportation_expenses", "daily_cap"],
+    "description": "Claimant's vehicle is not drivable after a collision. They have rental reimbursement coverage with a daily cap and maximum duration. The repair is taking longer than expected due to parts delays. Rental costs are approaching the policy limit.",
+    "input": {
+      "claimant_name": "Jennifer Walsh",
+      "policy_number": "OMA-2025-78901",
+      "incident_date": "2026-01-28",
+      "incident_type": "collision",
+      "description": "I was hit by another driver who failed to yield at a roundabout on January 28th. My 2022 Subaru Outback has significant front-end damage and is not drivable. The repair shop told me it will take 3-4 weeks due to a backorder on the driver-side headlight assembly. I rented a car from Enterprise on January 29th at $45/day. It has now been 21 days and the repair shop says they need at least 10 more days. My rental bill is already at $945 and my policy only covers $30/day up to $900 total. I've already exceeded my rental coverage limit. Who pays for the remaining rental days?",
+      "police_report": true,
+      "police_report_number": "2026-0128-COLLISION-4456",
+      "photos": ["front_end_damage.jpg", "headlight_destroyed.jpg", "rental_agreement.jpg"],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Thomas Green",
+        "insurance": "Liberty Mutual",
+        "policy": "LM-2025-88776",
+        "fault_determination": "Other driver at fault (failed to yield)"
+      },
+      "rental_info": {
+        "provider": "Enterprise Rent-A-Car",
+        "daily_rate": 45,
+        "start_date": "2026-01-29",
+        "current_total": 945,
+        "estimated_additional_days": 10
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-78901",
+      "insured_name": "Jennifer Walsh",
+      "policy_start": "2025-07-01",
+      "policy_end": "2026-07-01",
+      "status": "active",
+      "vehicle": {
+        "vin": "4S4BTAPC2N3123456",
+        "year": 2022,
+        "make": "Subaru",
+        "model": "Outback",
+        "actual_cash_value": 30000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 30000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 30000,
+          "deductible": 250,
+          "status": "active"
+        },
+        "rental_reimbursement": {
+          "daily_limit": 30,
+          "max_total": 900,
+          "max_days": 30,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Collision claim with rental reimbursement component. Claimant's rental costs are exceeding policy limits due to extended repair timeline. Other driver is at fault.",
+        "priority": "STANDARD - Active rental generating daily costs.",
+        "recommended_action": "Route to claims officer. Alert about rental cap issue."
+      },
+      "claims_officer": {
+        "coverage_determination": "Collision coverage applies for vehicle repair. Rental reimbursement coverage applies but is limited to $30/day and $900 total.",
+        "rental_analysis": "Claimant is renting at $45/day but policy only covers $30/day. OMA reimburses $30/day; claimant is responsible for the $15/day difference. Maximum OMA obligation: $900 total (30 days at $30/day). Claimant has used 21 days x $30 = $630 of the $900 cap. Remaining OMA coverage: $270 (9 more days at $30/day).",
+        "excess_rental_costs": "After OMA rental coverage is exhausted, claimant should pursue remaining rental costs from Liberty Mutual (at-fault party's insurer) as a loss-of-use claim.",
+        "recommendation": "Pay rental reimbursement up to policy limit ($900). Advise claimant to (1) downgrade to a vehicle within the $30/day cap, and (2) pursue excess rental costs from Liberty Mutual."
+      },
+      "assessor": {
+        "vehicle_inspection": "Front-end damage requiring headlight assembly replacement (backordered), bumper, and fender repair. Estimated repair: $6,500-$8,500.",
+        "total_loss": false,
+        "repair_timeline": "Parts delay is legitimate (Subaru headlight assemblies have known supply chain delays). Estimated completion: 10 additional business days."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "LOW FRAUD RISK. Rental costs are real and documented. Parts delay is verifiable with repair shop. No indicators of prolonging rental for personal benefit.",
+        "recommendation": "Clear to process."
+      },
+      "senior_reviewer": {
+        "decision": "APPROVE collision claim and rental reimbursement up to policy limits.",
+        "rental_guidance": "OMA's obligation is capped at $30/day and $900 total per policy terms. Claimant chose a vehicle above the daily cap rate. OMA is not responsible for the difference. Advise claimant to pursue Liberty Mutual for excess rental expenses as a loss-of-use/consequential damage claim against the at-fault driver.",
+        "subrogation": "Pursue subrogation against Liberty Mutual for collision repair costs and rental reimbursement paid."
+      },
+      "finance": {
+        "collision_estimated_payout": 7000,
+        "collision_calculation": "Estimated repair $7,500 - deductible $500 = $7,000",
+        "rental_payout": 900,
+        "rental_calculation": "Policy maximum: $30/day x 30 days = $900 cap. OMA pays up to $900 regardless of actual rental rate.",
+        "total_payout": 7900,
+        "subrogation": true,
+        "subrogation_target": "Liberty Mutual (policy LM-2025-88776)"
+      }
+    }
+  },
+  {
+    "id": "TC-052",
+    "name": "DUI Exclusion — Policy Excludes Intoxicated Driver",
+    "difficulty": "medium",
+    "tags": ["exclusion", "dui", "intoxication", "policy_exclusion", "denial"],
+    "description": "Claimant was arrested for DUI at the scene of a single-vehicle accident. Policy has an explicit intoxication exclusion. Claim should be denied for collision coverage, but liability coverage may still apply if third parties were harmed (Ohio law prohibits excluding liability for DUI in some circumstances).",
+    "input": {
+      "claimant_name": "Brandon Riley",
+      "policy_number": "OMA-2025-12345",
+      "incident_date": "2026-02-07",
+      "incident_type": "collision",
+      "description": "I was driving home from a Super Bowl party on Saturday night. I lost control of my vehicle on a curve on Route 40 and hit a telephone pole. The police arrived and I was given a field sobriety test. I was arrested for OVI (Operating a Vehicle Impaired). My BAC was measured at 0.14, which is above the legal limit of 0.08. My car is severely damaged — the front end is crushed and the airbags deployed. I also caused damage to the telephone pole and a fence belonging to the property adjacent to the road. I need Ohio Mutual to cover my vehicle repairs.",
+      "police_report": true,
+      "police_report_number": "2026-0207-OVI-8823",
+      "photos": ["vehicle_vs_pole.jpg", "front_end_crushed.jpg", "damaged_fence.jpg"],
+      "witnesses": 0,
+      "other_party_info": null,
+      "dui_arrest": {
+        "bac_level": 0.14,
+        "legal_limit": 0.08,
+        "arrest_charge": "OVI (Ohio Revised Code 4511.19)",
+        "arrest_date": "2026-02-07"
+      },
+      "third_party_damage": {
+        "telephone_pole_owner": "AEP Ohio",
+        "fence_owner": "Harold Mitchell (adjacent property)",
+        "estimated_third_party_damage": 8500
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-12345",
+      "insured_name": "Brandon Riley",
+      "policy_start": "2025-02-07",
+      "policy_end": "2026-02-07",
+      "status": "active",
+      "vehicle": {
+        "vin": "1FA6P8TH4J5123456",
+        "year": 2018,
+        "make": "Ford",
+        "model": "Mustang",
+        "actual_cash_value": 25000
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000,
+          "status": "active"
+        },
+        "collision": {
+          "limit": 25000,
+          "deductible": 1000,
+          "status": "active"
+        },
+        "comprehensive": {
+          "limit": 25000,
+          "deductible": 500,
+          "status": "active"
+        },
+        "uninsured_motorist": {
+          "limit": 100000,
+          "status": "active"
+        }
+      },
+      "exclusions": ["intoxication", "illegal_activity"],
+      "claims_history": []
+    },
+    "expected": {
+      "front_desk": {
+        "initial_assessment": "Single-vehicle collision involving DUI/OVI arrest. BAC 0.14 (above 0.08 limit). Policy has intoxication exclusion. Third-party property damage to telephone pole and fence.",
+        "priority": "HIGH - Legal complexity. DUI exclusion and third-party liability.",
+        "recommended_action": "Route to claims officer immediately. Flag DUI exclusion and third-party property damage for separate handling."
+      },
+      "claims_officer": {
+        "collision_coverage": "DENY - Policy explicitly excludes coverage for losses occurring while the insured is operating a vehicle under the influence of alcohol. BAC of 0.14 exceeds Ohio's legal limit of 0.08. Collision claim for claimant's vehicle is DENIED.",
+        "liability_coverage": "IMPORTANT: Ohio law generally does NOT allow insurers to exclude liability coverage for DUI. Under Ohio insurance regulations, liability coverage must still respond to protect injured third parties regardless of the insured's intoxication. AEP Ohio (telephone pole) and Harold Mitchell (fence) may file claims against OMA's liability coverage.",
+        "third_party_handling": "OMA must defend third-party property damage claims under liability coverage even though claimant was intoxicated. Estimated third-party damage: $8,500. Within property damage liability limit of $50,000.",
+        "recommendation": "Deny collision claim for claimant's vehicle. Accept and process third-party liability claims for telephone pole and fence damage."
+      },
+      "assessor": {
+        "vehicle_inspection": "Vehicle vs. telephone pole at speed. Front end crushed, airbags deployed. Likely total loss but assessment is moot since collision claim is denied.",
+        "third_party_damage": "Telephone pole damage estimated at $5,000-$6,500 (AEP Ohio replacement cost). Fence damage estimated at $2,000-$3,000. Total third-party: $7,000-$9,500.",
+        "status": "Assess third-party damage only. Claimant vehicle assessment is not needed for denied claim."
+      },
+      "fraud_analyst": {
+        "risk_assessment": "NOT FRAUD — but policy exclusion applies. Claimant was forthcoming about DUI arrest. Police report confirms BAC level. No fraud indicators.",
+        "recommendation": "No fraud investigation needed. This is a coverage exclusion issue."
+      },
+      "senior_reviewer": {
+        "decision": "DENY collision claim. APPROVE third-party liability claims.",
+        "collision_denial_basis": "Policy intoxication exclusion applies. BAC 0.14 exceeds legal limit. Claimant's vehicle damage is excluded from coverage.",
+        "liability_approval_basis": "Ohio law requires liability coverage to respond to third-party claims regardless of insured's intoxication. OMA must pay third-party property damage claims for telephone pole and fence.",
+        "claimant_notification": "Send formal denial letter citing specific policy exclusion language. Advise claimant of right to appeal or seek independent review."
+      },
+      "finance": {
+        "collision_payout": 0,
+        "collision_status": "DENIED - intoxication exclusion",
+        "liability_payout": 8500,
+        "liability_calculation": "Telephone pole replacement $5,500 + fence repair $3,000 = $8,500 to third parties",
+        "payment_recipients": "AEP Ohio ($5,500), Harold Mitchell ($3,000)",
+        "subrogation": false
+      }
+    }
+  }
+]

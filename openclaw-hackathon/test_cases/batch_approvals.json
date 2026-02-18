@@ -1,0 +1,699 @@
+[
+  {
+    "id": "TC-010",
+    "name": "Rear-end collision at traffic light",
+    "difficulty": "easy",
+    "tags": ["approval", "collision", "other_party_at_fault"],
+    "description": "Tests standard rear-end collision with clear liability and moderate damage. Other party has insurance. Validates straightforward collision claim processing.",
+    "input": {
+      "claimant_name": "Jennifer Martinez",
+      "policy_number": "OMA-2023-47582",
+      "incident_date": "2026-02-15",
+      "incident_type": "collision",
+      "description": "I was stopped at a red light on Riverside Drive near Main Street in Columbus around 2:45 PM when a white sedan hit me from behind without any warning. The impact was pretty hard — it pushed me forward into the intersection. The other driver apologized immediately and admitted they didn't see me stop. We both pulled over right there and exchanged insurance information. My back bumper and trunk have some significant damage, the bumper cover is cracked and there's a dent in the trunk panel. My neck is sore but I'm okay.",
+      "police_report": true,
+      "police_report_number": "PR-2026-089234",
+      "photos": ["rear_bumper_damage.jpg", "trunk_dent.jpg", "vehicle_position.jpg"],
+      "witnesses": 2,
+      "other_party_info": {
+        "name": "Robert Chen",
+        "insurance": "State Farm",
+        "policy": "SF-2025-92847"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-47582",
+      "holder": "Jennifer Martinez",
+      "status": "active",
+      "effective_date": "2023-03-15",
+      "expiry_date": "2027-03-15",
+      "vehicle": {
+        "year": 2024,
+        "make": "Honda",
+        "model": "CR-V",
+        "vin": "2HRCF7H52LH634819"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        },
+        "medical_payments": 5000
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "liability_clear": true,
+        "other_party_liable": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [4800, 6200],
+        "repair_timeline": "5-7 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 8,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 5500,
+        "subrogation_potential": true
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "State Farm",
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-011",
+    "name": "Side-swipe in parking garage",
+    "difficulty": "easy",
+    "tags": ["approval", "collision", "split_liability"],
+    "description": "Tests minor collision with split liability in constrained environment. Both parties have insurance. Validates comparative fault handling.",
+    "input": {
+      "claimant_name": "Marcus Johnson",
+      "policy_number": "OMA-2022-31847",
+      "incident_date": "2026-02-14",
+      "incident_type": "collision",
+      "description": "I was driving through the parking garage at Riverside Commons shopping center on Saturday afternoon, it was crowded and tight. I was exiting a row when another vehicle came from the opposite direction. We didn't see each other until we were pretty close, and we both swerved but our side mirrors and driver-side panels made contact. The impact wasn't hard, mostly cosmetic damage. The other driver and I agreed it was a mutual thing. No police report but we exchanged contact information and insurance details. Just some scrapes and a dent on my door.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": ["driver_side_panel_damage.jpg", "mirror_scratch.jpg"],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Sarah Williams",
+        "insurance": "Geico",
+        "policy": "GEICO-2024-56091"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2022-31847",
+      "holder": "Marcus Johnson",
+      "status": "active",
+      "effective_date": "2022-07-20",
+      "expiry_date": "2026-07-20",
+      "vehicle": {
+        "year": 2021,
+        "make": "Chevrolet",
+        "model": "Malibu",
+        "vin": "1G1TB1SM5F5103847"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 750,
+        "liability_clear": false,
+        "comparative_fault": "50/50"
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [1800, 2400],
+        "repair_timeline": "3-4 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 5,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 825,
+        "note": "Split liability. Claimant pays $750 deductible, insurer covers 50% of $3300 estimate minus deductible."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-012",
+    "name": "Deer strike on rural highway",
+    "difficulty": "medium",
+    "tags": ["approval", "comprehensive", "animal_strike"],
+    "description": "Tests comprehensive claim for animal strike with significant front-end damage. Validates collision with wildlife processing.",
+    "input": {
+      "claimant_name": "David Keller",
+      "policy_number": "OMA-2024-52109",
+      "incident_date": "2026-02-10",
+      "incident_type": "comprehensive",
+      "description": "I was driving on Route 23 heading north around 6:30 PM, just as it was getting dark. A large deer ran out from the tree line on the left side of the road and I couldn't swerve in time. I hit it head-on at about 55 miles per hour. The impact was hard — the windshield cracked, the hood is severely buckled, and I'm pretty sure there's damage to the radiator and engine compartment. The deer didn't survive. I pulled over immediately and called the sheriff's non-emergency line. An officer came by about 20 minutes later and documented the incident. My airbags did not deploy which is good. I'm fine but my car is definitely not drivable right now.",
+      "police_report": true,
+      "police_report_number": "PR-2026-078453",
+      "photos": ["frontal_impact_damage.jpg", "cracked_windshield.jpg", "hood_buckling.jpg", "radiator_damage.jpg"],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2024-52109",
+      "holder": "David Keller",
+      "status": "active",
+      "effective_date": "2024-05-10",
+      "expiry_date": "2025-05-10",
+      "vehicle": {
+        "year": 2023,
+        "make": "Subaru",
+        "model": "Outback",
+        "vin": "4S4BTACD2P3253489"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 75000,
+          "deductible": 250
+        },
+        "comprehensive": {
+          "limit": 75000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 250000,
+          "property_damage": 100000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 75000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "high",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 250,
+        "incident_type_valid": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [8500, 11200],
+        "major_repairs": ["windshield", "hood", "radiator", "engine_bay"],
+        "repair_timeline": "10-14 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 12,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 9750,
+        "note": "Comprehensive claim for animal strike. Police report supports incident details."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-013",
+    "name": "Hail damage during spring storm",
+    "difficulty": "easy",
+    "tags": ["approval", "comprehensive", "weather_damage"],
+    "description": "Tests comprehensive claim for weather-related damage. Multiple vehicles affected validates typical hail scenario.",
+    "input": {
+      "claimant_name": "Patricia Sullivan",
+      "policy_number": "OMA-2023-65238",
+      "incident_date": "2026-02-08",
+      "incident_type": "comprehensive",
+      "description": "We had a severe hail storm roll through the area on Saturday afternoon around 3 PM. I parked my truck in the driveway and went inside. The hail was huge — some of the stones looked bigger than golf balls. When it stopped about 20 minutes later, I went out and saw my truck covered in dents. The roof has multiple dents, the hood is dimpled all over, and I have some damage to the windshield too. Several of my neighbors had the same damage. I took photos right away and called your company on Sunday morning to report the claim.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": ["roof_hail_damage.jpg", "hood_hail_damage.jpg", "windshield_pitting.jpg", "overall_damage.jpg"],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2023-65238",
+      "holder": "Patricia Sullivan",
+      "status": "active",
+      "effective_date": "2023-09-01",
+      "expiry_date": "2026-09-01",
+      "vehicle": {
+        "year": 2022,
+        "make": "Ford",
+        "model": "F-150",
+        "vin": "1FTFW1ET6CF23456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "weather_event_confirmed": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [6200, 8100],
+        "major_repairs": ["roof", "hood", "windshield"],
+        "repair_timeline": "7-10 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 6,
+        "flags": [],
+        "notes": "Regional hail event confirmed via weather service"
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 6900,
+        "note": "Comprehensive claim for weather damage. Multiple vehicle reports in area support event legitimacy."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-014",
+    "name": "T-bone collision at intersection",
+    "difficulty": "medium",
+    "tags": ["approval", "collision", "dashcam_evidence", "clear_liability"],
+    "description": "Tests collision claim with dashcam evidence proving other party fault. Significant damage requires assessor review.",
+    "input": {
+      "claimant_name": "Angela Thompson",
+      "policy_number": "OMA-2023-44291",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was driving on Parsons Avenue approaching the intersection with Goodale Street around 10:15 AM on Wednesday. I had a green light and was proceeding through the intersection when a pickup truck ran the red light from my right. He hit the passenger side of my vehicle directly. The impact was violent — my car spun and hit a utility pole. The pickup driver fled the scene initially but was caught about a block away. Police responded and took a full report. I have dashcam footage that clearly shows the truck running the red light and the impact. My right side is crushed, the frame is likely damaged, and I'm worried the car might be totaled. I was taken to the ER but thankfully no serious injuries.",
+      "police_report": true,
+      "police_report_number": "PR-2026-091847",
+      "photos": ["passenger_side_crush.jpg", "frame_damage.jpg", "utility_pole_impact.jpg", "vehicle_after_spinout.jpg"],
+      "dashcam_video": "dashcam_footage_pr2026091847.mp4",
+      "witnesses": 3,
+      "other_party_info": {
+        "name": "Kevin Rodriguez",
+        "insurance": "Allstate",
+        "policy": "AS-2024-88234",
+        "hit_and_run": false,
+        "police_citation": true
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-44291",
+      "holder": "Angela Thompson",
+      "status": "active",
+      "effective_date": "2023-01-15",
+      "expiry_date": "2026-01-15",
+      "vehicle": {
+        "year": 2020,
+        "make": "Toyota",
+        "model": "RAV4",
+        "vin": "2T1BYRFE6LC082942"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        },
+        "medical_payments": 5000
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "high",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 500,
+        "liability_clear": true,
+        "other_party_liable": true,
+        "police_citation_issued": true
+      },
+      "assessor": {
+        "total_loss": true,
+        "actual_cash_value": 18500,
+        "estimated_damage_range": [18500, 21000],
+        "assessment_notes": "Passenger side crush, frame damage, deemed total loss"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 5,
+        "flags": [],
+        "evidence_quality": "excellent",
+        "dashcam_validation": true
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 18000,
+        "note": "T-bone collision with clear liability via dashcam and police citation. Vehicle total loss approved. Claimant entitled to medical payments additional benefit."
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "Allstate",
+        "total_loss_settlement": true,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-015",
+    "name": "Vandalism in apartment parking lot",
+    "difficulty": "medium",
+    "tags": ["approval", "vandalism", "criminal_activity"],
+    "description": "Tests comprehensive vandalism claim with police report. Validates deliberate damage claim processing.",
+    "input": {
+      "claimant_name": "James Liu",
+      "policy_number": "OMA-2024-38847",
+      "incident_date": "2026-02-09",
+      "incident_type": "vandalism",
+      "description": "I came out to my car in the parking lot of my apartment complex on Sunday morning and discovered someone had vandalized it overnight. The entire driver's side is keyed with deep scratches, and both the driver and passenger side tires have been slashed with a knife or something sharp. The perpetrator really did a number on the paint. There's also a dent on the driver's door like they kicked it. I reported it to building management and the police. An officer came and took photos and filed a police report. There was some kind of party in the complex Saturday night, so security thinks it might have been random vandalism by someone in a neighboring unit.",
+      "police_report": true,
+      "police_report_number": "PR-2026-082956",
+      "photos": ["keyed_paint_driver_side.jpg", "slashed_tire_1.jpg", "slashed_tire_2.jpg", "door_dent.jpg", "overall_vandalism.jpg"],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2024-38847",
+      "holder": "James Liu",
+      "status": "active",
+      "effective_date": "2024-11-01",
+      "expiry_date": "2025-11-01",
+      "vehicle": {
+        "year": 2025,
+        "make": "Tesla",
+        "model": "Model 3",
+        "vin": "5YJ3E1EA3PF012345"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 250
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "vandalism",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 250,
+        "incident_type_valid": true,
+        "police_report_filed": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [4200, 5800],
+        "damage_items": ["paint_repair_driver_side", "door_dent_repair", "tire_replacement_2"],
+        "repair_timeline": "5-7 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 9,
+        "flags": []
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 4950,
+        "note": "Comprehensive vandalism claim. Police report filed. Vehicle newly purchased (2025 model), clean claims history."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-016",
+    "name": "Multi-vehicle chain reaction on highway",
+    "difficulty": "medium",
+    "tags": ["approval", "collision", "chain_reaction", "weather_related"],
+    "description": "Tests collision claim in chain reaction scenario with rain conditions. Claimant is second vehicle. Validates causation analysis.",
+    "input": {
+      "claimant_name": "Robert Williams",
+      "policy_number": "OMA-2023-29384",
+      "incident_date": "2026-02-11",
+      "incident_type": "collision",
+      "description": "I was driving on I-270 northbound around 4:30 PM during moderate to heavy rain on Tuesday. Traffic was moving at about 45 mph when the car in front of me suddenly braked hard. I couldn't stop in time and hit the back of that car. The impact pushed me forward a bit and then the car behind me hit me. So we had four cars involved total. The roads were wet and visibility wasn't great but I was keeping a reasonable following distance I thought. The initial vehicle that braked had suddenly swerved to avoid a piece of debris on the road. The police came and took statements from everyone. My front bumper and hood have damage, and there's frame damage underneath. I'm the second car in the chain.",
+      "police_report": true,
+      "police_report_number": "PR-2026-085736",
+      "photos": ["front_bumper_damage.jpg", "hood_crumple.jpg", "accident_scene.jpg", "rain_conditions.jpg"],
+      "witnesses": 4,
+      "other_party_info": {
+        "name": "Michelle Brown",
+        "insurance": "Nationwide",
+        "policy": "NW-2023-74821",
+        "position": "vehicle_in_front"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2023-29384",
+      "holder": "Robert Williams",
+      "status": "active",
+      "effective_date": "2023-04-01",
+      "expiry_date": "2026-04-01",
+      "vehicle": {
+        "year": 2023,
+        "make": "Mazda",
+        "model": "CX-5",
+        "vin": "JM2BL2S97K0703149"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 750
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_motorist": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "moderate",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 750,
+        "chain_reaction": true,
+        "comparative_liability": "proportional",
+        "liability_partial": true,
+        "estimated_claimant_fault": "30%"
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [5100, 7200],
+        "damage_items": ["front_bumper", "hood", "frame_inspection"],
+        "repair_timeline": "8-10 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 11,
+        "flags": [],
+        "environmental_factor": "rain",
+        "debris_confirmed": true
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 4725,
+        "note": "Chain reaction collision. Claimant has partial liability (30%) but covered under collision policy. Weather and debris conditions documented. Vehicle in front responsible for initial event."
+      },
+      "finance": {
+        "subrogation": true,
+        "subrogation_target": "Nationwide",
+        "subrogation_percentage": "70%",
+        "payment_method": "check"
+      }
+    }
+  },
+  {
+    "id": "TC-017",
+    "name": "Backing into pole at gas station",
+    "difficulty": "easy",
+    "tags": ["approval", "collision", "claimant_at_fault", "low_damage"],
+    "description": "Tests collision claim where claimant is at fault. Single-vehicle minor damage. Validates at-fault claim acceptance and processing.",
+    "input": {
+      "claimant_name": "Thomas Garcia",
+      "policy_number": "OMA-2021-19473",
+      "incident_date": "2026-02-16",
+      "incident_type": "collision",
+      "description": "I was backing out of a parking spot at the Shell station on Main Street on Monday afternoon and I misjudged the distance. I backed into a light pole that was closer than I thought. The backup camera showed the area was clear but I didn't notice the pole wasn't directly behind me — it was at an angle. The impact was minor, just some damage to my rear bumper. The pole is fine, no damage to it. I was alone so there were no witnesses. I reported the damage to the gas station attendant and then called your company. Honestly, this was totally my fault for not paying closer attention.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": ["rear_bumper_damage.jpg", "damage_close_up.jpg"],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2021-19473",
+      "holder": "Thomas Garcia",
+      "status": "active",
+      "effective_date": "2021-10-12",
+      "expiry_date": "2026-10-12",
+      "vehicle": {
+        "year": 2019,
+        "make": "Nissan",
+        "model": "Altima",
+        "vin": "1N4AL3AP0KC234567"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 50000,
+          "deductible": 1000
+        },
+        "comprehensive": {
+          "limit": 50000,
+          "deductible": 1000
+        },
+        "liability": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "deductible": 1000,
+        "claimant_at_fault": true,
+        "liability_acknowledged": true
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [650, 950],
+        "damage_items": ["rear_bumper_cover"],
+        "repair_timeline": "1-2 days"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 3,
+        "flags": [],
+        "claimant_acknowledgment": "full_liability"
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "estimated_payout": 0,
+        "note": "At-fault collision. Estimated repair cost of $800 is below the $1000 deductible. No payment to claimant. Claim filed for record but no payout due. Rates subject to at-fault surcharge."
+      },
+      "finance": {
+        "subrogation": false,
+        "payment_method": "n/a",
+        "note": "No payment required. Damage cost below deductible threshold."
+      }
+    }
+  }
+]

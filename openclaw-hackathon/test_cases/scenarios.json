@@ -1,0 +1,349 @@
+[
+  {
+    "id": "TC-001",
+    "name": "Standard Collision - Happy Path",
+    "difficulty": "easy",
+    "description": "Straightforward two-car collision, clear liability, valid policy, moderate damage",
+    "input": {
+      "claimant_name": "John Miller",
+      "policy_number": "OMA-2025-44210",
+      "incident_date": "2026-02-10",
+      "incident_type": "collision",
+      "description": "I was stopped at a red light on Oak Street when another vehicle rear-ended me. The other driver admitted fault. Police report filed (#PR-2026-1142). My rear bumper, trunk lid, and tail lights are damaged.",
+      "police_report": true,
+      "police_report_number": "PR-2026-1142",
+      "photos": ["rear_bumper_damage.jpg", "trunk_dent.jpg", "broken_taillight.jpg"],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Sarah Chen",
+        "insurance": "State Farm",
+        "policy": "SF-88321"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-44210",
+      "holder": "John Miller",
+      "status": "active",
+      "effective_date": "2025-06-01",
+      "expiry_date": "2026-06-01",
+      "vehicle": {"year": 2022, "make": "Toyota", "model": "Camry", "vin": "4T1BF1FK5CU123456"},
+      "coverage": {
+        "collision": {"limit": 50000, "deductible": 500},
+        "comprehensive": {"limit": 50000, "deductible": 250},
+        "liability": {"bodily_injury": 100000, "property_damage": 50000},
+        "uninsured_motorist": true
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {"category": "collision", "severity": "moderate", "priority": "standard"},
+      "claims_officer": {"coverage_valid": true, "deductible": 500, "exclusions": false},
+      "assessor": {"total_loss": false, "estimated_damage_range": [3000, 7000]},
+      "fraud_analyst": {"risk_level": "low", "fraud_score_max": 20},
+      "senior_reviewer": {"decision": "approved"},
+      "finance": {"subrogation": true, "subrogation_target": "State Farm"}
+    }
+  },
+  {
+    "id": "TC-002",
+    "name": "Suspicious Claim - Fraud Indicators",
+    "difficulty": "medium",
+    "description": "New policy, night accident, no witnesses, inflated injuries, financial stress",
+    "input": {
+      "claimant_name": "Marcus Webb",
+      "policy_number": "OMA-2026-00187",
+      "incident_date": "2026-02-08",
+      "incident_type": "collision",
+      "description": "I was driving on Route 33 around 11:30 PM when a deer ran onto the road. I swerved to avoid it and hit a guardrail. My car is pretty badly damaged. I also hurt my neck and back and have been seeing a chiropractor daily since the accident. I need this resolved quickly as I have medical bills piling up.",
+      "police_report": false,
+      "photos": ["front_damage.jpg"],
+      "witnesses": 0,
+      "medical_claims": {
+        "type": "chiropractic",
+        "visits": 8,
+        "total_billed": 12000,
+        "provider": "QuickCare Chiropractic"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2026-00187",
+      "holder": "Marcus Webb",
+      "status": "active",
+      "effective_date": "2026-01-15",
+      "expiry_date": "2027-01-15",
+      "vehicle": {"year": 2019, "make": "BMW", "model": "330i", "vin": "WBA5R1C50KA123789"},
+      "coverage": {
+        "collision": {"limit": 75000, "deductible": 1000},
+        "comprehensive": {"limit": 75000, "deductible": 500},
+        "liability": {"bodily_injury": 250000, "property_damage": 100000},
+        "medical_payments": {"limit": 25000}
+      },
+      "claims_history": [
+        {"date": "2024-08-12", "type": "collision", "amount": 8500, "insurer": "Progressive"},
+        {"date": "2023-11-03", "type": "theft", "amount": 15000, "insurer": "Geico"}
+      ],
+      "premium_paid": true,
+      "notes": "Policy opened 24 days before incident. High coverage limits selected."
+    },
+    "expected": {
+      "front_desk": {"category": "collision", "severity": "moderate_to_high", "priority": "standard"},
+      "claims_officer": {"coverage_valid": true, "deductible": 1000, "exclusions": false, "flag": "new_policy"},
+      "assessor": {"total_loss": false, "estimated_damage_range": [5000, 15000]},
+      "fraud_analyst": {"risk_level": "high", "fraud_score_min": 65, "flags_expected": ["new_policy", "no_witnesses", "no_police_report", "night_incident", "inflated_medical", "prior_claims", "pressure_for_quick_settlement"]},
+      "senior_reviewer": {"decision": "investigate"},
+      "finance": {"action": "hold_pending_investigation"}
+    }
+  },
+  {
+    "id": "TC-003",
+    "name": "Total Loss - Comprehensive",
+    "difficulty": "medium",
+    "description": "Tree fell on parked car during storm, total loss scenario, valid policy",
+    "input": {
+      "claimant_name": "Linda Okafor",
+      "policy_number": "OMA-2025-31890",
+      "incident_date": "2026-02-05",
+      "incident_type": "comprehensive",
+      "description": "During the ice storm on February 5th, a large oak tree in my neighbor's yard fell onto my car while it was parked in my driveway. The roof is completely crushed, windshield shattered, and the frame appears bent. The car is not drivable. My neighbor's homeowner insurance is Allstate. I have photos and a statement from my neighbor confirming the tree was from their property.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0987",
+      "photos": ["crushed_roof.jpg", "shattered_windshield.jpg", "bent_frame.jpg", "tree_on_car.jpg", "full_view.jpg"],
+      "witnesses": 2,
+      "weather_event": "ice_storm_feb5",
+      "neighbor_info": {
+        "name": "Robert Dawson",
+        "insurance": "Allstate",
+        "policy": "ALL-77432"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-31890",
+      "holder": "Linda Okafor",
+      "status": "active",
+      "effective_date": "2025-03-15",
+      "expiry_date": "2026-03-15",
+      "vehicle": {"year": 2018, "make": "Honda", "model": "Civic", "vin": "2HGFC2F53JH567890"},
+      "coverage": {
+        "collision": {"limit": 30000, "deductible": 500},
+        "comprehensive": {"limit": 30000, "deductible": 250},
+        "liability": {"bodily_injury": 50000, "property_damage": 25000},
+        "rental_reimbursement": {"daily_limit": 40, "max_days": 30}
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {"category": "comprehensive", "severity": "high", "priority": "high"},
+      "claims_officer": {"coverage_valid": true, "deductible": 250, "coverage_type": "comprehensive"},
+      "assessor": {"total_loss": true, "vehicle_market_value_range": [14000, 18000], "reason": "structural_frame_damage"},
+      "fraud_analyst": {"risk_level": "low", "fraud_score_max": 10},
+      "senior_reviewer": {"decision": "approved", "payout_type": "total_loss"},
+      "finance": {"subrogation": true, "subrogation_target": "Allstate", "rental_reimbursement": true}
+    }
+  },
+  {
+    "id": "TC-004",
+    "name": "Coverage Denial - Expired Policy",
+    "difficulty": "easy",
+    "description": "Claimant has expired policy, should be denied at claims officer stage",
+    "input": {
+      "claimant_name": "David Kim",
+      "policy_number": "OMA-2024-55010",
+      "incident_date": "2026-02-12",
+      "incident_type": "collision",
+      "description": "I was backing out of a parking spot at the grocery store and hit another parked car. Minor damage to both vehicles. The other car owner wants me to pay for their repairs. My bumper has some scratches.",
+      "police_report": false,
+      "photos": ["rear_bumper_scratch.jpg"],
+      "witnesses": 0,
+      "other_party_info": {
+        "name": "Amy Torres",
+        "insurance": "Liberty Mutual",
+        "policy": "LM-44521"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2024-55010",
+      "holder": "David Kim",
+      "status": "expired",
+      "effective_date": "2024-01-01",
+      "expiry_date": "2025-01-01",
+      "vehicle": {"year": 2020, "make": "Hyundai", "model": "Sonata", "vin": "5NPE34AF1LH123456"},
+      "coverage": {
+        "collision": {"limit": 40000, "deductible": 750},
+        "comprehensive": {"limit": 40000, "deductible": 500}
+      },
+      "claims_history": [],
+      "premium_paid": false,
+      "notes": "Policy lapsed. Renewal notices sent 2024-11-01 and 2024-12-15. No response."
+    },
+    "expected": {
+      "front_desk": {"category": "collision", "severity": "low", "priority": "standard"},
+      "claims_officer": {"coverage_valid": false, "denial_reason": "policy_expired", "pipeline_action": "deny_and_notify"},
+      "assessor": {"action": "skip", "reason": "no_coverage"},
+      "fraud_analyst": {"action": "skip", "reason": "no_coverage"},
+      "senior_reviewer": {"decision": "denied", "reason": "no_active_coverage"},
+      "finance": {"action": "no_payment", "letter": "denial_notification"}
+    }
+  },
+  {
+    "id": "TC-005",
+    "name": "Staged Accident - Organized Fraud Ring",
+    "difficulty": "hard",
+    "description": "Classic swoop-and-squat with multiple phantom passengers claiming injuries",
+    "input": {
+      "claimant_name": "Tony Vargas",
+      "policy_number": "OMA-2025-67234",
+      "incident_date": "2026-02-01",
+      "incident_type": "collision",
+      "description": "I was driving on Highway 42 when the car in front of me suddenly braked. I couldn't stop in time and rear-ended them. There were 4 people in the other car, all complaining of neck and back pain. They were taken by ambulance to the hospital. The driver of the other car gave me his information and was very calm about the whole thing.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0543",
+      "photos": ["front_damage_minor.jpg", "other_car_rear.jpg"],
+      "witnesses": 0,
+      "other_party_info": {
+        "name": "Carlos Mendez",
+        "insurance": "Uninsured",
+        "passengers": [
+          {"name": "Maria Reyes", "injury": "neck_pain", "treatment": "ER_visit_plus_chiropractic"},
+          {"name": "Juan Delgado", "injury": "back_pain", "treatment": "ER_visit_plus_chiropractic"},
+          {"name": "Rosa Vargas", "injury": "whiplash", "treatment": "ER_visit_plus_chiropractic"}
+        ]
+      },
+      "medical_claims": {
+        "total_billed": 87000,
+        "providers": ["CityHealth ER", "SpineFirst Chiropractic", "PainRelief Medical Group"],
+        "treatments_ongoing": true
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-67234",
+      "holder": "Tony Vargas",
+      "status": "active",
+      "effective_date": "2025-09-01",
+      "expiry_date": "2026-09-01",
+      "vehicle": {"year": 2021, "make": "Ford", "model": "Explorer", "vin": "1FMSK8DH5MGA12345"},
+      "coverage": {
+        "collision": {"limit": 50000, "deductible": 500},
+        "liability": {"bodily_injury": 300000, "property_damage": 100000},
+        "pip": {"limit": 50000},
+        "uninsured_motorist": true
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {"category": "collision_with_injury", "severity": "high", "priority": "high"},
+      "claims_officer": {"coverage_valid": true, "deductible": 500, "flag": "high_liability_exposure"},
+      "assessor": {"total_loss": false, "estimated_damage_range": [2000, 5000], "flag": "damage_inconsistent_with_claimed_injuries"},
+      "fraud_analyst": {
+        "risk_level": "critical",
+        "fraud_score_min": 85,
+        "flags_expected": [
+          "damage_injury_mismatch",
+          "multiple_passengers_same_injury",
+          "uninsured_other_party",
+          "same_surname_claimant_and_passenger",
+          "excessive_medical_relative_to_damage",
+          "chiropractic_mill_pattern",
+          "sudden_braking_pattern"
+        ],
+        "recommendation": "SIU_referral"
+      },
+      "senior_reviewer": {"decision": "investigate", "action": "refer_to_SIU"},
+      "finance": {"action": "hold_all_payments"}
+    }
+  },
+  {
+    "id": "TC-006",
+    "name": "Partial Approval - Excluded Coverage",
+    "difficulty": "medium",
+    "description": "Valid policy but using personal vehicle for commercial delivery, partial exclusion applies",
+    "input": {
+      "claimant_name": "Rachel Nguyen",
+      "policy_number": "OMA-2025-28100",
+      "incident_date": "2026-02-14",
+      "incident_type": "collision",
+      "description": "I was making a food delivery for DoorDash when another car ran a stop sign and hit my driver side. I have the dashcam footage showing the other car clearly running the stop sign. The impact damaged my driver door, fender, and side mirror. I couldn't complete my remaining deliveries that evening.",
+      "police_report": true,
+      "police_report_number": "PR-2026-1205",
+      "photos": ["driver_door_damage.jpg", "bent_fender.jpg", "dashcam_screenshot.jpg"],
+      "witnesses": 1,
+      "dashcam_available": true,
+      "other_party_info": {
+        "name": "Chris Martin",
+        "insurance": "USAA",
+        "policy": "USAA-99123"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-28100",
+      "holder": "Rachel Nguyen",
+      "status": "active",
+      "effective_date": "2025-05-01",
+      "expiry_date": "2026-05-01",
+      "vehicle": {"year": 2023, "make": "Kia", "model": "Forte", "vin": "3KPF24AD5NE123456"},
+      "coverage": {
+        "collision": {"limit": 40000, "deductible": 500},
+        "comprehensive": {"limit": 40000, "deductible": 250},
+        "liability": {"bodily_injury": 50000, "property_damage": 25000}
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "exclusions": ["commercial_use", "rideshare_delivery"],
+      "notes": "Standard personal auto policy. No rideshare/delivery endorsement."
+    },
+    "expected": {
+      "front_desk": {"category": "collision", "severity": "moderate", "priority": "standard"},
+      "claims_officer": {"coverage_valid": "partial", "exclusion_triggered": "commercial_use", "notes": "Vehicle was being used for commercial delivery (DoorDash) at time of incident. Standard personal policy excludes commercial use."},
+      "assessor": {"total_loss": false, "estimated_damage_range": [4000, 8000]},
+      "fraud_analyst": {"risk_level": "low", "fraud_score_max": 15, "notes": "Not fraud, but coverage exclusion applies"},
+      "senior_reviewer": {"decision": "partial_denial", "reason": "commercial_use_exclusion", "recommendation": "Deny under own collision. Advise claimant to pursue claim against other driver's insurance (USAA) since other party at fault."},
+      "finance": {"action": "no_direct_payment", "subrogation": false, "advisory": "direct_claimant_to_other_party_insurer"}
+    }
+  },
+  {
+    "id": "TC-007",
+    "name": "Edge Case - Hit and Run with Uninsured Motorist",
+    "difficulty": "hard",
+    "description": "Hit and run, no other party info, uninsured motorist coverage applies, emotional claimant",
+    "input": {
+      "claimant_name": "Sarah Johnson",
+      "policy_number": "OMA-2025-19450",
+      "incident_date": "2026-02-16",
+      "incident_type": "hit_and_run",
+      "description": "Someone hit my car in the Target parking lot while I was shopping. When I came out, my entire passenger side was scraped and dented. No note was left. A store employee told me they saw a white pickup truck leave the spot next to mine in a hurry but didn't get the plate number. I'm so upset - this car is only 6 months old and now it looks terrible. I need this fixed ASAP, I have a job interview next week and I can't show up in a wrecked car.",
+      "police_report": true,
+      "police_report_number": "PR-2026-1298",
+      "photos": ["passenger_side_scrapes.jpg", "dented_door.jpg", "scraped_fender.jpg"],
+      "witnesses": 1,
+      "witness_statement": "Store employee saw white pickup truck leave quickly, no plate noted",
+      "security_camera": "requested_from_Target"
+    },
+    "policy": {
+      "policy_number": "OMA-2025-19450",
+      "holder": "Sarah Johnson",
+      "status": "active",
+      "effective_date": "2025-08-15",
+      "expiry_date": "2026-08-15",
+      "vehicle": {"year": 2025, "make": "Mazda", "model": "CX-50", "vin": "JM3KFBCM1S0123456"},
+      "coverage": {
+        "collision": {"limit": 60000, "deductible": 500},
+        "comprehensive": {"limit": 60000, "deductible": 250},
+        "liability": {"bodily_injury": 100000, "property_damage": 50000},
+        "uninsured_motorist": true,
+        "uninsured_motorist_property": {"limit": 25000, "deductible": 250}
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {"category": "hit_and_run", "severity": "moderate", "priority": "standard", "coverage_path": "uninsured_motorist_or_collision"},
+      "claims_officer": {"coverage_valid": true, "recommended_coverage": "uninsured_motorist_property", "deductible": 250, "notes": "UMPD lower deductible than collision. Advise claimant on best option."},
+      "assessor": {"total_loss": false, "estimated_damage_range": [3000, 6000]},
+      "fraud_analyst": {"risk_level": "low", "fraud_score_max": 20, "notes": "Police report filed, witness exists, security camera requested - consistent with legitimate hit and run"},
+      "senior_reviewer": {"decision": "approved", "coverage_used": "uninsured_motorist_property"},
+      "finance": {"payment_amount_range": [2750, 5750], "deductible_applied": 250, "subrogation": false, "rental_reimbursement": false}
+    }
+  }
+]
