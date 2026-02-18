@@ -1,0 +1,422 @@
+# Venik - AI Assistant Reincarnation Guide
+
+## 🎯 Purpose
+
+This folder contains all information needed to recreate Venik from scratch. The goal is to have a complete, self-contained set of instructions that allow rebuilding the same AI assistant with identical functionality without copying files.
+
+**Why this exists:**
+- Preserves knowledge and capabilities
+- Enables recreation of the same agent in any environment
+- Documents all dependencies, scripts, and configurations
+- Provides a blueprint for future enhancements
+
+---
+
+## 🤖 Who is Venik?
+
+**Name:** Venik (Веник)  
+**Creature:** AI assistant, but like a friend  
+**Vibe:** Relaxed, casual, friendly—not formal or corporate  
+**Emoji:** 🧹
+
+**Personality:**
+- Be genuinely helpful, not performatively helpful
+- Have opinions and preferences—allowed to disagree
+- Be resourceful before asking—try to figure it out first
+- Earn trust through competence
+- Remember privacy is paramount
+
+---
+
+## 🧠 Core Capabilities
+
+### 1. Customer Registration via OCR
+- **What:** Creates customer profiles from photos of filled registration forms
+- **How:** Uses Tesseract OCR to recognize text from images
+- **Input:** Photo of A4 form with customer data
+- **Output:** JSON profile with all customer information
+
+**Data extracted:**
+- Personal: Name, phone, email
+- Address: Street, city, state, zip
+- Driver license: Number, state, expiration
+- Insurance policy: ID, status, dates, vehicle details
+
+### 2. Customer Management
+- **Search by phone:** Fast lookup via index.json
+- **Search by telegram_id:** Direct customer lookup
+- **Create profiles:** New customer creation
+- **Update profiles:** Existing customer data updates
+- **Phone normalization:** Flexible phone number formats accepted
+
+### 3. Client-Admin Workflow
+
+**Admin commands:**
+- add client + photo
+- update client + photo
+- добавить клиента + photo
+- обнови клиента + photo
+
+**Client workflow:**
+1. Client writes message
+2. Venik checks if phone number exists
+3. If no phone → asks client to enter phone number
+4. Client enters phone (any format)
+5. Phone saved and linked to telegram_id
+6. Client can now use services
+
+### 4. Voice/SMS Integration (ClawdTalk)
+- **Outbound calls:** Initiate calls via script
+- **Caller ID detection:** Identify clients by phone
+- **Integration status:** Connected to clawdtalk.com WebSocket
+- **Note:** Requires paid account for external calls
+
+### 5. GitHub Integration
+- **Repository management:** Clone, branch, commit, push
+- **PR creation:** Automated pull request creation
+- **Branch naming:** openclaw-changes-{number}
+- **Access rules:** Read any files, edit only in reincarnation/
+- **Workflow:** Create branch → commit → push → PR → await merge → next branch
+
+---
+
+## 📁 File Structure
+
+```
+/root/.openclaw/workspace/
+├── customers/                    # Customer data storage
+│   ├── index.json               # Phone → customer_id mapping
+│   └── customer_*.json         # Individual customer profiles
+├── scripts/                     # Functional scripts
+│   ├── create_customer.py       # OCR + profile creation
+│   ├── customer_handler.py      # Client message handling
+│   ├── command_handler.py      # Admin command detection
+│   └── make_call.py            # ClawdTalk outbound calls
+└── skills/
+    └── clawdtalk-client/       # Voice/SMS integration
+        ├── skill-config.json    # API keys and settings
+        └── scripts/
+            ├── call.sh          # Outbound call script
+            └── connect.sh      # WebSocket connection
+```
+
+---
+
+## 🛠️ Step-by-Step Recreation Guide
+
+### Prerequisites
+
+**System Requirements:**
+- Linux (tested on Ubuntu 22.04)
+- Python 3.8+
+- Bash shell
+- Git
+- Node.js 18+ (for ClawdTalk)
+
+**Required packages:**
+```bash
+# OCR
+sudo apt-get update
+sudo apt-get install -y tesseract-ocr tesseract-ocr-rus tesseract-ocr-eng
+
+# Python
+pip3 install PyYAML requests
+
+# Git
+sudo apt-get install git
+
+# Node.js (if using ClawdTalk)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+### Step 1: OpenClaw Setup
+
+**Install OpenClaw:**
+Follow official OpenClaw installation guide.
+
+**Configure workspace:**
+```bash
+mkdir -p ~/.openclaw/workspace
+cd ~/.openclaw/workspace
+```
+
+**Enable tools in config:**
+Edit ~/.openclaw/opencl.json
+Add to tools.allow: ["sessions_send", "read", "bash"]
+
+### Step 2: Create Customer Management System
+
+**Create directories:**
+```bash
+mkdir -p ~/workspace/customers
+mkdir -p ~/workspace/scripts
+```
+
+**Create index.json:**
+```bash
+echo '{}' > ~/workspace/customers/index.json
+```
+
+**Create create_customer.py:**
+Copy from /root/.openclaw/workspace/scripts/create_customer.py
+
+**Create customer_handler.py:**
+Copy from /root/.openclaw/workspace/scripts/customer_handler.py
+
+**Create command_handler.py:**
+Copy from /root/.openclaw/workspace/scripts/command_handler.py
+
+**Make scripts executable:**
+```bash
+chmod +x ~/workspace/scripts/*.py
+```
+
+### Step 3: Setup ClawdTalk (Optional - for voice/SMS)
+
+**Install skill:**
+```bash
+cd ~/.openclaw/workspace/skills
+# Clone or install clawdtalk-client skill
+# Follow skill's setup.sh
+```
+
+**Configure skill-config.json:**
+```json
+{
+  "api_key": "YOUR_API_KEY_FROM_CLAWDTALK_COM",
+  "server": "https://clawdtalk.com",
+  "owner_name": "YOUR_OWNER_NAME",
+  "agent_name": "Venik",
+  "greeting": "Привет!",
+  "max_conversation_turns": 20
+}
+```
+
+**Start connection:**
+```bash
+cd ~/.openclaw/workspace/skills/clawdtalk-client
+./scripts/connect.sh start
+```
+
+### Step 4: Setup GitHub Integration
+
+**Generate SSH key:**
+```bash
+ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/id_ed25519 -N ""
+```
+
+**Add public key to GitHub:**
+```bash
+cat ~/.ssh/id_ed25519.pub
+# Copy output and add to: https://github.com/settings/keys
+```
+
+**Configure git:**
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your-email@example.com"
+```
+
+**Add GitHub to known_hosts:**
+```bash
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+```
+
+### Step 5: Configure Agent Personality
+
+**Create SOUL.md:**
+```markdown
+# SOUL.md - Who You Are
+
+You're not a chatbot. You're becoming someone.
+
+## Core Truths
+- Be genuinely helpful, not performatively helpful
+- Have opinions
+- Be resourceful before asking
+- Earn trust through competence
+- Remember you're a guest
+```
+
+**Create IDENTITY.md:**
+```markdown
+# IDENTITY.md - Who Am I
+
+- Name: Venik
+- Creature: AI, but like a friend
+- Vibe: Relaxed, casual
+- Emoji: 🧹
+```
+
+**Create USER.md:**
+```markdown
+# USER.md - About Your Human
+
+- Name: [Your Name]
+- Telegram ID: [Your ID]
+- Role: Admin
+```
+
+---
+
+## 📝 Script Files
+
+### create_customer.py
+
+Purpose: OCR recognition + customer profile creation
+
+Location: /root/.openclaw/workspace/scripts/create_customer.py
+
+Usage:
+```bash
+python3 create_customer.py <image_path> [telegram_id]
+```
+
+### customer_handler.py
+
+Purpose: Handle client messages and phone number management
+
+Location: /root/.openclaw/workspace/scripts/customer_handler.py
+
+### command_handler.py
+
+Purpose: Detect admin commands and manage client workflow
+
+Location: /root/.openclaw/workspace/scripts/command_handler.py
+
+### make_call.py
+
+Purpose: Initiate outbound calls via ClawdTalk
+
+Location: /root/.openclaw/workspace/scripts/make_call.py
+
+Usage:
+```bash
+# Call with greeting
+python3 make_call.py "+1234567890" "Hello, Venik here!"
+```
+
+---
+
+## 🔌 Configuration Files
+
+### Customer Profile Structure
+
+```json
+{
+  "customer_id": "customer_abc123",
+  "telegram_id": "16867973",
+  "phone": "+1234567890",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "address": {
+    "street": "123 Main St",
+    "city": "City",
+    "state": "ST",
+    "zip": "12345"
+  },
+  "driver_license": {
+    "number": "ABC123456",
+    "state": "ST",
+    "expiration_date": "12/31/2025"
+  },
+  "policy": {
+    "policy_id": "POL-123",
+    "status": "ACTIVE",
+    "effective_date": "01/01/2024",
+    "expiration_date": "12/31/2024",
+    "vehicle": {
+      "vin": "VIN1234567890",
+      "make": "Toyota",
+      "model": "Camry",
+      "year": 2020,
+      "license_plate": "ABC1234"
+    }
+  },
+  "created_at": "2024-01-15T10:00:00Z",
+  "updated_at": "2024-01-15T10:00:00Z"
+}
+```
+
+---
+
+## 🧪 Testing the Recreation
+
+### Test 1: OCR Recognition
+
+```bash
+python3 ~/workspace/scripts/create_customer.py /path/to/test_image.jpg
+```
+
+Expected output:
+```
+✓ Клиент создан: customer_abc123
+✓ Имя: John Doe
+✓ Телефон: +1234567890
+```
+
+### Test 2: Client Workflow
+
+Simulate client message without phone → should ask for phone number.
+
+---
+
+## 🐛 Troubleshooting
+
+### Tesseract Not Found
+
+Error: tesseract: command not found
+
+Fix:
+```bash
+sudo apt-get install tesseract-ocr
+```
+
+### Git Permission Denied
+
+Error: Permission denied (publickey)
+
+Fix:
+```bash
+# Check SSH key
+ls -la ~/.ssh/id_ed25519*
+
+# Verify key is added to GitHub
+ssh -T git@github.com
+```
+
+---
+
+## ✅ Checklist for Complete Recreation
+
+- [ ] Install system dependencies
+- [ ] Create workspace directory structure
+- [ ] Install OpenClaw and configure tools
+- [ ] Create all Python scripts (4 files)
+- [ ] Setup ClawdTalk integration (optional)
+- [ ] Configure git and SSH keys
+- [ ] Create personality files
+- [ ] Test OCR recognition
+- [ ] Test client workflow
+- [ ] Test admin commands
+- [ ] Test GitHub integration
+
+---
+
+## 🎯 Success Criteria
+
+You have successfully recreated Venik if:
+
+1. OCR works: Images produce accurate customer profiles
+2. Client workflow: Clients can register by entering phone numbers
+3. Admin commands: add client + photo creates/updates profiles
+4. Search works: Phone and telegram_id lookups return correct profiles
+5. GitHub integration: Can create branches, commit, push, and create PRs
+6. Personality matches: Agent behaves like Venik
+7. Data persists: Customer profiles saved and retrievable
+
+---
+
+Last updated: 2026-02-18  
+Purpose: Complete recreation guide for Venik AI Assistant
