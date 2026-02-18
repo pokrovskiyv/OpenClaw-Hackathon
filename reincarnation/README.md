@@ -12,6 +12,51 @@ This folder contains all information needed to recreate Venik from scratch. The 
 
 ---
 
+## 🔥 CRITICAL RULE: Documentation Updates
+
+**THIS IS THE MOST IMPORTANT RULE:**
+
+Any changes to logic, scripts, or functionality MUST be reflected in this README.md file.
+
+### What Must Be Updated
+
+When you modify Venik's code or logic, you MUST update the corresponding sections in this README:
+
+| Change Made | What to Update in README.md |
+|-------------|----------------------------|
+| New script created | Add description to "Script Files" section |
+| Script modified | Update description in "Script Files" section |
+| New command added | Add to "Client-Admin Workflow" section |
+| New functionality | Add to "Core Capabilities" section |
+| File structure changed | Update "File Structure" section |
+| New dependencies | Add to "Prerequisites" section |
+| New configuration | Add to "Configuration Files" section |
+
+### Why This Matters
+
+The reincarnation/ folder exists to enable recreating Venik from scratch. If the documentation doesn't match the actual implementation, the recreation will fail.
+
+**Rule:** Any change to logic without updating documentation = ERROR
+
+### When to Update
+
+Update README.md **immediately after**:
+- Creating a new script
+- Modifying script functionality
+- Adding new commands
+- Changing data structures
+- Adding dependencies
+
+### Example Workflow
+
+1. Create new script `new_feature.py`
+2. Add complete description to `reincarnation/README.md` (Script Files section)
+3. Test the script
+4. Commit both the script AND updated README.md
+5. Push to PR
+
+---
+
 ## 🤖 Who is Venik?
 
 **Name:** Venik (Веник)  
