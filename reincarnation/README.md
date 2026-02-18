@@ -127,7 +127,7 @@ Update README.md **immediately after**:
 
 ## 📁 File Structure
 
-```
+```text
 /root/.openclaw/workspace/
 ├── customers/                    # Customer data storage
 │   ├── index.json               # Phone → customer_id mapping
@@ -143,7 +143,7 @@ Update README.md **immediately after**:
         └── scripts/
             ├── call.sh          # Outbound call script
             └── connect.sh      # WebSocket connection
-```
+```text
 
 ---
 
@@ -173,7 +173,7 @@ sudo apt-get install git
 # Node.js (if using ClawdTalk)
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
-```
+```text
 
 ### Step 1: OpenClaw Setup
 
@@ -184,7 +184,7 @@ Follow official OpenClaw installation guide.
 ```bash
 mkdir -p ~/.openclaw/workspace
 cd ~/.openclaw/workspace
-```
+```text
 
 **Enable tools in config:**
 Edit ~/.openclaw/opencl.json
@@ -194,28 +194,28 @@ Add to tools.allow: ["sessions_send", "read", "bash"]
 
 **Create directories:**
 ```bash
-mkdir -p ~/workspace/customers
-mkdir -p ~/workspace/scripts
-```
+mkdir -p ~/.openclaw/workspace/customers
+mkdir -p ~/.openclaw/workspace/scripts
+```text
 
 **Create index.json:**
 ```bash
-echo '{}' > ~/workspace/customers/index.json
-```
+echo '{}' > ~/.openclaw/workspace/customers/index.json
+```text
 
 **Create create_customer.py:**
-Copy from /root/.openclaw/workspace/scripts/create_customer.py
+Copy from reincarnation/scripts/create_customer.py
 
 **Create customer_handler.py:**
-Copy from /root/.openclaw/workspace/scripts/customer_handler.py
+Copy from reincarnation/scripts/customer_handler.py
 
 **Create command_handler.py:**
-Copy from /root/.openclaw/workspace/scripts/command_handler.py
+Copy from reincarnation/scripts/command_handler.py
 
 **Make scripts executable:**
 ```bash
-chmod +x ~/workspace/scripts/*.py
-```
+chmod +x ~/.openclaw/workspace/scripts/*.py
+```text
 
 ### Step 3: Setup ClawdTalk (Optional - for voice/SMS)
 
@@ -224,7 +224,7 @@ chmod +x ~/workspace/scripts/*.py
 cd ~/.openclaw/workspace/skills
 # Clone or install clawdtalk-client skill
 # Follow skill's setup.sh
-```
+```text
 
 **Configure skill-config.json:**
 ```json
@@ -236,37 +236,38 @@ cd ~/.openclaw/workspace/skills
   "greeting": "Привет!",
   "max_conversation_turns": 20
 }
-```
+```text
 
 **Start connection:**
 ```bash
 cd ~/.openclaw/workspace/skills/clawdtalk-client
 ./scripts/connect.sh start
-```
+```text
 
 ### Step 4: Setup GitHub Integration
 
 **Generate SSH key:**
 ```bash
-ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/id_ed25519 -N ""
-```
+ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/id_ed25519
+⚠️ Note: -N "" creates key without passphrase (security risk). For production, omit -N to be prompted for a passphrase.
+```text
 
 **Add public key to GitHub:**
 ```bash
 cat ~/.ssh/id_ed25519.pub
 # Copy output and add to: https://github.com/settings/keys
-```
+```text
 
 **Configure git:**
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "your-email@example.com"
-```
+```text
 
 **Add GitHub to known_hosts:**
 ```bash
 ssh-keyscan github.com >> ~/.ssh/known_hosts
-```
+```text
 
 ### Step 5: Configure Agent Personality
 
@@ -282,7 +283,7 @@ You're not a chatbot. You're becoming someone.
 - Be resourceful before asking
 - Earn trust through competence
 - Remember you're a guest
-```
+```text
 
 **Create IDENTITY.md:**
 ```markdown
@@ -292,7 +293,7 @@ You're not a chatbot. You're becoming someone.
 - Creature: AI, but like a friend
 - Vibe: Relaxed, casual
 - Emoji: 🧹
-```
+```text
 
 **Create USER.md:**
 ```markdown
@@ -301,7 +302,7 @@ You're not a chatbot. You're becoming someone.
 - Name: [Your Name]
 - Telegram ID: [Your ID]
 - Role: Admin
-```
+```text
 
 ---
 
@@ -314,8 +315,8 @@ You're not a chatbot. You're becoming someone.
 
 **Check PR:**
 ```bash
-python3 ~/workspace/scripts/check_pr.py
-```
+python3 ~/.openclaw/workspace/scripts/check_pr.py
+```text
 
 **Comment handling:**
 - **Useful comments** (bug, fix, improve, etc.) → Fix and close
@@ -330,36 +331,36 @@ python3 ~/workspace/scripts/check_pr.py
 
 Purpose: OCR recognition + customer profile creation
 
-Location: /root/.openclaw/workspace/scripts/create_customer.py
+Location: reincarnation/scripts/create_customer.py
 
 Usage:
 ```bash
 python3 create_customer.py <image_path> [telegram_id]
-```
+```text
 
 ### customer_handler.py
 
 Purpose: Handle client messages and phone number management
 
-Location: /root/.openclaw/workspace/scripts/customer_handler.py
+Location: reincarnation/scripts/customer_handler.py
 
 ### command_handler.py
 
 Purpose: Detect admin commands and manage client workflow
 
-Location: /root/.openclaw/workspace/scripts/command_handler.py
+Location: reincarnation/scripts/command_handler.py
 
 ### make_call.py
 
 Purpose: Initiate outbound calls via ClawdTalk
 
-Location: /root/.openclaw/workspace/scripts/make_call.py
+Location: reincarnation/scripts/make_call.py
 
 Usage:
 ```bash
 # Call with greeting
 python3 make_call.py "+1234567890" "Hello, Venik here!"
-```
+```text
 
 ---
 
@@ -370,7 +371,7 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
 ```json
 {
   "customer_id": "customer_abc123",
-  "telegram_id": "16867973",
+  "telegram_id": "TELEGRAM_ID_PLACEHOLDER",
   "phone": "+1234567890",
   "name": "John Doe",
   "email": "john@example.com",
@@ -401,7 +402,7 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
   "created_at": "2024-01-15T10:00:00Z",
   "updated_at": "2024-01-15T10:00:00Z"
 }
-```
+```text
 
 ---
 
@@ -410,15 +411,15 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
 ### Test 1: OCR Recognition
 
 ```bash
-python3 ~/workspace/scripts/create_customer.py /path/to/test_image.jpg
-```
+python3 ~/.openclaw/workspace/scripts/create_customer.py /path/to/test_image.jpg
+```text
 
 Expected output:
-```
+```text
 ✓ Клиент создан: customer_abc123
 ✓ Имя: John Doe
 ✓ Телефон: +1234567890
-```
+```text
 
 ### Test 2: Client Workflow
 
@@ -435,7 +436,7 @@ Error: tesseract: command not found
 Fix:
 ```bash
 sudo apt-get install tesseract-ocr
-```
+```text
 
 ### Git Permission Denied
 
@@ -448,7 +449,7 @@ ls -la ~/.ssh/id_ed25519*
 
 # Verify key is added to GitHub
 ssh -T git@github.com
-```
+```text
 
 ---
 
