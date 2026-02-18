@@ -1,0 +1,27 @@
+{
+  "policy_number": "OMA-2025-67234",
+  "holder": {
+    "name": "Tony Vargas",
+    "email": "t.vargas@email.com",
+    "phone": "614-555-6723",
+    "address": "233 Highway 42, Reynoldsburg, OH 43068"
+  },
+  "status": "active",
+  "effective_date": "2025-09-01",
+  "expiry_date": "2026-09-01",
+  "vehicle": {
+    "year": 2021,
+    "make": "Ford",
+    "model": "Explorer",
+    "vin": "1FMSK8DH5MGA12345"
+  },
+  "coverage": {
+    "collision": {"limit": 50000, "deductible": 500},
+    "liability": {"bodily_injury": 300000, "property_damage": 100000},
+    "pip": {"limit": 50000},
+    "uninsured_motorist": true
+  },
+  "claims_history": [],
+  "premium_paid": true,
+  "exclusions": []
+}

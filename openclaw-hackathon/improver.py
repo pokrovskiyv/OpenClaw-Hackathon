@@ -136,7 +136,7 @@ Rewrite the complete agent prompt to fix the identified issues. Return ONLY the 
     return improved.strip()
 
 
-def run_improvement_cycle(eval_results: list, dry_run: bool = False) -> dict:
+def run_improvement_cycle(eval_results: list, dry_run: bool = False, iteration: int = 0) -> dict:
     """Analyze all agents and improve the weakest ones."""
     improvement_log = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -174,11 +174,10 @@ def run_improvement_cycle(eval_results: list, dry_run: bool = False) -> dict:
         if dry_run:
             print(f"    [DRY RUN] Would update {agent_name}.md ({len(improved_prompt)} chars)")
         else:
-            # Backup current prompt
-            backup_dir = os.path.join(AGENTS_DIR, "backups")
+            # Backup current prompt grouped by iteration
+            backup_dir = os.path.join(AGENTS_DIR, "backups", f"iter_{iteration:03d}")
             os.makedirs(backup_dir, exist_ok=True)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            backup_path = os.path.join(backup_dir, f"{agent_name}_{timestamp}.md")
+            backup_path = os.path.join(backup_dir, f"{agent_name}.md")
             with open(backup_path, "w") as f:
                 f.write(current_prompt)
 

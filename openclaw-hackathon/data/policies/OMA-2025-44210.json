@@ -1,0 +1,27 @@
+{
+  "policy_number": "OMA-2025-44210",
+  "holder": {
+    "name": "John Miller",
+    "email": "john.miller@email.com",
+    "phone": "614-555-0123",
+    "address": "123 Oak Street, Columbus, OH 43215"
+  },
+  "status": "active",
+  "effective_date": "2025-06-01",
+  "expiry_date": "2026-06-01",
+  "vehicle": {
+    "year": 2022,
+    "make": "Toyota",
+    "model": "Camry",
+    "vin": "4T1BF1FK5CU123456"
+  },
+  "coverage": {
+    "collision": {"limit": 50000, "deductible": 500},
+    "comprehensive": {"limit": 50000, "deductible": 250},
+    "liability": {"bodily_injury": 100000, "property_damage": 50000},
+    "uninsured_motorist": true
+  },
+  "claims_history": [],
+  "premium_paid": true,
+  "exclusions": []
+}

@@ -36,7 +36,7 @@ def load_scenarios():
     return scenarios
 
 
-def save_iteration_summary(iteration: int, run_path: str, eval_path: str, improvement_log: dict, score: float):
+def save_iteration_summary(iteration: int, iter_log_dir: str, improvement_log: dict, score: float):
     """Append iteration results to a running summary file."""
     summary_path = os.path.join(RESULTS_DIR, "loop_summary.json")
 
@@ -50,8 +50,7 @@ def save_iteration_summary(iteration: int, run_path: str, eval_path: str, improv
         "iteration": iteration,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "overall_score": score,
-        "run_log": run_path,
-        "eval_log": eval_path,
+        "iter_log_dir": iter_log_dir,
         "agents_improved": [a["agent"] for a in improvement_log.get("agents_improved", [])],
         "agents_skipped": improvement_log.get("agents_skipped", []),
     }
@@ -65,6 +64,31 @@ def save_iteration_summary(iteration: int, run_path: str, eval_path: str, improv
         json.dump(summary, f, indent=2)
 
     return summary_path
+
+
+def save_agent_progress(eval_results: list, iteration: int):
+    """Append per-agent scores to results/agent_progress/{agent}.json."""
+    progress_dir = os.path.join(RESULTS_DIR, "agent_progress")
+    os.makedirs(progress_dir, exist_ok=True)
+
+    for agent_name in AGENT_ORDER:
+        path = os.path.join(progress_dir, f"{agent_name}.json")
+        if os.path.exists(path):
+            with open(path) as f:
+                data = json.load(f)
+        else:
+            data = {"agent": agent_name, "iterations": []}
+
+        scores = [e["scores"].get(agent_name, 0) for e in eval_results]
+        avg = round(sum(scores) / len(scores), 1) if scores else 0
+        data["iterations"].append({
+            "iteration": iteration,
+            "avg_score": avg,
+            "by_scenario": {e["scenario_id"]: e["scores"].get(agent_name, 0) for e in eval_results},
+        })
+
+        with open(path, "w") as f:
+            json.dump(data, f, indent=2)
 
 
 def print_iteration_header(iteration: int, max_iter: int):
@@ -138,29 +162,30 @@ def main():
         # ── Phase 1: Run Pipeline ──
         print("\n📋 PHASE 1: Running pipeline...")
         run_results = run_all_scenarios(scenarios)
-        run_path = save_run_log(run_results, iteration)
-        print(f"   Saved: {run_path}")
+        iter_log_dir = save_run_log(run_results, iteration)
+        print(f"   Saved: {iter_log_dir}")
 
         # ── Phase 2: Evaluate ──
         print("\n🔍 PHASE 2: Evaluating outputs...")
         eval_results = evaluate_all(run_results, scenarios)
-        eval_path = save_eval_results(eval_results, iteration)
+        save_eval_results(eval_results, iteration)
         print_eval_summary(eval_results)
-        print(f"   Saved: {eval_path}")
+        print(f"   Saved: {iter_log_dir}")
+        save_agent_progress(eval_results, iteration)
 
         overall = round(sum(e["overall_score"] for e in eval_results) / len(eval_results), 1) if eval_results else 0
 
         # ── Phase 3: Improve ──
         if not args.run_once and overall < args.passing_score:
             print(f"\n🔧 PHASE 3: Improving agents (score {overall} < {args.passing_score})...")
-            improvement_log = run_improvement_cycle(eval_results, dry_run=args.dry_run)
+            improvement_log = run_improvement_cycle(eval_results, dry_run=args.dry_run, iteration=iteration)
         else:
             improvement_log = {"agents_improved": [], "agents_skipped": AGENT_ORDER}
             if overall >= args.passing_score:
                 print(f"\n✅ Score {overall} >= {args.passing_score} — agents are ready!")
 
         # ── Save iteration summary ──
-        summary_path = save_iteration_summary(iteration, run_path, eval_path, improvement_log, overall)
+        summary_path = save_iteration_summary(iteration, iter_log_dir, improvement_log, overall)
 
         # ── Check stopping condition ──
         if overall >= args.passing_score:

@@ -1,0 +1,16 @@
+{
+  "claimant_name": "John Miller",
+  "policy_number": "OMA-2025-44210",
+  "incident_date": "2026-02-18",
+  "incident_type": "collision",
+  "description": "I was stopped at a red light on Oak Street when another vehicle rear-ended me. The other driver admitted fault. Police report filed (#PR-2026-1142). My rear bumper, trunk lid, and tail lights are damaged.",
+  "police_report": true,
+  "police_report_number": "PR-2026-1142",
+  "photos": ["rear_bumper_damage.jpg", "trunk_dent.jpg", "broken_taillight.jpg"],
+  "witnesses": 1,
+  "other_party_info": {
+    "name": "Sarah Chen",
+    "insurance": "State Farm",
+    "policy": "SF-88321"
+  }
+}

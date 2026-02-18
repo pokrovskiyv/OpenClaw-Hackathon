@@ -1,0 +1,26 @@
+{
+  "policy_number": "OMA-2024-55010",
+  "holder": {
+    "name": "David Kim",
+    "email": "d.kim@email.com",
+    "phone": "614-555-5501",
+    "address": "78 Birch Lane, Grove City, OH 43123"
+  },
+  "status": "expired",
+  "effective_date": "2024-01-01",
+  "expiry_date": "2025-01-01",
+  "vehicle": {
+    "year": 2020,
+    "make": "Hyundai",
+    "model": "Sonata",
+    "vin": "5NPE34AF1LH123456"
+  },
+  "coverage": {
+    "collision": {"limit": 40000, "deductible": 750},
+    "comprehensive": {"limit": 40000, "deductible": 500}
+  },
+  "claims_history": [],
+  "premium_paid": false,
+  "exclusions": [],
+  "notes": "Policy lapsed. Renewal notices sent 2024-11-01 and 2024-12-15. No response."
+}

@@ -7,7 +7,7 @@ import json
 import os
 from datetime import datetime, timezone
 
-from lib.config import EVAL_MODEL, AGENT_ORDER, RESULTS_DIR
+from lib.config import EVAL_MODEL, AGENT_ORDER, LOGS_DIR, RESULTS_DIR
 from lib.llm import call_llm_json
 
 
@@ -297,33 +297,21 @@ def evaluate_all(run_results: list, scenarios: list) -> list:
 
 
 def save_eval_results(evals: list, iteration: int = 0) -> str:
-    """Save evaluation results."""
-    os.makedirs(RESULTS_DIR, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"eval_iter{iteration}_{timestamp}.json"
-    filepath = os.path.join(RESULTS_DIR, filename)
+    """Save evaluation results to hierarchical logs directory.
 
-    # Add summary
-    output = {
-        "iteration": iteration,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "summary": {
-            "overall_avg": round(sum(e["overall_score"] for e in evals) / len(evals), 1) if evals else 0,
-            "by_agent": {},
-            "by_scenario": {e["scenario_id"]: e["overall_score"] for e in evals},
-        },
-        "details": evals,
-    }
+    Creates:
+      logs/iter_{N:03d}/{scenario_id}/eval.json
+    Returns the iteration directory path.
+    """
+    iter_dir = os.path.join(LOGS_DIR, f"iter_{iteration:03d}")
 
-    # Aggregate by agent
-    for agent_name in AGENT_ORDER:
-        scores = [e["scores"].get(agent_name, 0) for e in evals]
-        output["summary"]["by_agent"][agent_name] = round(sum(scores) / len(scores), 1) if scores else 0
+    for ev in evals:
+        scenario_dir = os.path.join(iter_dir, ev["scenario_id"])
+        os.makedirs(scenario_dir, exist_ok=True)
+        with open(os.path.join(scenario_dir, "eval.json"), "w") as f:
+            json.dump(ev, f, indent=2)
 
-    with open(filepath, "w") as f:
-        json.dump(output, f, indent=2)
-
-    return filepath
+    return iter_dir
 
 
 def print_eval_summary(evals: list):

@@ -1,0 +1,27 @@
+{
+  "policy_number": "OMA-2025-31890",
+  "holder": {
+    "name": "Linda Okafor",
+    "email": "l.okafor@email.com",
+    "phone": "614-555-3189",
+    "address": "445 Maple Drive, Westerville, OH 43081"
+  },
+  "status": "active",
+  "effective_date": "2025-03-15",
+  "expiry_date": "2026-03-15",
+  "vehicle": {
+    "year": 2018,
+    "make": "Honda",
+    "model": "Civic",
+    "vin": "2HGFC2F53JH567890"
+  },
+  "coverage": {
+    "collision": {"limit": 30000, "deductible": 500},
+    "comprehensive": {"limit": 30000, "deductible": 250},
+    "liability": {"bodily_injury": 50000, "property_damage": 25000},
+    "rental_reimbursement": {"daily_limit": 40, "max_days": 30}
+  },
+  "claims_history": [],
+  "premium_paid": true,
+  "exclusions": []
+}

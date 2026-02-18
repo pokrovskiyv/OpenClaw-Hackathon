@@ -9,7 +9,7 @@ import sys
 import time
 from datetime import datetime, timezone
 
-from lib.config import AGENT_MODEL, AGENT_ORDER, AGENTS_DIR, LOGS_DIR
+from lib.config import AGENT_MODEL, AGENT_ORDER, AGENTS_DIR, CLAIMS_DIR, LOGS_DIR
 from lib.llm import call_llm_json
 
 
@@ -122,16 +122,75 @@ def run_all_scenarios(scenarios: list, verbose: bool = True) -> list:
 
 
 def save_run_log(results: list, iteration: int = 0) -> str:
-    """Save pipeline run results to logs directory."""
-    os.makedirs(LOGS_DIR, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"run_iter{iteration}_{timestamp}.json"
-    filepath = os.path.join(LOGS_DIR, filename)
+    """Save pipeline run results to hierarchical logs directory.
 
-    with open(filepath, "w") as f:
-        json.dump(results, f, indent=2)
+    Creates:
+      logs/iter_{N:03d}/run_summary.json
+      logs/iter_{N:03d}/{scenario_id}/pipeline.json
+    Returns the iteration directory path.
+    """
+    iter_dir = os.path.join(LOGS_DIR, f"iter_{iteration:03d}")
+    os.makedirs(iter_dir, exist_ok=True)
 
-    return filepath
+    for result in results:
+        scenario_id = result["scenario_id"]
+        scenario_dir = os.path.join(iter_dir, scenario_id)
+        os.makedirs(scenario_dir, exist_ok=True)
+        with open(os.path.join(scenario_dir, "pipeline.json"), "w") as f:
+            json.dump(result, f, indent=2)
+
+    summary = {
+        "iteration": iteration,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "scenarios_run": [r["scenario_id"] for r in results],
+        "agent_order": AGENT_ORDER,
+        "total_scenarios": len(results),
+    }
+    with open(os.path.join(iter_dir, "run_summary.json"), "w") as f:
+        json.dump(summary, f, indent=2)
+
+    return iter_dir
+
+
+def save_claim_output(claim_id: str, input_data: dict, policy: dict, run_log: dict) -> str:
+    """Save runtime claim results to claims/{claim_id}/.
+
+    Creates:
+      claims/{claim_id}/input.json
+      claims/{claim_id}/pipeline/01_front_desk.json ... 06_finance.json
+      claims/{claim_id}/summary.json
+    Returns the claim directory path.
+    """
+    claim_dir = os.path.join(CLAIMS_DIR, claim_id)
+    pipeline_dir = os.path.join(claim_dir, "pipeline")
+    os.makedirs(pipeline_dir, exist_ok=True)
+
+    with open(os.path.join(claim_dir, "input.json"), "w") as f:
+        json.dump(input_data, f, indent=2)
+
+    for i, agent_name in enumerate(AGENT_ORDER, 1):
+        if agent_name in run_log["agents"]:
+            agent_file = f"{i:02d}_{agent_name}.json"
+            with open(os.path.join(pipeline_dir, agent_file), "w") as f:
+                json.dump(run_log["agents"][agent_name], f, indent=2)
+
+    reviewer_output = run_log["agents"].get("senior_reviewer", {}).get("output", {})
+    finance_output = run_log["agents"].get("finance", {}).get("output", {})
+
+    summary = {
+        "claim_id": claim_id,
+        "processed_at": datetime.now(timezone.utc).isoformat(),
+        "policy_number": input_data.get("policy_number"),
+        "claimant": input_data.get("claimant_name"),
+        "incident_type": input_data.get("incident_type"),
+        "decision": reviewer_output.get("decision", "unknown"),
+        "finance_action": finance_output.get("action") or finance_output.get("payment_amount"),
+        "pipeline_status": "completed",
+    }
+    with open(os.path.join(claim_dir, "summary.json"), "w") as f:
+        json.dump(summary, f, indent=2)
+
+    return claim_dir
 
 
 if __name__ == "__main__":

@@ -1,0 +1,31 @@
+{
+  "policy_number": "OMA-2026-00187",
+  "holder": {
+    "name": "Marcus Webb",
+    "email": "m.webb@email.com",
+    "phone": "614-555-0187",
+    "address": "890 Route 33, Dublin, OH 43017"
+  },
+  "status": "active",
+  "effective_date": "2026-01-15",
+  "expiry_date": "2027-01-15",
+  "vehicle": {
+    "year": 2019,
+    "make": "BMW",
+    "model": "330i",
+    "vin": "WBA5R1C50KA123789"
+  },
+  "coverage": {
+    "collision": {"limit": 75000, "deductible": 1000},
+    "comprehensive": {"limit": 75000, "deductible": 500},
+    "liability": {"bodily_injury": 250000, "property_damage": 100000},
+    "medical_payments": {"limit": 25000}
+  },
+  "claims_history": [
+    {"claim_id": "EXT-2024-8812", "date": "2024-08-12", "type": "collision", "paid_amount": 8500, "insurer": "Progressive"},
+    {"claim_id": "EXT-2023-1103", "date": "2023-11-03", "type": "theft", "paid_amount": 15000, "insurer": "Geico"}
+  ],
+  "premium_paid": true,
+  "exclusions": [],
+  "notes": "Policy opened 24 days before first incident. High coverage limits selected."
+}
