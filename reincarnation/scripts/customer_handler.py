@@ -142,8 +142,7 @@ def update_customer_phone(telegram_id, phone):
     if not customer:
         return False, "Клиент не найден"
     
-    customer['phone'] = normalize_phone(phone)
-    save_customer_profile(customer)
+    customer = dict(customer, phone=normalize_phone(phone))    save_customer_profile(customer)
     return True, f"Номер телефона сохранён: {phone}"
 
 if __name__ == "__main__":
