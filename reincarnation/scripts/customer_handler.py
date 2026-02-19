@@ -21,7 +21,11 @@ def find_customer_by_telegram(telegram_id):
     for customer_file in CUSTOMERS_DIR.glob("customer_*.json"):
         try:
             with open(customer_file, 'r') as f:
-                customer = json.load(f)
+                customer = try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
                 if customer.get('telegram_id') == telegram_id:
                     return customer
         except:
@@ -37,7 +41,11 @@ def find_customer_by_phone(phone):
         return None
     
     with open(index_file, 'r') as f:
-        index = json.load(f)
+        index = try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
     
     # Пробуем найти в индексе
     for stored_phone, customer_id in index.items():
@@ -45,7 +53,11 @@ def find_customer_by_phone(phone):
             customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
             if customer_file.exists():
                 with open(customer_file, 'r') as f:
-                    return json.load(f)
+                    return try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
     return None
 
 def save_customer_profile(profile):
@@ -60,7 +72,11 @@ def save_customer_profile(profile):
     index = {}
     if index_file.exists():
         with open(index_file, 'r') as f:
-            index = json.load(f)
+            index = try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
     
     if profile.get('phone'):
         normalized = normalize_phone(profile['phone'])

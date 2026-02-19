@@ -22,7 +22,11 @@ def ensure_customers_dir():
 def load_index():
     """Загрузить индекс"""
     with open(INDEX_FILE, 'r') as f:
-        return json.load(f)
+        return try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
 
 def save_index(index):
     """Сохранить индекс"""
@@ -187,7 +191,11 @@ def find_customer_by_phone(phone):
         customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
         if customer_file.exists():
             with open(customer_file, 'r') as f:
-                return json.load(f)
+                return try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
     return None
 
 def find_customer_by_telegram(telegram_id):
@@ -197,7 +205,11 @@ def find_customer_by_telegram(telegram_id):
     
     for customer_file in CUSTOMERS_DIR.glob("customer_*.json"):
         with open(customer_file, 'r') as f:
-            customer = json.load(f)
+            customer = try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
             if customer.get('telegram_id') == telegram_id:
                 return customer
     return None
@@ -207,7 +219,11 @@ def update_customer(customer_id, new_data):
     customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
     
     with open(customer_file, 'r') as f:
-        profile = json.load(f)
+        profile = try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
     
     # Обновляем поля
     for key, value in new_data.items():
@@ -251,7 +267,7 @@ def update_customer(customer_id, new_data):
 
 def process_image(image_path, telegram_id=None):
     """Обработать изображение"""
-    output_file = f"/tmp/ocr_temp_{datetime.now().timestamp()}"
+    output_file = f"/tmp/ocr_temp_{datetime.now(timezone.utc).timestamp()}"
     subprocess.run([
         'tesseract', str(image_path), output_file, '-l', 'eng'
     ], check=True, timeout=60)

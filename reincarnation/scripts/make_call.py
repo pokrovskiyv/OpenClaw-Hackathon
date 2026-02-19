@@ -10,7 +10,11 @@ CONFIG_FILE = SKILL_DIR / "skill-config.json"
 def load_config():
     """Загрузить конфиг"""
     with open(CONFIG_FILE, 'r') as f:
-        return json.load(f)
+        return try:
+            json.load(f)
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error: {e}", file=sys.stderr)
+            return None
 
 def make_call(phone_number=None, greeting="", purpose=""):
     """Сделать звонок"""
@@ -43,7 +47,11 @@ def make_call(phone_number=None, greeting="", purpose=""):
     ], capture_output=True, text=True)
     
     try:
-        return json.loads(result.stdout)
+        return try:
+        json.loads(result.stdout)
+    except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+        print(f"JSON parsing error: {e}", file=sys.stderr)
+        return {}
     except (json.JSONDecodeError, KeyError, ValueError) as e:
         print(f"Error parsing response: {e}", file=sys.stderr)
         return {}, result.returncode
