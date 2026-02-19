@@ -314,7 +314,7 @@ You're not a chatbot. You're becoming someone.
 
 **Check PR:**
 ```bash
-python3 ~/workspace/scripts/check_pr.py
+python3 reincarnation/scripts/get_pr_comments.py <pr_number>
 ```
 
 **Comment handling:**
@@ -324,15 +324,49 @@ python3 ~/workspace/scripts/check_pr.py
 
 ---
 
+## ⚠️ CRITICAL: NO STATUS REPORTS IN PR
 
-### 7. CodeRabbit Integration (Beta)
+**FORBIDDEN:** Do NOT add status reports, summaries, or "completion reports" to PR comments!
 
-- **Automated reviews:** CodeRabbit bot reviews PRs automatically
-- **Comments location:** Found in issue comments, not review comments
-- **Analysis:** Comprehensive walkthrough and code review
-- **Rate limiting:** Bot may limit reviews per hour
+### What's NOT Allowed
 
-**Note:** CodeRabbit provides detailed automated reviews. Not all suggestions require fixes.
+❌ Comments like: "PR готов к merge", "Все комментарии обработаны", "Отчёт по работе"
+❌ Summaries of work completed
+❌ Status updates with lists of fixes
+❌ Reports about how many comments were processed
+
+### What IS Allowed
+
+✅ Commit messages describing what was fixed
+✅ Code changes (commits)
+✅ Documentation updates (README.md, etc.)
+✅ Script additions
+✅ Reply comments ONLY if commenting on specific issue/thread
+
+### Why This Matters
+
+Status reports in PR create "noise" and confusion:
+- PR becomes unreadable
+- Hard to see actual code changes
+- Impossible to track what's really fixed
+- Violates clean development practices
+
+### Algorithm
+
+1. Check PR for open comments
+2. If comment is outdated/doesn't need actions → resolve it
+3. If comment requires code changes → fix it, commit
+4. Wait 3 minutes, repeat check
+5. If no open comments → report SUCCESS
+
+### What to Report
+
+**ONLY when PR is truly ready:**
+- No open comments
+- No unaddressed issues
+- Ready for review
+
+Do NOT report until this state is reached!
 
 ---
 ## 📝 Script Files
