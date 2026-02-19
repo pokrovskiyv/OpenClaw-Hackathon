@@ -12,11 +12,7 @@ def get_pr_comments(owner, repo, pr_number, token):
     
     if result.returncode == 0:
         try:
-            return try:
-        json.loads(result.stdout)
-    except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-        print(f"JSON parsing error: {e}", file=sys.stderr)
-        return {}
+            return json.loads(result.stdout)
         except (json.JSONDecodeError, OSError) as e:
             print(f"Error parsing JSON: {e}", file=sys.stderr)
             return []
@@ -32,11 +28,7 @@ def get_pr_commits(owner, repo, pr_number, token):
     
     if result.returncode == 0:
         try:
-            return try:
-        json.loads(result.stdout)
-    except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-        print(f"JSON parsing error: {e}", file=sys.stderr)
-        return {}
+            return json.loads(result.stdout)
         except (json.JSONDecodeError, OSError) as e:
             print(f"Error parsing JSON: {e}", file=sys.stderr)
             return []
