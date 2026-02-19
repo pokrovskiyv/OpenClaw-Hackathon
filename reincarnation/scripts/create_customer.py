@@ -176,27 +176,33 @@ def save_customer(profile):
     with open(customer_file, 'w') as f:
         json.dump(profile, f, indent=2)
     
-    # Обновить индекс - добавляем телефон (если есть)
+    # Обновить индекс - добавляем телефон (если есть) с нормализацией
     index = load_index()
-    if profile['phone']:
-        index[profile['phone']] = profile['customer_id']
+    if profile.get('phone'):
+        normalized = normalize_phone(profile['phone'])
+        if normalized:
+            index[normalized] = profile['customer_id']
     save_index(index)
     
     return customer_file
 
 def find_customer_by_phone(phone):
     """Найти клиента по номеру телефона"""
+    normalized = normalize_phone(phone)
+    if not normalized:
+        return None
+    
     index = load_index()
-    if phone in index:
-        customer_id = index[phone]
+    if normalized in index:
+        customer_id = index[normalized]
         customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
         if customer_file.exists():
-            with open(customer_file, 'r') as f:
-                return try:
-            json.load(f)
-        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-            print(f"JSON loading error: {e}", file=sys.stderr)
-            return None
+            try:
+                with open(customer_file, 'r') as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+                print(f"JSON loading error: {e}", file=sys.stderr)
+                return None
     return None
 
 def find_customer_by_telegram(telegram_id):
@@ -205,14 +211,14 @@ def find_customer_by_telegram(telegram_id):
         return None
     
     for customer_file in CUSTOMERS_DIR.glob("customer_*.json"):
-        with open(customer_file, 'r') as f:
-            customer = try:
-            json.load(f)
-        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-            print(f"JSON loading error: {e}", file=sys.stderr)
-            return None
+        try:
+            with open(customer_file, 'r') as f:
+                customer = json.load(f)
             if customer.get('telegram_id') == telegram_id:
                 return customer
+        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
+            print(f"JSON loading error for {customer_file.name}: {e}", file=sys.stderr)
+            continue
     return None
 
 def update_customer(customer_id, new_data):
