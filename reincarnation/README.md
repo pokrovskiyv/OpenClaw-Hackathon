@@ -441,7 +441,7 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
 
 - **Port:** Randomized (not 18789 - public knowledge)
 - **Location:** `/root/.openclaw/openclaw.json`
-- **Range:** 40000-60000 (ephemeral ports)
+- **Range:** 40000-59999 (ephemeral ports)
 - **Reason:** Prevent automated scans targeting default port
 
 **To change port:**
@@ -450,7 +450,7 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
 NEW_PORT=$((RANDOM % 20000 + 40000))
 
 # Update openclaw.json
-sed -i "s/\"port\": [0-9]*/\"port\": $NEW_PORT/" /root/.openclaw/openclaw.json
+sed -i "s/\"port\": [0-9]\+/\"port\": $NEW_PORT/" /root/.openclaw/openclaw.json
 
 # Update clawdtalk-client
 sed -i 's/[0-9]\{5\}/$NEW_PORT/g' /root/.openclaw/workspace/skills/clawdtalk-client/scripts/ws-client.js
@@ -466,8 +466,8 @@ openclaw gateway restart
 **Installed for secure, invisible network access**
 
 - **Status:** Active
-- **IP:** 100.83.60.87 (Tailscale network)
-- **User:** serbalemira@
+- **IP:** 100.x.x.x (Tailscale network)
+- **User:** your-tailscale-email@
 - **Cost:** Free (personal use)
 - **Visibility:** Invisible to internet (only visible on tailnet)
 
@@ -532,7 +532,7 @@ ufw reset
 | Security Control | Status | Details |
 |-----------------|--------|---------|
 | Firewall (UFW) | ✅ Active | DENY incoming, ALLOW outgoing |
-| VPN (Tailscale) | ✅ Active | 100.83.60.87 |
+| VPN (Tailscale) | ✅ Active | 100.x.x.x |
 | Gateway Port | ✅ Randomized | 43482 (not 18789) |
 | SSH Access | ✅ Restricted | Port 22 |
 | Network Exposure | ✅ Minimal | Only Tailscale + localhost |
