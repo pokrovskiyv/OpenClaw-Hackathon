@@ -37,8 +37,21 @@ When multiple coverage options exist (e.g., hit-and-run can use collision OR UMP
 - Note both options in your output
 
 ## Output Format
+
+Before performing your analysis, assess the prior agent's (Front Desk) output quality.
+Set `input_assessment.quality = "sufficient"` if you have everything needed to verify coverage.
+Set `"partial"` if you can proceed but something useful is missing.
+Set `"insufficient"` if critical information is absent — note what specifically.
+Even when routing to deny, still include `input_assessment`.
+
 ```json
 {
+  "input_assessment": {
+    "prior_agent": "front_desk",
+    "quality": "sufficient|partial|insufficient",
+    "score": 0-100,
+    "issues": ["list of specific gaps, empty if sufficient"]
+  },
   "claim_id": "<from front desk>",
   "processed_at": "<ISO timestamp>",
   "policy_number": "<policy>",
