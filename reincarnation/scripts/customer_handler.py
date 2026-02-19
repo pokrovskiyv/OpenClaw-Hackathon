@@ -45,7 +45,7 @@ def create_basic_profile(telegram_id, phone=None):
                 "license_plate": ""
             }
         },
-        "created_at": datetime.now().isoformat() + "Z"
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     save_customer_profile(profile)

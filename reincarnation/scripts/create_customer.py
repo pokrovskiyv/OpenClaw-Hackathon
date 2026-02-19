@@ -222,71 +222,96 @@ def find_customer_by_telegram(telegram_id):
     return None
 
 def update_customer(customer_id, new_data):
-    """Обновить профиль клиента"""
+    """Обновить профиль клиента (immutable update)"""
+    import copy
     customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
     
     with open(customer_file, 'r') as f:
-        profile = try:
-            json.load(f)
+        try:
+            profile = json.load(f)
         except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
             print(f"JSON loading error: {e}", file=sys.stderr)
             return None
     
+    # Immutable update - создаём глубокую копию
+    new_profile = copy.deepcopy(profile)
+    
     # Обновляем поля
     for key, value in new_data.items():
         if key == 'telegram_id' and value:
-            profile['telegram_id'] = value
+            new_profile['telegram_id'] = value
         elif key == 'name' and value:
-            profile['name'] = value
+            new_profile['name'] = value
         elif key == 'phone' and value:
-            profile['phone'] = value
+            new_profile['phone'] = value
         elif key == 'email' and value:
-            profile['email'] = value
+            new_profile['email'] = value
         elif key == 'address' and value:
             for addr_key, addr_val in value.items():
                 if addr_val:
-                    profile['address'][addr_key] = addr_val
+                    new_profile['address'][addr_key] = addr_val
         elif key == 'driver_license' and value:
             for dl_key, dl_val in value.items():
                 if dl_val:
-                    profile['driver_license'][dl_key] = dl_val
+                    new_profile['driver_license'][dl_key] = dl_val
         elif key == 'policy' and value:
             if 'vehicle' in value:
                 for veh_key, veh_val in value['vehicle'].items():
                     if veh_val:
-                        profile['policy']['vehicle'][veh_key] = veh_val
+                        new_profile['policy']['vehicle'][veh_key] = veh_val
             for pol_key, pol_val in value.items():
                 if pol_key != 'vehicle' and pol_val:
-                    profile['policy'][pol_key] = pol_val
+                    new_profile['policy'][pol_key] = pol_val
     
-    profile['updated_at'] = datetime.now(timezone.utc).isoformat()
+    # Обновляем timestamp
+    from datetime import datetime, timezone
+    new_profile['updated_at'] = datetime.now(timezone.utc).isoformat()
     
+    # Сохраняем новый профиль
     with open(customer_file, 'w') as f:
-        json.dump(profile, f, indent=2)
+        json.dump(new_profile, f, indent=2)
     
-    # Обновить индекс если номер телефона изменился
-    if new_data.get('phone'):
+    # Обновляем индекс с нормализацией телефона
+    if new_profile.get('phone'):
+        from customer_store import normalize_phone
         index = load_index()
-        index[new_data['phone']] = customer_id
+        normalized = normalize_phone(new_profile['phone'])
+        if normalized:
+            index[normalized] = customer_id
         save_index(index)
     
-    return profile
+    return new_profile
 
 def process_image(image_path, telegram_id=None):
-    """Обработать изображение"""
-    output_file = f"/tmp/ocr_temp_{datetime.now(timezone.utc).timestamp()}"
-    subprocess.run([
-        'tesseract', str(image_path), output_file, '-l', 'eng'
-    ], check=True, timeout=60)
+    """Обработать изображение с secure temp file"""
+    import tempfile
+    import os
     
-    with open(f"{output_file}.txt", 'r') as f:
-        text = f.read()
+    # Создаём secure temporary file
+    fd, temp_base = tempfile.mkstemp(prefix='ocr_', suffix='_')
+    os.close(fd)  # Закрываем fd, tesseract создаст .txt
     
-    data = parse_ocr_text(text)
-    profile = create_customer_profile(data, telegram_id=telegram_id)
-    customer_file = save_customer(profile)
-    
-    return profile, customer_file
+    try:
+        # Запускаем tesseract с timeout
+        subprocess.run([
+            'tesseract', str(image_path), temp_base, '-l', 'eng'
+        ], check=True, timeout=60)
+        
+        # Читаем результат
+        with open(f"{temp_base}.txt", 'r') as f:
+            text = f.read()
+        
+        data = parse_ocr_text(text)
+        profile = create_customer_profile(data, telegram_id=telegram_id)
+        customer_file = save_customer(profile)
+        
+        return profile, customer_file
+    finally:
+        # Очищаем temp файлы
+        for ext in ['.txt', '.pdf', '.hocr', '.tsv', '.unlv', '.osd']:
+            temp_file = f"{temp_base}{ext}"
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
 
 if __name__ == "__main__":
     import sys
