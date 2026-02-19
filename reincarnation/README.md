@@ -440,7 +440,7 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
 ```json
 {
   "customer_id": "customer_abc123",
-  "telegram_id": "16867973",
+  "telegram_id": "00000000",
   "phone": "+1234567890",
   "name": "John Doe",
   "email": "john@example.com",
