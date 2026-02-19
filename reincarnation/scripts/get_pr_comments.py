@@ -11,11 +11,11 @@ def get_pr_comments(owner, repo, pr_number, token):
     ], capture_output=True, text=True)
     
     if result.returncode == 0:
-        return try:
-        return json.loads(result.stdout)
-    except (json.JSONDecodeError, OSError) as e:
-        print(f"Error parsing JSON: {e}", file=sys.stderr)
-        return []
+        try:
+            return json.loads(result.stdout)
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"Error parsing JSON: {e}", file=sys.stderr)
+            return []
     return []
 
 def get_pr_commits(owner, repo, pr_number, token):
@@ -27,11 +27,11 @@ def get_pr_commits(owner, repo, pr_number, token):
     ], capture_output=True, text=True)
     
     if result.returncode == 0:
-        return try:
-        return json.loads(result.stdout)
-    except (json.JSONDecodeError, OSError) as e:
-        print(f"Error parsing JSON: {e}", file=sys.stderr)
-        return []
+        try:
+            return json.loads(result.stdout)
+        except (json.JSONDecodeError, OSError) as e:
+            print(f"Error parsing JSON: {e}", file=sys.stderr)
+            return []
     return []
 
 def analyze_comment(comment_body):
@@ -124,13 +124,13 @@ def check_pr(owner, repo, pr_number, token):
     summary = f"📊 Проверка PR #{pr_number}\n\n"
     
     if classified['useful']:
-        summary += f"⚠️ Полезных комментариев: {len(classified['useful'])}\n\n"
+        summary += f"⚠️ Требуют исправлений: {len(classified['useful'])}\n\n"
         for i, comment in enumerate(classified['useful'][:3]):
             summary += f"{i}. @{comment['user']}: {comment['body']}\n"
         if len(classified['useful']) > 3:
             summary += f"   ... и ещё {len(classified['useful']) - 3}\n"
         
-        summary += f"⚡ Действия:\n"
+        summary += f"\n⚡ Действия:\n"
         summary += f"• Если критично → исправить и закрыть\n"
         summary += f"• Если не критично → можно отложить\n"
     elif classified['warnings']:
@@ -143,6 +143,8 @@ def check_pr(owner, repo, pr_number, token):
         summary += f"ℹ️ Рекомендация: Предупреждения можно оставить без действий или закрыть после просмотра.\n"
     elif classified['resolved']:
         summary += f"ℹ️ Отмечено как resolved: {len(classified['resolved'])} (уже обработано)\n"
+        for comment in classified['resolved'][:2]:
+            summary += f"   @{comment['user']}\n"
     else:
         summary += "✅ Нет требуемых исправлений\n"
     
