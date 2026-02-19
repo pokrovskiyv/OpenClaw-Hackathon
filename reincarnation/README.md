@@ -362,6 +362,31 @@ Location: /root/.openclaw/workspace/scripts/command_handler.py
 
 ### make_call.py
 
+
+### get_pr_comments\.py
+
+Purpose: PR review automation with proper comment classification
+
+
+Classifies comments as:
+- **Useful** (requires fixes): bug, error, fix, security, performance, documentation
+- **Warnings** (informational, no fixes needed): rate limit, potential issues
+- **Resolved** (already addressed): previously marked as resolved
+
+
+Tracks resolved comments separately and provides clear action recommendations.
+
+**Usage:**
+```bash
+python3 reincarnation/scripts/get_pr_comments.py <pr_number>
+```
+
+**Features:**
+- Retrieves ALL comments (review and issue) from PR
+- Properly classifies each comment type
+- Provides action recommendations for each type
+- Tracks resolved comments to avoid duplicate work
+
 Purpose: Initiate outbound calls via ClawdTalk
 
 Location: /root/.openclaw/workspace/scripts/make_call.py
