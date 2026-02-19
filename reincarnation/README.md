@@ -523,6 +523,51 @@ ufw disable
 ufw reset
 ```
 
+## 🔒 Security Audit Report
+
+**Last Audit:** 2026-02-19
+
+### Summary
+
+| Security Control | Status | Details |
+|-----------------|--------|---------|
+| Firewall (UFW) | ✅ Active | DENY incoming, ALLOW outgoing |
+| VPN (Tailscale) | ✅ Active | 100.83.60.87 |
+| Gateway Port | ✅ Randomized | 43482 (not 18789) |
+| SSH Access | ✅ Restricted | Port 22 |
+| Network Exposure | ✅ Minimal | Only Tailscale + localhost |
+
+### Allowed Ports
+
+| Port | Protocol | Source | Purpose |
+|------|----------|--------|---------|
+| 22/tcp | TCP | Anywhere | SSH access |
+| Any | Any | 100.64.0.0/10 | Tailscale VPN |
+| 43482/tcp | TCP | 127.0.0.1 | Local Gateway only |
+
+### Security Measures
+
+1. **Randomized Gateway Port** - Changed from default 18789 to random (43482)
+2. **Tailscale VPN** - Invisible to internet, only visible on tailnet
+3. **UFW Firewall** - All ports blocked except explicitly allowed
+4. **Localhost-only Gateway** - Gateway only accessible from 127.0.0.1
+
+### Audit Commands
+
+```bash
+# Check firewall
+ufw status numbered
+
+# Check Tailscale
+tailscale status
+
+# Check open ports
+ss -tlnp | grep openclaw
+
+# Check gateway port
+grep '"port"' /root/.openclaw/openclaw.json
+```
+
 ## 🔌 Configuration Files
 
 ### Customer Profile Structure
