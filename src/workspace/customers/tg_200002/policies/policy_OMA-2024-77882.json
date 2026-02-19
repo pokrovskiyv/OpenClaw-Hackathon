@@ -1,0 +1,31 @@
+{
+  "policy_id": "OMA-2024-77882",
+  "status": "EXPIRED",
+  "effective_date": "2024-01-01",
+  "expiration_date": "2025-01-01",
+  "premium_paid": false,
+  "coverage": {
+    "collision": {
+      "limit": 30000,
+      "deductible": 1000
+    },
+    "comprehensive": {
+      "limit": 30000,
+      "deductible": 800
+    }
+  },
+  "exclusions": [
+    "uninsured_motorist"
+  ],
+  "object_insured": {
+    "vehicle": {
+      "vin": "2C3CDXBG1MH007782",
+      "make": "DODGE",
+      "model": "Charger",
+      "year": 2021,
+      "license_plate": "OH-OLD778"
+    }
+  },
+  "created_at": "2026-02-19T17:18:29.007865Z",
+  "updated_at": "2026-02-19T17:18:29.007865Z"
+}
