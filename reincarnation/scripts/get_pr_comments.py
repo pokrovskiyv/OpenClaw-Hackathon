@@ -102,23 +102,25 @@ def check_pr(owner, repo, pr_number, token):
     
     for comment in comments:
         if isinstance(comment, dict) and comment.get('body'):
-            is_useful, comment_type, _ = analyze_comment(comment['body'])
+            is_useful, action, category = analyze_comment(comment['body'])
             
-            if is_useful and comment_type != "unprocessed":
+            if category == "useful":
                 classified['useful'].append({
                     'user': comment.get('user', {}).get('login', 'Unknown'),
                     'body': comment['body'][:150],
-                    'reason': comment_type
+                    'reason': action
                 })
-            elif comment_type == "warning":
+            elif category == "warning":
                 classified['warnings'].append({
                     'user': comment.get('user', {}).get('login', 'Unknown'),
                     'body': comment['body'][:100],
-                    'reason': comment_type
+                    'reason': action
                 })
-            elif comment_type == "resolved":
-                # Пропускаем уже разрешённые
-                pass
+            elif category == "resolved":
+                classified['resolved'].append({
+                    'user': comment.get('user', {}).get('login', 'Unknown'),
+                    'body': comment['body'][:100]
+                })
     
     # Формируем отчёт
     summary = f"📊 Проверка PR #{pr_number}\n\n"
@@ -152,17 +154,30 @@ def check_pr(owner, repo, pr_number, token):
 
 if __name__ == "__main__":
     import sys
+    import os
     
+    # Get token from env or file
+    token_path = os.environ.get('GH_TOKEN_PATH', '/root/.openclaw/credentials/.gh_token')
+    token = os.environ.get('GH_TOKEN')
+    
+    if not token:
+        try:
+            with open(token_path, 'r') as f:
+                token = f.read().strip()
+        except Exception as e:
+            print(f"❌ GitHub token not found: {e}")
+            sys.exit(1)
+    
+    # Get repo config from env or defaults
+    owner = os.environ.get('GITHUB_OWNER', 'pokrovskiyv')
+    repo = os.environ.get('GITHUB_REPO', 'OpenClaw-Hackathon')
+    
+    # Get PR number from args or env
     try:
-        with open('/root/.openclaw/credentials/.gh_token', 'r') as f:
-            token = f.read().strip()
-    except:
-        print("❌ GitHub token not found")
+        pr_number = int(sys.argv[1]) if len(sys.argv) > 1 else int(os.environ.get('PR_NUMBER', 2))
+    except ValueError:
+        print("❌ Invalid PR number")
         sys.exit(1)
-    
-    owner = "pokrovskiyv"
-    repo = "OpenClaw-Hackathon"
-    pr_number = sys.argv[1] if len(sys.argv) > 1 else 2
     
     summary = check_pr(owner, repo, pr_number, token)
     print(summary)
