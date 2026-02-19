@@ -49,8 +49,21 @@ Flag if:
 - Medical claims are disproportionate to vehicle damage
 
 ## Output Format
+
+Before performing your assessment, evaluate the Claims Officer's output quality.
+Set `input_assessment.quality = "sufficient"` if coverage determination and policy data are clear.
+Set `"partial"` if you can proceed but something is ambiguous.
+Set `"insufficient"` if critical coverage data is absent. Note what is missing.
+If routing to skip (no coverage), still include `input_assessment`.
+
 ```json
 {
+  "input_assessment": {
+    "prior_agent": "claims_officer",
+    "quality": "sufficient|partial|insufficient",
+    "score": 0-100,
+    "issues": ["list of specific gaps, empty if sufficient"]
+  },
   "claim_id": "<from pipeline>",
   "processed_at": "<ISO timestamp>",
   "damage_catalog": [

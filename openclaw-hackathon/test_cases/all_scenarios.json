@@ -83,6 +83,149 @@
         "subrogation": true,
         "subrogation_target": "State Farm"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "moderate",
+          "low",
+          "high"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "front_desk",
+        "field": "fnol_complete",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 500,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          3000,
+          7000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 20,
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.target_insurer",
+        "op": "contains",
+        "value": "State Farm",
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "subrogation_required_when_other_party_insured",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "payment_authorized_when_approved",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -192,6 +335,133 @@
       "finance": {
         "action": "hold_pending_investigation"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 1000,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 65,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "high",
+          "critical"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "investigate",
+          "SIU_referral",
+          "enhanced_documentation"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          5000,
+          15000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "in",
+        "value": [
+          "investigate",
+          "referred"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "high_fraud_score_blocks_payment",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "fraud_score",
+          "op": "gte",
+          "value": 65
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "investigate_decision_when_high_risk",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "in",
+          "value": [
+            "high",
+            "critical"
+          ]
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "investigate",
+            "referred"
+          ]
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.6
     }
   },
   {
@@ -287,6 +557,140 @@
         "subrogation_target": "Allstate",
         "rental_reimbursement": true
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "high"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 250,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_type",
+        "op": "contains",
+        "value": "comprehensive",
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "vehicle_acv",
+        "op": "between",
+        "value": [
+          14000,
+          18000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 10,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "rental_reimbursement.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "total_loss_triggers_acv_payout",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "vehicle_acv",
+          "op": "gt",
+          "value": 0
+        }
+      },
+      {
+        "name": "neighbor_insurer_triggers_subrogation",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -364,6 +768,114 @@
         "action": "no_payment",
         "letter": "denial_notification"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "policy_status",
+        "op": "eq",
+        "value": "expired",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "denial_reason",
+        "op": "exists",
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "action",
+        "op": "eq",
+        "value": "skip",
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "action",
+        "op": "eq",
+        "value": "skip",
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "denied",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "expired_policy_must_be_denied",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        }
+      },
+      {
+        "name": "denial_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "no_coverage_skips_assessor",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "action",
+          "op": "eq",
+          "value": "skip"
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -484,6 +996,112 @@
       "finance": {
         "action": "hold_all_payments"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "in",
+        "value": [
+          "collision_with_injury",
+          "collision"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "high",
+          "critical"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 85,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "critical",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "SIU_referral",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "in",
+        "value": [
+          "investigate",
+          "referred"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "siu_referral_blocks_payment",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "eq",
+          "value": "SIU_referral"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "critical_risk_requires_investigation",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "critical"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "investigate",
+            "referred"
+          ]
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.6
     }
   },
   {
@@ -579,6 +1197,126 @@
         "subrogation": false,
         "advisory": "direct_claimant_to_other_party_insurer"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "in",
+        "value": [
+          "partial",
+          false
+        ],
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          4000,
+          8000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 15,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "in",
+        "value": [
+          "denied",
+          "approved_partial"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "commercial_use_exclusion_denies_payment",
+        "if": {
+          "agent": "claims_officer",
+          "field": "exclusions_triggered",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "exclusion_results_in_denial_or_partial",
+        "if": {
+          "agent": "claims_officer",
+          "field": "exclusions_triggered",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "denied",
+            "approved_partial"
+          ]
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.6
     }
   },
   {
@@ -675,6 +1413,134 @@
         "subrogation": false,
         "rental_reimbursement": false
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "hit_and_run",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "moderate",
+          "low"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 250,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          3000,
+          6000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 20,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "coverage_used",
+        "op": "contains",
+        "value": "uninsured_motorist",
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "hit_and_run_uses_uninsured_motorist_coverage",
+        "if": {
+          "agent": "front_desk",
+          "field": "category",
+          "op": "eq",
+          "value": "hit_and_run"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "coverage_used",
+          "op": "contains",
+          "value": "uninsured_motorist"
+        }
+      },
+      {
+        "name": "approved_hit_and_run_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -776,6 +1642,131 @@
         "subrogation_target": "State Farm",
         "payment_method": "check"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "moderate",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 500,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          4800,
+          6200
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 8,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.target_insurer",
+        "op": "contains",
+        "value": "State Farm",
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "other_party_insured_triggers_subrogation",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "approved_claim_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -870,6 +1861,127 @@
         "subrogation": false,
         "payment_method": "check"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "low",
+          "moderate"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 750,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          1800,
+          2400
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 5,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "split_liability_still_approves_claim",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        }
+      },
+      {
+        "name": "no_subrogation_when_mutual_fault",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -971,6 +2083,127 @@
         "subrogation": false,
         "payment_method": "check"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "high",
+          "moderate"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 250,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          8500,
+          11200
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 12,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "animal_strike_uses_comprehensive",
+        "if": {
+          "agent": "front_desk",
+          "field": "category",
+          "op": "eq",
+          "value": "comprehensive"
+        },
+        "then": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "no_other_party_means_no_subrogation",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1068,6 +2301,127 @@
         "subrogation": false,
         "payment_method": "check"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "moderate",
+          "low"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 500,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          6200,
+          8100
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 6,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "weather_damage_under_comprehensive",
+        "if": {
+          "agent": "front_desk",
+          "field": "category",
+          "op": "eq",
+          "value": "comprehensive"
+        },
+        "then": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "low_fraud_score_approves_claim",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "low"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1179,6 +2533,133 @@
         "total_loss_settlement": true,
         "payment_method": "check"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "high"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 500,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "vehicle_acv",
+        "op": "between",
+        "value": [
+          18500,
+          21000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 5,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.target_insurer",
+        "op": "contains",
+        "value": "Allstate",
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "total_loss_requires_acv_valuation",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "vehicle_acv",
+          "op": "gt",
+          "value": 0
+        }
+      },
+      {
+        "name": "at_fault_other_party_with_insurance_triggers_subrogation",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1277,6 +2758,127 @@
         "subrogation": false,
         "payment_method": "check"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "vandalism",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "moderate",
+          "low"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 250,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          4200,
+          5800
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 9,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "vandalism_covered_under_comprehensive",
+        "if": {
+          "agent": "front_desk",
+          "field": "category",
+          "op": "eq",
+          "value": "vandalism"
+        },
+        "then": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "vandalism_no_subrogation_when_unknown_party",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1390,6 +2992,134 @@
         "subrogation_percentage": "70%",
         "payment_method": "check"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "moderate",
+          "high"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 750,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          5100,
+          7200
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 11,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.target_insurer",
+        "op": "contains",
+        "value": "Nationwide",
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "chain_reaction_with_identifiable_party_triggers_subrogation",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "partial_fault_does_not_block_claim",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1486,6 +3216,133 @@
         "payment_method": "n/a",
         "note": "No payment required. Damage cost below deductible threshold."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": [
+          "low"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 1000,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          650,
+          950
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 3,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "eq",
+        "value": 0,
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "damage_below_deductible_means_no_payout",
+        "if": {
+          "agent": "assessor",
+          "field": "repair_estimate.total",
+          "op": "lte",
+          "value": 1000
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "approved_with_zero_payout_still_no_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "eq",
+          "value": 0
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1584,6 +3441,132 @@
       "finance": {
         "action": "hold_pending_investigation"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "theft",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "high",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "priority",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 72,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "high",
+          "critical"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "SIU_referral",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "high_fraud_score_triggers_siu",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "fraud_score",
+          "op": "gte",
+          "value": 72
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "eq",
+          "value": "SIU_referral"
+        }
+      },
+      {
+        "name": "siu_referral_blocks_payment",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "eq",
+          "value": "SIU_referral"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "investigate_decision_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "investigate"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1694,6 +3677,123 @@
       "finance": {
         "action": "hold_pending_independent_assessment"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "medium",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          2400,
+          3100
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 65,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "moderate",
+          "high"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "enhanced_documentation",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "inflated_estimate_triggers_enhanced_doc",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "moderate"
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "in",
+          "value": [
+            "enhanced_documentation",
+            "investigate"
+          ]
+        }
+      },
+      {
+        "name": "investigate_decision_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "investigate"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1827,6 +3927,122 @@
       "finance": {
         "action": "hold_all_payments"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision_with_injury",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "high",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 88,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "critical",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "SIU_referral",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "critical_risk_mandates_siu",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "critical"
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "eq",
+          "value": "SIU_referral"
+        }
+      },
+      {
+        "name": "siu_referral_blocks_payment",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "eq",
+          "value": "SIU_referral"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "investigate_decision_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "investigate"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -1933,6 +4149,128 @@
       "finance": {
         "action": "deny_claim"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "high",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "policy_status",
+        "op": "exists",
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 92,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "critical",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "SIU_referral",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "denied",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "action",
+        "op": "eq",
+        "value": "skip",
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "invalid_coverage_triggers_denial",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        }
+      },
+      {
+        "name": "denial_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "coverage_invalid_skips_assessor",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "action",
+          "op": "eq",
+          "value": "skip"
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2041,6 +4379,113 @@
       "finance": {
         "action": "hold_pending_investigation"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "medium",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 68,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "moderate",
+          "high"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "moderate_fraud_triggers_investigation",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "moderate"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "investigate",
+            "referred"
+          ]
+        }
+      },
+      {
+        "name": "investigate_decision_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "investigate"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2149,6 +4594,125 @@
       "finance": {
         "action": "hold_all_payments"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision_with_injury",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "high",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 81,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "high",
+          "critical"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "SIU_referral",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "high_fraud_score_triggers_siu",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "fraud_score",
+          "op": "gte",
+          "value": 81
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "eq",
+          "value": "SIU_referral"
+        }
+      },
+      {
+        "name": "siu_referral_blocks_all_payments",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "eq",
+          "value": "SIU_referral"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "investigate_decision_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "investigate"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2254,6 +4818,116 @@
       "finance": {
         "action": "hold_pending_investigation"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "low",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 64,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "moderate",
+          "high"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "enhanced_documentation",
+          "investigate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "serial_claimant_pattern_triggers_investigation",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "moderate"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "investigate",
+            "referred"
+          ]
+        }
+      },
+      {
+        "name": "investigate_decision_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "investigate"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2365,6 +5039,131 @@
       "finance": {
         "action": "hold_pending_independent_assessment"
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "eq",
+        "value": "medium",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 77,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "high",
+          "critical"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "enhanced_documentation",
+          "investigate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "investigate",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "high_fraud_triggers_investigation_hold",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "high"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "investigate",
+            "referred"
+          ]
+        }
+      },
+      {
+        "name": "investigate_decision_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "investigate"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "mixed_damage_requires_independent_assessment",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "fraud_score",
+          "op": "gte",
+          "value": 77
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "neq",
+          "value": "approved"
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2466,6 +5265,166 @@
         "hold_status": "PENDING - Hold payment until assessor confirms total loss and senior reviewer verifies coverage decision. Expected resolution: 5-7 business days.",
         "notes": "If partial claim approved instead: Deduct $250 deductible from repair estimate. Likely scenario: Full replacement/total loss claim."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "in",
+        "value": [
+          true,
+          "partial"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "vehicle_acv",
+        "op": "between",
+        "value": [
+          18000,
+          26000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "low",
+          "moderate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 35,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "proceed",
+          "enhanced_documentation"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "in",
+        "value": [
+          "approved",
+          "approved_partial"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "between",
+        "value": [
+          15000,
+          23000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "flood_damage_comprehensive_coverage_not_voided_by_negligence",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "approved",
+            "approved_partial"
+          ]
+        }
+      },
+      {
+        "name": "total_loss_with_approval_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "approved",
+            "approved_partial"
+          ]
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "total_loss_generates_acv_settlement",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "vehicle_acv",
+          "op": "exists"
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2584,6 +5543,124 @@
         "special_conditions": "Do NOT attempt subrogation against City of Columbus without legal review. City will likely invoke sovereign immunity. UM claim structure should be optimized to maximize recovery within policy limits.",
         "hold_status": "CONDITIONAL - Approve vehicle damage immediately upon assessor report. Hold UM bodily injury settlement pending: (1) Full medical records from all treatment providers, (2) Verification of all past/future medical expenses, (3) Wage loss documentation from claimant's employer, (4) Third-party subrogation letter from city (which may deny responsibility)."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "in",
+        "value": [
+          "collision",
+          "collision_with_injury"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_type",
+        "op": "contains",
+        "value": "uninsured",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "eq",
+        "value": "proceed",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "gt",
+        "value": 0,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "exists",
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "government_vehicle_treated_as_uninsured_for_um_purposes",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "claims_officer",
+          "field": "coverage_type",
+          "op": "contains",
+          "value": "uninsured"
+        }
+      },
+      {
+        "name": "low_fraud_approved_claim_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "approved_claim_has_positive_amount",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "gt",
+          "value": 0
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2691,6 +5768,159 @@
         "deductible_clarity": "Clarify with claims officer whether claim is being processed under Collision ($500 ded) or Comprehensive/UM Property ($250 ded). This affects net payout.",
         "timeline": "Inspection report expected within 5 business days. Payment authorization within 1 business day of inspection report."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "in",
+        "value": [
+          "collision",
+          "comprehensive"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss_ratio",
+        "op": "gte",
+        "value": 0.73,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "vehicle_acv",
+        "op": "between",
+        "value": [
+          27000,
+          32000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "exists",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "low",
+          "moderate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "proceed",
+          "enhanced_documentation"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "in",
+        "value": [
+          "approved",
+          "approved_partial",
+          "investigate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "gt",
+        "value": 0,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "total_loss_ratio_above_75_percent_triggers_total_loss",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss_ratio",
+          "op": "gte",
+          "value": 0.75
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "total_loss_ratio_below_75_percent_allows_repair",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss_ratio",
+          "op": "lt",
+          "value": 0.75
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "borderline_case_requires_investigation_not_immediate_approval",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss_ratio",
+          "op": "between",
+          "value": [
+            0.73,
+            0.76
+          ]
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "approved",
+            "approved_partial",
+            "investigate"
+          ]
+        }
+      },
+      {
+        "name": "total_loss_confirmed_triggers_acv_settlement",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "gt",
+          "value": 0
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2806,6 +6036,137 @@
         "payment_hold": "HOLD ALL PAYMENTS pending investigation and fault determination. Do not advance funds until fault is established or presumed.",
         "investigation_budget": "Allocate $2,000-$3,000 for investigator, damage expert, and potential traffic camera FOIA request."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          8000,
+          13000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "low",
+          "moderate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "proceed",
+          "enhanced_documentation"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "in",
+        "value": [
+          "approved",
+          "approved_partial",
+          "investigate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "dual_oma_claim_requires_separate_handling",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "in",
+          "value": [
+            "low",
+            "moderate"
+          ]
+        }
+      },
+      {
+        "name": "undetermined_fault_cannot_be_full_approval_without_investigation",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "moderate"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "investigate",
+            "approved_partial"
+          ]
+        }
+      },
+      {
+        "name": "internal_dual_claim_subrogation_not_applicable",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "approved",
+            "approved_partial"
+          ]
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -2931,6 +6292,135 @@
         "payment_authority": "CONDITIONAL on policy review and coverage determination.",
         "special_note": "Also verify: If at-fault party is identified and insured, can claimant recover rental damage through their liability claim? This is separate from OMA coverage question."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "in",
+        "value": [
+          true,
+          false,
+          "partial"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_type",
+        "op": "exists",
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          3500,
+          8000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "low",
+          "moderate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "proceed",
+          "enhanced_documentation"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "exists",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "rental_reimbursement.applicable",
+        "op": "exists",
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "rental_coverage_approved_authorizes_payment",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "approved",
+            "approved_partial"
+          ]
+        }
+      },
+      {
+        "name": "rental_coverage_denied_blocks_payment",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "approved_rental_claim_payment_authorized",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -3049,6 +6539,150 @@
         "original_claim_status": "Original collision claim (TC-045-PRIOR) was paid on 1/20/2026 in the amount of $11,800 (repair estimate $12,800 minus collision deductible $1,000). That claim is closed.",
         "supplemental_denial": "The supplemental diminished value claim is DENIED. No additional payment is made."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "exists",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "fnol_complete",
+        "op": "exists",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "denial_reason",
+        "op": "exists",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "low",
+          "moderate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "proceed",
+          "enhanced_documentation"
+        ],
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "denied",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "eq",
+        "value": 0,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "diminished_value_not_covered_under_standard_policy",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        }
+      },
+      {
+        "name": "denial_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "denied_claim_has_zero_approved_amount",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "eq",
+          "value": 0
+        }
+      },
+      {
+        "name": "exclusion_triggered_leads_to_denial",
+        "if": {
+          "agent": "claims_officer",
+          "field": "exclusions_triggered",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "in",
+          "value": [
+            "denied",
+            "approved_partial"
+          ]
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   },
   {
@@ -3162,6 +6796,166 @@
         "condition": "Approval contingent on assessor inspection confirming repair estimate is within expected range.",
         "hold_status": "CONDITIONAL - Approve comprehensive claim subject to assessor report. Expected payment authorization within 5-7 business days of inspection."
       }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [
+          5500,
+          11000
+        ],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": [
+          "low",
+          "moderate"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 40,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "recommendation",
+        "op": "in",
+        "value": [
+          "proceed",
+          "enhanced_documentation"
+        ],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "between",
+        "value": [
+          5000,
+          10500
+        ],
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "delayed_discovery_due_to_absence_does_not_void_coverage",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        }
+      },
+      {
+        "name": "approved_vandalism_claim_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "approved_claim_has_positive_amount",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "gt",
+          "value": 0
+        }
+      },
+      {
+        "name": "low_fraud_risk_vandalism_proceeds",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "eq",
+          "value": "low"
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "recommendation",
+          "op": "in",
+          "value": [
+            "proceed",
+            "enhanced_documentation"
+          ]
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
     }
   }
 ]

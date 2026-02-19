@@ -61,8 +61,20 @@ You CANNOT:
 - [ ] No conflicts of interest (reviewer not related to claimant/other party)
 
 ## Output Format
+
+Before making your decision, assess the Fraud Analyst's output quality.
+Set `input_assessment.quality = "sufficient"` if fraud score, risk level, and indicators are clearly documented.
+Set `"partial"` if the fraud analysis is present but lacks specifics.
+Set `"insufficient"` if fraud analysis is missing or unusable. Note what is missing.
+
 ```json
 {
+  "input_assessment": {
+    "prior_agent": "fraud_analyst",
+    "quality": "sufficient|partial|insufficient",
+    "score": 0-100,
+    "issues": ["list of specific gaps, empty if sufficient"]
+  },
   "claim_id": "<from pipeline>",
   "processed_at": "<ISO timestamp>",
   "decision": "approved|approved_partial|investigate|denied|referred",

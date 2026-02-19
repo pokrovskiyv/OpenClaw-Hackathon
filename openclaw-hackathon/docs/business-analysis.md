@@ -1,232 +1,772 @@
-# Ohio Mutual Auto — Business Context & Evaluation Metrics
+# Ohio Mutual Auto — Product Requirements Document
 
-## Who Is Ohio Mutual Auto and What's the Problem
+## 0. Титул и метаданные
 
-Ohio Mutual Auto is a regional car insurance carrier. Their claims process is
-entirely manual: a customer calls in an accident, and the claim travels through
-six people before anything is decided. Each handoff introduces delay, human
-error, and inconsistency.
+***Основные реквизиты документа.***
 
-The pipeline today looks like this:
-- A front desk agent takes the initial call and categorizes the claim
-- A claims officer checks whether the policy actually covers this event
-- An assessor estimates the repair or replacement cost
-- A fraud analyst reviews for suspicious patterns
-- A senior reviewer makes the final approval decision
-- A finance clerk executes the payment
-
-Six people. Sequential. No automation. Each step waits for the previous one.
-This is expensive, slow, and error-prone — and at scale, the errors compound.
-
-The system described here automates this pipeline using six AI agents, one per
-role, running sequentially and passing context forward.
+| Поле | Значение |
+|------|----------|
+| **Название** | Ohio Mutual Auto — Product Requirements Document |
+| **Версия** | 2.0 |
+| **Дата** | 21 февраля 2026 |
+| **Автор** | Команда |
+| **Хакатон** | OpenClaw Business Engineering Hackathon, Belgrade |
+| **Организаторы** | Context by Insightful + Startit |
+| **Статус** | Final |
 
 ---
 
-## Key Business Priorities
+## 1. Видение продукта
 
-The following five priorities drive every design decision in the system. They
-are ordered from highest to lowest business risk — the further up the list, the
-more expensive the mistake.
+***Краткое описание проблемы, решения и уникальности — для тех, кто прочитает только эту страницу.***
 
----
+Ohio Mutual Auto — региональная автостраховая компания штата Огайо, чей процесс урегулирования убытков полностью ручной: каждая заявка проходит через шесть сотрудников последовательно, с неизбежными задержками, ошибками и ограничением рабочими часами. Мы не заменяем людей — мы усиливаем их. Система из семи AI-агентов берёт на себя рутинную обработку: от регистрации и проверки покрытия до оценки ущерба, выявления мошенничества и расчёта выплаты. Седьмой агент, Claims Manager, выступает внутренним контролёром качества. Финальное решение по сложным, дорогим или спорным случаям остаётся за живым специалистом — система готовит полный пакет данных и рекомендации.
 
-### 🔴 Priority 1: Fraud Detection
-
-**What it is:** Identifying organized fraud schemes before money goes out the
-door. Common patterns include inflated medical bills, coordinated passenger
-injury claims, staged accidents ("swoop-and-squat" where one driver cuts off
-another to manufacture a rear-end collision), and damage that doesn't match the
-reported incident.
-
-**Why it matters:** A single successfully prosecuted staged accident claim costs
-the insurer $50,000–$150,000 in payments, plus investigation and legal costs.
-At the industry level, auto insurance fraud accounts for roughly 15% of all
-claims payouts in the US. That cost is passed directly to honest policyholders
-as premium increases — which means fraud undermines both the company's finances
-and its customer trust.
-
-**Cost of missing it:** Direct financial loss on that claim, a precedent that
-attracts repeat offenders to the same carrier, and potential regulatory scrutiny
-if fraud patterns go undetected systematically.
+Ключевая особенность архитектуры — два контура работы. **Контур разработки** (самообучение): система прогоняет сценарии, оценивает результаты и автоматически перезаписывает инструкции агентов, показавших слабый результат. **Контур продакшена** (обработка заявок): агенты работают с оптимизированными инструкциями, а цикл самоулучшения запускается вручную только при необходимости адаптации к новым бизнес-правилам. Голосовой канал на базе ClawdTalk принимает звонок клиента, подтверждает личность, собирает данные за 3–5 минут и передаёт структурированную заявку в конвейер. Клиент **всегда может попросить живого оператора** — на любом этапе, без объяснения причин.
 
 ---
 
-### 🟠 Priority 2: Coverage Validation
+## 2. Постановка проблемы
 
-**What it is:** Verifying that the claimed event is actually covered by the
-policy. This means checking that the policy was active on the date of loss, that
-the type of coverage (collision, comprehensive, liability, etc.) applies to this
-type of incident, and that no exclusions have been triggered — for example, a
-policy that excludes coverage when the vehicle is used for commercial purposes.
+***Текущее состояние, конкретные проблемы и целевое решение.***
 
-**Why it matters:** Paying a claim that is not covered by the policy is a pure
-financial loss with no recovery path. Worse, it creates legal exposure: if the
-company pays for something not in the contract, it may set a precedent that
-undermines future denials. On the other side, denying a valid claim creates
-regulatory risk and bad faith litigation.
+### 2.1. Текущее состояние
 
-**Cost of missing it:** The company absorbs a loss it was never contractually
-obligated to cover, or faces a lawsuit for wrongfully denying one it was.
+Процесс урегулирования убытков полностью ручной. Клиент звонит на линию, оператор принимает звонок 15–25 минут, вводит данные в систему. Заявка последовательно проходит через шесть человек: оператор фронт-офиса → сотрудник отдела убытков → оценщик → аналитик по мошенничеству → старший ревьюер → финансовый отдел. Каждая передача — точка потери информации, задержки и ошибки.
 
----
+### 2.2. Конкретные проблемы
 
-### 🟠 Priority 3: Coverage Routing
+| Проблема | Влияние на бизнес |
+|----------|-------------------|
+| **Задержки при передаче дела** | Клиент ждёт решения дни вместо часов |
+| **Человеческие ошибки** | Неверный тип покрытия, пропущенное исключение — каскадируют на все последующие этапы |
+| **Несогласованность решений** | Два сотрудника на одной должности могут вынести противоположные решения по идентичной заявке |
+| **Отсутствие 24/7** | Заявка, поданная в пятницу вечером, ждёт понедельника |
+| **Пропущенное мошенничество** | Без автоматического анализа инсценированные аварии и завышенные счета остаются незамеченными |
+| **Нет механизма самоулучшения** | Ошибки одного сотрудника не становятся обучающим сигналом для команды |
 
-**What it is:** When multiple types of coverage could apply to the same incident,
-selecting the one that best serves the policyholder. For example, a glass
-replacement claim might be processable under collision coverage (with a $500
-deductible) or comprehensive coverage (with a $50 deductible). The right answer
-for the customer is obvious; the wrong system routes it mechanically or not at
-all.
+### 2.3. Целевое состояние
 
-**Why it matters:** Customers who receive optimal coverage outcomes — paying the
-lowest deductible they're entitled to — are less likely to dispute the claim,
-more likely to renew, and less likely to generate legal complaints. Poor routing
-reduces customer retention and increases dispute volume, both of which have
-measurable financial consequences.
+AI-усиленный конвейер обработки заявок с человеческим контролем на критических точках:
 
-**Cost of missing it:** The customer pays more out-of-pocket than they should,
-generates a complaint, escalates to a supervisor, or files a regulatory
-complaint. Each of these costs more to resolve than routing correctly in the
-first place.
+- Голосовой помощник принимает звонок круглосуточно, формирует заявку за 3–5 минут. Клиент всегда может попросить живого оператора.
+- Шесть специализированных AI-агентов обрабатывают заявку, каждый в рамках своей зоны ответственности.
+- Claims Manager оценивает качество работы каждого агента.
+- Простые случаи (~70% заявок) обрабатываются автоматически. Сложные — эскалируются с полным пакетом данных.
+- Самообучающийся цикл улучшает инструкции агентов автоматически.
+- Суброгация определяется автоматически при наличии данных о виновнике.
 
 ---
 
-### 🟡 Priority 4: Damage Assessment
+## 3. Заинтересованные стороны
 
-**What it is:** Accurately estimating the cost of repair or replacement.
-This includes determining whether a vehicle has crossed the total loss threshold
-— the point where repair cost exceeds a defined percentage of the vehicle's
-actual cash value (ACV). In most US states, that threshold is 75% of ACV.
-When the threshold is crossed, the correct outcome is to declare total loss and
-pay ACV rather than authorize repairs.
+***Кто пользуется системой, кто принимает решения, кто контролирует процесс извне.***
 
-**Why it matters:** Overestimating damage means overpaying. Underestimating
-invites a bad faith lawsuit from the customer when the repair shop comes back
-with a higher bill. Failing to declare total loss when the threshold is crossed
-is a regulatory violation in many jurisdictions.
+**Клиент (водитель после ДТП)** — основной пользователь голосового канала. В стрессе, хочет быстро сообщить о случившемся. Метрика: время от звонка до подтверждения заявки < 5 минут, доступность 24/7.
 
-**Cost of missing it:** Financial loss in either direction. The total loss
-threshold is not a judgment call — it is a regulated requirement, and getting
-it wrong exposes the company to fines, not just claims disputes.
+**Руководитель отдела убытков (Claims Director)** — внутренний заказчик. Отвечает за скорость, качество и стоимость обработки заявок. Метрика: общий балл конвейера >= 85/100, время обработки < 1 часа.
+
+**Следователь SIU** — пользователь аналитики мошенничества. Перегружен десятками открытых дел. Метрика: 100% выявление инсценированных аварий, ноль ложноотрицательных по критическим кейсам.
+
+**Финансовый менеджер** — контролирует корректность выплат и возврат средств через суброгацию. Метрика: 100% корректность сумм, суброгация определена во всех применимых случаях.
+
+**Регулятор (Ohio Department of Insurance)** — внешний надзорный орган. Проверяет соблюдение законодательства штата Огайо. Метрика: ноль регуляторных нарушений, каждое решение подкреплено цепочкой рассуждений.
 
 ---
 
-### 🟢 Priority 5: Subrogation Identification
+## 4. Специфика автострахования в США
 
-**What it is:** Determining whether a third party is legally at fault for the
-loss, and if so, initiating a subrogation claim — a legal process where the
-insurer pays the customer first, then recovers that amount from the at-fault
-party's insurance carrier.
+***Полис собирается как конструктор из независимых покрытий, каждое со своей франшизой, лимитом и набором исключений. Без понимания этой механики агенты не смогут корректно обрабатывать заявки.***
 
-**Why it matters:** Subrogation is a direct revenue recovery mechanism. The
-company has already paid the customer. Subrogation is how some or all of that
-money comes back. Missing a valid subrogation opportunity means money that could
-be recovered simply isn't.
+### Полис = конструктор из покрытий
 
-**Cost of missing it:** No immediate crisis, but accumulated missed subrogation
-across thousands of claims represents a material gap in financial recovery.
-Unlike fraud or coverage errors, the mistake here is not in what was paid — it's
-in what was never reclaimed.
+| Покрытие | Аналог в РФ | Что покрывает |
+|----------|-------------|---------------|
+| **Liability (BI/PD)** | ОСАГО | Ущерб **другим** — вред здоровью (BI) и имуществу (PD) |
+| **Collision** | Часть КАСКО | Ремонт **своего** авто при столкновении |
+| **Comprehensive** | Часть КАСКО | Ущерб **своему** авто от кражи, града, пожара, животных |
+| **UM/UIM** | Нет аналога | Если виновник **без страховки** или с низкими лимитами |
+| **PIP/MedPay** | Нет аналога | Медрасходы водителя/пассажиров (в no-fault штатах) |
+
+### Ключевые термины
+
+- **Франшиза (deductible)** — сумма, которую клиент платит сам. Collision обычно $500, Comprehensive — $250.
+- **Лимит покрытия** — максимальная сумма выплаты по каждому покрытию.
+- **Исключения** — случаи отказа: коммерческое использование личного полиса, DUI, гонки, езда без прав, умышленное повреждение.
+- **Полная гибель (total loss)** — ремонт > 75% рыночной стоимости авто (ACV). **Регуляторное требование.**
+- **Суброгация** — страховая платит клиенту, затем взыскивает со страховой виновника. Прямой механизм возврата денег.
+
+### Что это значит для агентов
+
+| Агент | На что влияет специфика покрытий |
+|-------|----------------------------------|
+| **Front Desk** | Категоризация инцидента определяет, какое покрытие проверяется дальше |
+| **Claims Officer** | Центральная точка: проверяет все применимые покрытия, выбирает оптимальное, определяет франшизу |
+| **Assessor** | Порог total loss 75% ACV — регуляторное правило, не подлежит интерпретации |
+| **Fraud Analyst** | Несоответствие покрытия и типа инцидента — один из индикаторов мошенничества |
+| **Senior Reviewer** | Должен убедиться, что выбранное покрытие и сумма согласованы |
+| **Finance** | Выплата привязана к конкретному покрытию с его лимитом и франшизой |
 
 ---
 
-## The Evaluation Metric
+## 5. Архитектура системы
 
-### Combined Evaluation Score (0–100)
+***Последовательный конвейер из семи AI-агентов: шесть рабочих обрабатывают заявку, седьмой контролирует качество.***
 
-Every claim run through the system produces a Combined Evaluation Score:
+### 5.1. Общая структура
+
+| Шаг | Агент | Функция |
+|-----|-------|---------|
+| 1 | Front Desk | Регистрация и категоризация заявки |
+| 2 | Claims Officer | Проверка покрытия по полису |
+| 3 | Assessor | Оценка ущерба |
+| 4 | Fraud Analyst | Анализ на мошенничество |
+| 5 | Senior Reviewer | Финальное решение по заявке |
+| 6 | Finance | Исполнение выплаты |
+| 7 | Claims Manager | Контроль качества всего конвейера |
+
+### 5.2. Модели и распределение ресурсов
+
+| Роль | Модель | Назначение |
+|------|--------|------------|
+| Рабочие агенты (1–6) | claude-haiku-4-5 | Быстрая обработка, оптимальна по стоимости |
+| Claims Manager | claude-sonnet-4-6 | Глубокий анализ качества решений |
+| Evaluator / Improver | claude-sonnet-4-6 | Извлечение оценок и перезапись инструкций |
+| LLM-Judge (бенчмарк) | claude-opus-4-6 | Внешняя объективная оценка |
+
+Haiku обеспечивает ~3-кратную экономию по сравнению с Sonnet при ~90% качества для структурированных задач.
+
+### 5.3. Человек в контуре принятия решений
+
+Система не является полностью автономной. Человеческий контроль встроен на трёх уровнях:
+
+**Уровень 1 — Голосовой канал.** Клиент всегда может попросить живого оператора. Бот автоматически переводит при обнаружении стресса, травм или невозможности идентифицировать клиента.
+
+**Уровень 2 — Эскалация внутри конвейера.** Автоматическая эскалация при:
+
+| Триггер | Источник | Причина |
+|---------|----------|---------|
+| fraud_score >= 46 | Fraud Analyst | Обвинение в мошенничестве требует человеческого суждения |
+| Сумма > $25 000 | Senior Reviewer | Высокая цена ошибки |
+| decision = investigate/referred | Senior Reviewer | Агент сигнализирует о неуверенности |
+| Противоречия между агентами | Claims Manager | Качество передачи = insufficient |
+
+**Уровень 3 — Финальное утверждение.** Для определённых категорий заявок решение AI является рекомендацией, а не вердиктом. Живой специалист получает полный пакет данных и может утвердить, скорректировать или отклонить.
+
+**Принцип:** AI берёт объём и скорость, человек — ответственность и суждение. Простые случаи (стандартное столкновение, активный полис, низкий риск, сумма < $10 000) проходят автоматически.
+
+### 5.4. Два контура системы
+
+Система работает в двух режимах, каждый со своей ролью самообучающегося цикла:
+
+**Контур 1 — Разработка (до хакатона).** `loop.py` автоматически прогоняет 30 сценариев, собирает оценки Claims Manager и перезаписывает инструкции слабых агентов. Результат: набор оптимизированных инструкций, прошедших 10+ итераций улучшения.
+
+**Контур 2 — Продакшен (на хакатоне).** `runner.py` обрабатывает заявки с готовыми инструкциями. Claims Manager по-прежнему оценивает качество (это часть конвейера), но Improver **не запускается автоматически** — инструкции стабильны.
+
+**Мост между контурами.** При появлении нового бизнес-контекста (Secret Addition) — ручной запуск `loop.py --iterations 2` для адаптации инструкций, затем возврат в контур продакшена.
+
+**Почему так:** стабильность продакшена (агенты работают предсказуемо) + адаптивность при необходимости (1–2 итерации обучения достаточно для перенастройки).
+
+---
+
+## 6. Описание агентов
+
+***Каждый из семи агентов выполняет строго одну роль. Агенты 2–6 дополнительно оценивают качество входных данных от предыдущего агента (взаимная оценка).***
+
+### 6.1. Front Desk — приём заявок
+
+**Роль:** Первая точка контакта. Регистрирует случай, категоризирует инцидент, оценивает серьёзность и приоритет. Получает только данные о заявке — не получает данные полиса.
+
+**Ключевые поля вывода:** claim_id, category (collision / comprehensive / hit_and_run / collision_with_injury / theft / vandalism), severity (low / moderate / high), priority (urgent / high / standard / low), fnol_complete, missing_info, summary.
+
+**Правила:** Категоризация обязательна даже при неполных данных. При травмах — `_with_injury`. Отсутствие полицейского отчёта при ущербе > $1 000 помечается. Не оценивает покрытие, не определяет мошенничество.
+
+### 6.2. Claims Officer — проверка покрытия
+
+**Роль:** Проверяет действительность полиса, определяет применимое покрытие, франшизу и лимиты. Один из трёх агентов с доступом к полису.
+
+**Ключевые поля вывода:** policy_status, coverage_valid (true / false / "partial"), coverage_type, deductible, coverage_limit, exclusions_triggered, recommendation (proceed / deny / partial_deny / escalate).
+
+**Правила:** Истёкший полис — рекомендация к отказу. При нескольких вариантах покрытия — выбирает наиболее выгодный для клиента. Полисы моложе 60 дней помечаются для Fraud Analyst. Не принимает решений — только подтверждает или опровергает покрытие. **Взаимная оценка:** оценивает Front Desk.
+
+### 6.3. Assessor — оценка ущерба
+
+**Роль:** Оценивает физический ущерб, рассчитывает стоимость ремонта, определяет полную гибель. Не получает данные полиса.
+
+**Ключевые поля вывода:** damage_catalog, repair_estimate.total, vehicle_acv, total_loss, total_loss_ratio, consistency_flags.
+
+**Правила:** Полная гибель определяется по правилу 75% от ACV (см. раздел 4), а также при критических структурных повреждениях, затоплении, пожаре. Стоимость ремонта включает 10–15% на скрытые повреждения. Несоответствия фиксируются для Fraud Analyst. При отказе в покрытии — паттерн пропуска (см. 7.3). **Взаимная оценка:** оценивает Claims Officer.
+
+### 6.4. Fraud Analyst — анализ мошенничества
+
+**Роль:** Специалист SIU. Анализирует заявку на признаки мошенничества, рассчитывает балл риска (0–100). Не получает данные полиса напрямую, видит выводы Claims Officer.
+
+**Система оценки (0–100 баллов по четырём категориям):**
+
+| Категория | Макс. | Примеры индикаторов |
+|-----------|-------|---------------------|
+| Хронология | 25 | Полис < 30 дней (+15), заявка > 30 дней после ДТП (+10) |
+| Обстоятельства | 25 | Нет полицейского отчёта при > $2 000 (+10), ночь (+5), нет свидетелей (+5) |
+| Ущерб / медицина | 25 | Медрасходы несоразмерны повреждениям (+15), повреждения не соответствуют описанию (+12) |
+| Поведение | 25 | 2+ заявки за 3 года (+10), давление на ускорение (+10), общий адрес сторон (+15) |
+
+**Уровни риска:** low (0–20), moderate (21–45), high (46–70), critical (71–100).
+
+**Известные схемы:** подставные столкновения (Swoop-and-Squat), фиктивные аварии (Paper Accidents), завышение ущерба (Inflated Claims), задним числом (Past-Posting), ложный угон (Owner Give-Up), несуществующие пассажиры (Phantom Passengers), сеть мошеннических клиник (Medical Mill).
+
+**Правила:** Никогда не обвинять — формулировки "indicators present", "elevated risk". Каждый балл подтверждён наблюдением. SIU — только при score > 70 или явной организованной схеме. При отказе в покрытии — паттерн пропуска (см. 7.3). **Взаимная оценка:** оценивает Assessor.
+
+### 6.5. Senior Reviewer — финальное решение
+
+**Роль:** Принимает итоговое решение, синтезируя данные всех предыдущих агентов. Последняя линия защиты компании и финальный защитник прав заявителя. Один из трёх агентов с доступом к полису.
+
+**Матрица принятия решений:**
+
+| Покрытие | Риск мошенничества | Повреждения консистентны | Решение |
+|----------|-------------------|-------------------------|---------|
+| Да | Низкий | Да | Одобрено |
+| Да | Умеренный | Да | Одобрено + расширенная документация |
+| Да | Умеренный | Есть флаги | Расследование |
+| Да | Высокий/Критический | Любые | Расследование / Направление в SIU |
+| Частичное | Низкий | Да | Частичное одобрение |
+| Нет | Любой | Любые | Отказ |
+
+**Ключевые поля вывода:** decision (approved / approved_partial / investigate / denied / referred), approved_amount, deductible_applied, coverage_used, payout_breakdown, compliance_checklist.
+
+**Право на переопределение:** Может пересмотреть рекомендации нижестоящих с обоснованием. **Не может:** одобрить без покрытия, игнорировать критический fraud_score без SIU. При decision = investigate/referred или сумме выше порога — решение является рекомендацией для живого специалиста. **Взаимная оценка:** оценивает Fraud Analyst.
+
+### 6.6. Finance — исполнение выплаты
+
+**Роль:** Исполняет одобренные выплаты, управляет суброгацией, обрабатывает аренду подменного авто. Третий агент с доступом к полису.
+
+**Ключевые поля вывода:** payment_authorized, payment_details (сумма, расчёт, метод, получатель), subrogation (applicable, target_insurer, demand_amount), rental_reimbursement, financial_summary.
+
+**Формулы расчёта:**
+- Ремонт: MIN(одобренная сумма − франшиза, лимит покрытия)
+- Полная гибель: MIN(ACV − франшиза − стоимость остатков, лимит) + аренда ТС
+- Медицинские (PIP/MedPay): MIN(медицинская сумма, лимит MedPay), обычно без франшизы
+
+**Правила:** Выплата невозможна без одобрения Senior Reviewer. Сумма не может превышать лимит полиса. Все расчёты прозрачны — "покажи математику". При залогодержателе — двусторонний чек. Суброгация в течение 30 дней. Если цифры не сходятся — остановка и эскалация. **Взаимная оценка:** оценивает Senior Reviewer.
+
+### 6.7. Claims Manager — контроль качества
+
+**Роль:** Управляющий контроля качества. Не является частью основной цепочки — запускается после всех шести агентов и оценивает каждый этап. Работает на claude-sonnet-4-6.
+
+**Ключевые поля вывода:** agent_grades (0–100 по каждому агенту), handoff_chain (quality: sufficient / partial / insufficient), weakest_agent, overall_score (0–100), verdict (handled_correctly / needs_revision / escalate), improvement_notes.
+
+**Шкала оценки:** 90–100 = превосходно, 80–89 = хорошо, 70–79 = приемлемо, 60–69 = требует доработки, < 60 = неудовлетворительно.
+
+**Роль в обучающем цикле:** Поле `improvement_notes` — основной сигнал для Improver. Для агентов с оценкой ниже 80 Manager формулирует конкретную инструкцию: не "Assessor должен быть тщательнее", а "Assessor не рассчитал запас на скрытые повреждения. Добавить: всегда 10–15% supplemental."
+
+---
+
+## 7. Поток данных между агентами
+
+***Данные проходят по принципу накопления: каждый следующий агент получает оригинальную заявку и все предыдущие результаты, но доступ к полису ограничен.***
+
+### 7.1. Формирование входных данных
+
+Для каждого агента автоматически собирается сообщение из блоков:
+
+1. **Incoming Claim** — оригинальные данные заявки (всегда).
+2. **Policy Data** — данные полиса (только для агентов с доступом).
+3. **Результаты предыдущих агентов** — JSON-выход каждого предшественника.
+4. **Your Task** — инструкция по формату ответа.
+
+### 7.2. Избирательная подача данных полиса
+
+Ключевое архитектурное решение: данные полиса получают только три агента из шести.
+
+| Агент | Доступ к полису | Причина |
+|-------|-----------------|---------|
+| Front Desk | Нет | Фиксирует факты инцидента, не делает выводов о покрытии |
+| Claims Officer | **Да** | Основная задача — проверка покрытия |
+| Assessor | Нет | Оценивает ущерб по факту, независимо от покрытия |
+| Fraud Analyst | Нет | Анализирует паттерны; данные покрытия — из вывода Claims Officer |
+| Senior Reviewer | **Да** | Принимает финальное решение, нужна полная картина |
+| Finance | **Да** | Рассчитывает выплату по лимитам и франшизе |
+
+Принцип: каждый агент видит только необходимое. Assessor не занижает оценку из-за низкого лимита, Fraud Analyst не смещает анализ в зависимости от суммы полиса.
+
+### 7.3. Паттерн пропуска при отказе в покрытии
+
+Когда Claims Officer определяет `coverage_valid = false`, конвейер **не останавливается**. Все последующие агенты продолжают выполняться:
+
+1. Claims Officer → `coverage_valid: false`.
+2. Assessor → `{"action": "skip", "reason": "no_coverage"}` вместо полной оценки.
+3. Fraud Analyst → аналогично `action: "skip"`.
+4. Senior Reviewer → формализует отказ с указанием пункта полиса.
+5. Finance → уведомление об отказе без выплаты.
+
+Конвейер не останавливается, чтобы каждый агент оставил запись для аудиторского следа, а Senior Reviewer мог применить переопределение.
+
+### 7.4. Цепочка взаимных оценок
+
+Каждый агент, начиная со второго, оценивает входные данные от предыдущего через поле `input_assessment` по трёхуровневой шкале: **sufficient / partial / insufficient**. Claims Manager использует эти оценки как сигналы при выставлении баллов.
+
+### 7.5. Схема полного потока
 
 ```
-Score = Rule-Based Score × 0.40 + LLM-Judge Score × 0.60
+Заявка ──────────────────────────────────────────────────────────────────►
+Полис ────────────── ┐            ┌──────────── ┐     ┌───────────────── │
+                     ▼            ▼             ▼     ▼                  ▼
+ Front Desk → Claims Officer → Assessor → Fraud Analyst → Senior Reviewer → Finance
+                (+полис)                                     (+полис)       (+полис)
+     │              │             │            │              │              │
+     └──────────────┴─────────────┴────────────┴──────────────┴──────────────┘
+                                  │
+                                  ▼
+                          Claims Manager (claude-sonnet)
+                          + полис + все результаты
+                                  │
+                                  ▼
+                          improvement_notes → Improver
 ```
 
-This is not a single number — it is computed per agent, then averaged across
-all six agents for a final pipeline score.
+---
+
+## 8. Голосовой канал ClawdTalk
+
+***Голосовой помощник заменяет оператора на первой линии: принимает звонок, проверяет личность, собирает данные и передаёт заявку в конвейер.***
+
+### 8.1. Архитектура
+
+```
+Клиент звонит → ClawdTalk / Telnyx (STT/TTS) → WebSocket-клиент
+→ OpenClaw Gateway → Main Voice Orchestrator
+→ Pre-auth (Caller ID + PIN + проверка полиса)
+→ 6-агентный конвейер → Голосовая сводка клиенту
+```
+
+ClawdTalk обеспечивает телефонию: распознавание речи (STT), синтез голоса (TTS) и выделенный номер. WebSocket-клиент подключается исходящим соединением — шлюз не требует публичного IP.
+
+### 8.2. Предварительная аутентификация
+
+1. **Caller ID** — определение клиента по номеру телефона.
+2. **PIN-код** — клиент называет PIN, заданный при регистрации полиса.
+3. **Проверка полиса** — подтверждение, что полис активен.
+
+Если любой шаг не пройден — перевод на живого оператора.
+
+### 8.3. Эскалация на оператора
+
+| Триггер | Действие бота |
+|---------|---------------|
+| Клиент просит оператора | Немедленный перевод |
+| Есть пострадавшие или травмы | Перевод с передачей собранных данных |
+| Не удалось подтвердить личность | Перевод |
+| Полис не найден или истёк | Сообщение о статусе, перевод |
+| Сложный случай | Перевод с пометкой "требует внимания" |
+| Бот не понимает клиента (3+ попытки) | Перевод с извинением |
+| Стресс или агрессия | Эмпатичный перевод |
+
+Ключевой принцип: **клиент всегда имеет право на живого оператора** — без объяснений, без ожидания, без повторной идентификации.
+
+### 8.4. Операционные улучшения
+
+| Параметр | До (вручную) | После (ClawdTalk) |
+|----------|-------------|-------------------|
+| Время приёма заявки | 15–25 минут | 3–5 минут |
+| Доступность | 8:00–17:00 | 24/7 |
+| Ошибки при вводе | Часто | Минимум (структурированный сбор) |
+| Очередь на линии | Да | Нет (бот параллельно) |
+
+### 8.5. Экономика
+
+При 1 000 заявок/месяц: бот берёт ~80% простых случаев, высвобождая 1.5–2 ставки оператора. Экономия ~$50 000–70 000/год при стоимости ClawdTalk Pro + API ~$7 000/год.
 
 ---
 
-### Rule-Based Component (40% of score)
+## 9. Бизнес-приоритеты и цена ошибки
 
-The rule-based component checks objective, verifiable properties of each
-agent's output:
+***Приоритеты ранжированы по стоимости ошибки: от критических (мошенничество — сотни тысяч долларов) до базовых (пропуск суброгации — медленная накапливающаяся потеря). Каждый привязан к конкретным агентам.***
 
-- **Field presence:** Did the agent return all required fields?
-- **Value correctness:** Does the decision match the expected outcome (approved,
-  denied, flagged)?
-- **Numeric accuracy:** Does the damage estimate fall within an acceptable range?
-- **Flag detection:** Did the fraud analyst flag the patterns that should have
-  been detected?
-- **Threshold compliance:** Did the assessor correctly identify total loss when
-  repair cost exceeded 75% of ACV?
+### КРИТИЧЕСКИЙ: Выявление мошенничества
 
-These checks are deterministic and fast. They verify *what* was produced.
-A score of 100 on this component means the output had the right structure and
-the right values — but says nothing about whether the reasoning behind those
-values was sound.
+**Типичные схемы:** инсценированные аварии (swoop-and-squat), завышенные счета, несуществующие пассажиры, несоответствие повреждений описанию.
+
+**Цена ошибки:** Одна инсценированная авария — $50 000–$150 000 выплат + расследование + суды. На уровне индустрии ~15% всех выплат по автострахованию в США — мошеннические. Расходы перекладываются на честных клиентов через повышение премий.
+
+**Метрики:** fraud_score, risk_level, качество аргументации. **Ответственные:** Fraud Analyst (первичный), Senior Reviewer (контроль).
 
 ---
 
-### LLM-Judge Component (60% of score)
+### ВЫСОКИЙ: Валидация покрытия
 
-The LLM judge evaluates properties that rules cannot capture:
+**Обязательные проверки Claims Officer:** полис активен на дату инцидента, премии оплачены, тип покрытия соответствует инциденту, нет сработавших исключений, определены франшиза и лимиты.
 
-- **Correctness:** Did the agent reach the right conclusion given all available
-  information?
-- **Completeness:** Did the agent address all aspects of its role, or did it
-  ignore relevant context?
-- **Business logic:** Would a real claims professional approve of this decision?
-  Does it follow insurance norms and company policy?
-- **Format compliance:** Is the output structured correctly for downstream agents
-  to consume?
-- **Reasoning quality:** Is the chain of reasoning documented, defensible, and
-  free of contradictions?
-
-The LLM judge score carries more weight (60%) because it evaluates *why* a
-decision was made — not just what the decision was. In insurance, an incorrect
-decision made for defensible reasons is recoverable through review. An incorrect
-decision made for bad or absent reasons is a systemic risk.
+**Цена ошибки в обе стороны:** оплата непокрытого случая — чистый убыток + правовой прецедент. Отказ в покрытом случае — иск о недобросовестности (bad faith) и регуляторные штрафы.
 
 ---
 
-### Why This Split
+### ВЫСОКИЙ: Маршрутизация покрытия
 
-Rule-based checks are fast, cheap, and deterministic — but they only catch
-structural errors. An agent could return all the right fields with plausible
-numbers while still applying completely wrong business logic. The LLM judge
-catches this class of error.
-
-Conversely, the LLM judge has variance — it can be lenient or strict depending
-on how a judgment call is framed. Rule-based checks anchor the score to
-objective ground truth. Together, the 60/40 split balances deterministic
-accuracy with qualitative judgment.
+Когда несколько типов покрытия применимы — выбрать наиболее выгодный для клиента. Пример: замена стекла по Collision (франшиза $500) или по Comprehensive (франшиза $50) — разница $450 из кармана клиента. Неверная маршрутизация → жалобы, эскалации, регуляторные обращения.
 
 ---
 
-### Passing Threshold: 85/100
+### СРЕДНИЙ: Оценка ущерба
 
-A pipeline score of 85 or above is considered production-ready. Below that
-threshold, any agent scoring under 90 has its system prompt automatically
-revised based on the evaluation feedback, and the pipeline is retrained.
-
-This threshold is deliberately conservative. At 85, the system is reliable
-enough to process claims without human review on standard cases, while leaving
-room for improvement on edge cases and ambiguous scenarios.
+Правило полной гибели (см. раздел 4) — регуляторное требование. Пропуск total loss → штрафы от Ohio DOI. Завышение или занижение оценки → переплата или иск о недобросовестности.
 
 ---
 
-### How Business Priorities Map to the Metric
+### БАЗОВЫЙ: Идентификация суброгации
 
-| Business Priority | What the Metric Measures |
-|---|---|
-| Fraud Detection | Fraud flags detected vs. expected; reasoning about suspicious patterns |
-| Coverage Validation | Correct covered/denied decision; exclusion identification |
-| Coverage Routing | Optimal coverage type selected; deductible minimized for customer |
-| Damage Assessment | Estimate within acceptable range; total loss threshold applied correctly |
-| Subrogation | Third-party liability identified; recovery action initiated |
+Страховая платит своему клиенту, затем взыскивает со страховой виновника. Применимо, когда другой водитель виновен, у него есть страховка и известны данные. Нет немедленного кризиса, но накопленные пропуски — сотни тысяч долларов в год.
 
-Each business priority has both a rule-based dimension (did the right fields
-appear with the right values?) and an LLM-judge dimension (was the decision
-reached in a way that a professional would endorse?). The combined score
-captures both.
+---
+
+## 10. Система оценки и бенчмарк
+
+***Два независимых механизма: внутренний (Claims Manager) для тренировочного цикла и внешний бенчмарк (автоматические проверки + LLM-судья) для итогового измерения.***
+
+### 10.1. Внутренняя оценка (Claims Manager)
+
+Claims Manager — 7-й агент, выступающий одновременно участником обработки и внутренним оценщиком. После отработки всех 6 агентов, Manager:
+
+- Выставляет каждому балл 0–100 по пяти критериям: точность, полнота, бизнес-логика, качество вывода, готовность к передаче.
+- Оценивает качество каждой передачи: sufficient / partial / insufficient.
+- Определяет самого слабого агента.
+- Формирует конкретные инструкции по улучшению для агентов с баллом < 80.
+- Выносит общий вердикт: handled_correctly / needs_revision / escalate.
+
+**Важно:** модуль evaluator.py **не вызывает** дополнительную LLM-модель. Он просто извлекает оценки из поля `manager_eval` в результатах прогона. Manager — единственный источник тренировочного сигнала.
+
+### 10.2. Внешний бенчмарк
+
+**Формула:** `benchmark_score = assertions_pass_rate × 0.40 + llm_judge_overall × 0.60`
+
+**Автоматические проверки (40%):** наличие обязательных полей, корректность значений, числовая точность, обнаружение обязательных флагов, соблюдение регуляторных порогов. 310 проверок по 30 сценариям (202 критические, 108 не-критические).
+
+**LLM-судья (60%):** корректность, полнота, бизнес-логика, качество рассуждений, формат. Модель claude-opus-4-6 — сильнее и Manager, и Improver.
+
+### 10.3. Зачем два механизма
+
+| | Тренировочная (Manager) | Бенчмарк (проверки + судья) |
+|---|---|---|
+| Назначение | Обратная связь для цикла | Объективное измерение |
+| Источник | 7-й агент в конвейере | Внешние проверки + отдельная LLM |
+| Модель | claude-sonnet-4-6 | claude-opus-4-6 |
+| Запуск | Автоматически на каждой итерации | Вручную, для замера прогресса |
+
+Manager даёт быструю обратную связь. Бенчмарк — независимую проверку, чтобы Manager не "подыгрывал" агентам.
+
+---
+
+## 11. Цикл самоулучшения
+
+***Контур разработки: система автоматически прогоняет сценарии, собирает оценки Manager и перезаписывает инструкции слабых агентов. В контуре продакшена цикл запускается вручную при необходимости адаптации к новым бизнес-правилам (см. 5.4).***
+
+### 11.1. Три фазы итерации
+
+**Фаза 1 — Прогон.** 30 сценариев через 6-агентный конвейер + Claims Manager. Результаты → `logs/iter_NNN/TC-XXX/pipeline.json`.
+
+**Фаза 2 — Оценка.** Модуль evaluator.py извлекает оценки Manager: баллы, вердикт, слабейший агент, рекомендации. Результаты → `logs/iter_NNN/TC-XXX/eval.json`.
+
+**Фаза 3 — Улучшение.** Модуль improver.py анализирует оценки и перезаписывает инструкции агентов ниже порога.
+
+### 11.2. Критерии улучшения
+
+Improver проверяет условия последовательно для каждого агента:
+
+1. **Балл >= 90 и нет improvement_notes** → пропустить (агент работает хорошо).
+2. **Балл >= 85, нет improvement_notes и нет issues** → пропустить (допустимый уровень).
+3. **Всё остальное** → перезаписать инструкцию (средний балл < 85 или есть обратная связь от Manager).
+
+На практике это означает: любой агент с баллом ниже 85 или получивший improvement_notes от Manager попадает под перезапись. Агент, чаще всего отмеченный как weakest_agent по всем сценариям, получает приоритет.
+
+### 11.3. Как работает Improver
+
+Improver (claude-sonnet-4-6) — "тренер" агентов:
+
+1. Читает текущую инструкцию агента.
+2. Получает improvement_notes от Manager — первичный сигнал.
+3. Получает список issues и strengths по сценариям.
+4. Генерирует полностью новую инструкцию (целый текст, не diff).
+5. Сохраняет резервную копию в `agents/backups/iter_NNN/`.
+
+Правила: сохранять бизнес-правила и формат вывода, добавлять конкретику и примеры для слабых мест, не удалять работающие правила.
+
+### 11.4. Управление циклом
+
+| Параметр | По умолчанию | Описание |
+|----------|-------------|----------|
+| Максимум итераций | 10 | Жёсткий потолок |
+| Целевой балл | 85/100 | Цикл останавливается при достижении |
+| Плато | Автоматически | Остановка, если ни один агент не улучшен |
+
+**Ручной режим (контур продакшена).** В продакшене цикл не запускается автоматически. При необходимости адаптации (например, Secret Addition) — ручной запуск `loop.py --iterations 2` с последующей проверкой через `benchmark.py --no-llm-judge`.
+
+---
+
+## 12. Тестовые сценарии
+
+***30 сценариев покрывают весь спектр: от простого столкновения до инсценированной аварии.***
+
+### 12.1. Распределение по сложности
+
+| Сложность | Примеры | Количество |
+|-----------|---------|------------|
+| Лёгкий | Стандартное столкновение, истёкший полис, обычная comprehensive-заявка | ~10 |
+| Средний | Подозрительная заявка, полная гибель, исключённое покрытие, частичное покрытие | ~12 |
+| Сложный | Инсценированная авария, hit-and-run, граничный total loss, многостороннее ДТП | ~8 |
+
+### 12.2. Структура сценария
+
+Каждый сценарий содержит: входные данные (инцидент, полис, клиент, ТС), автоматические проверки с уровнем критичности, бизнес-правила и критерии для LLM-судьи.
+
+### 12.3. Статистика
+
+| Метрика | Значение |
+|---------|----------|
+| Всего сценариев | 30 |
+| Всего проверок | 310 (202 критических, 108 не-критических) |
+| Бизнес-правил | 76 |
+
+Критические проверки — поля, ошибка в которых означает неверное бизнес-решение (coverage_valid, total_loss, fraud_score, decision).
+
+---
+
+## 13. Нефункциональные требования
+
+***Лёгкий прототип с минимальными зависимостями, неизменяемой обработкой данных и иерархическим логированием.***
+
+**Производительность:** Конвейер последовательный. Один вызов LLM ~2–5 с. Один сценарий ~15–30 с. Полный прогон 30 сценариев ~8–15 минут.
+
+**Зависимости:** Python stdlib + SDK `anthropic`. Никаких баз данных, фреймворков или внешних сервисов.
+
+**Неизменяемость данных:** Агенты возвращают новые объекты, никогда не мутируют входные данные. Каждый агент добавляет свой вывод как новый блок в накопительный контекст.
+
+**Обработка ошибок:** Парсинг JSON с запасным вариантом: невалидный JSON оборачивается и записывается. Конвейер не падает целиком при ошибке одного агента.
+
+**Логирование:** Иерархическая структура `logs/iter_NNN/TC-XXX/`. Результаты оценки рядом с прогоном. Резервные копии инструкций в `agents/backups/iter_NNN/`. Общая сводка в `results/loop_summary.json`.
+
+---
+
+## 14. Ключевые риски
+
+***Риски делятся на два класса: ошибки бизнес-логики (агент принимает неверное решение) и системные (архитектурные проблемы, влияющие на весь конвейер).***
+
+### Риски бизнес-логики
+
+| Риск | Агент-источник | Как обнаруживаем | Критичность |
+|------|---------------|------------------|-------------|
+| Пропущенное мошенничество | Fraud Analyst | fraud_score ниже порога для suspicious-сценариев | Критический |
+| Оплата непокрытого случая | Claims Officer | coverage_valid=true при истёкшем полисе или исключении | Критический |
+| Пропуск полной гибели | Assessor | total_loss=false при ratio >= 0.75 | Высокий |
+| Неоптимальная франшиза | Claims Officer | Collision вместо Comprehensive при возможности | Высокий |
+| Пропуск суброгации | Finance | subrogation.applicable=false при наличии виновника | Средний |
+| Одобрение при SIU-флаге | Senior Reviewer | decision=approved при risk_level = high/critical | Критический |
+| Платёж без одобрения | Finance | payment_authorized=true при decision ≠ approved | Критический |
+
+### Системные риски
+
+**Галлюцинации модели.** Агенты могут генерировать правдоподобные, но фактически неверные данные — особенно числовые. *Снижение:* автоматические проверки против эталонных диапазонов, LLM-судья оценивает обоснованность, взаимная оценка позволяет downstream-агентам сигнализировать о несоответствиях.
+
+**Каскадные ошибки.** Ошибка раннего агента отравляет все последующие решения. *Снижение:* оценка качества передач Claims Manager, взаимная оценка, автоматические проверки на каждом этапе.
+
+**Предвзятость единственного оценщика.** Manager — единственный источник тренировочного сигнала. Если его инструкция содержит слепые зоны, они систематически искажают обучение. *Снижение:* разделение на два канала — детерминированные проверки (40%) и внешний LLM-судья (60%).
+
+**Неопределённость Secret Addition.** На хакатоне будет добавлен новый контекст. Если инструкции содержат жёсткие правила, агенты не адаптируются. *Снижение:* инструкции учат рассуждать, а не следовать шаблонам. Цикл самоулучшения может перенастроить инструкции за 1–2 итерации.
+
+---
+
+## 15. Критерии успеха хакатона
+
+***Что оценивает жюри и почему наш подход даёт преимущество.***
+
+### 15.1. Структура оценки
+
+10 минут на команду: 5 минут презентация + 5 минут вопросы.
+
+| Критерий | Вес | Что оценивается |
+|----------|-----|-----------------|
+| **Бизнес-мышление** | 50% | Защита каждого решения с позиции страхового бизнеса, понимание домена |
+| **Системное мышление** | 50% | Работоспособность end-to-end, логичность многоагентного дизайна, устойчивость |
+
+### 15.2. Наша стратегия: бизнес
+
+- **Регуляторные требования:** total loss при > 75% ACV — закон. Bad faith — реальный судебный риск. Ohio DOI штрафует за системные нарушения.
+- **Бизнес-приоритеты с конкретикой:** мошенничество (15% выплат), ошибки покрытия (дорого в обе стороны), оптимальная маршрутизация, суброгация.
+- **Полный путь клиента:** автоматизация всех 7 этапов от звонка до выплаты, включая ClawdTalk.
+- **ROI:** экономия $50–70K/год при стоимости ~$7K/год.
+
+### 15.3. Наша стратегия: система
+
+- **Последовательный конвейер с полным контекстом:** каждый агент получает все предыдущие выходы.
+- **Claims Manager как 7-й агент:** встроенный контроль качества с оценками 0–100 по каждому агенту.
+- **Самообучающийся цикл:** Run → Evaluate → Improve → Repeat — без ручного вмешательства.
+- **Разделение моделей:** Haiku для работников, Sonnet для управления — оптимизация стоимость/качество.
+- **Голосовой канал как отдельный слой:** отвечает за телефонию, конвейер — за решения.
+
+### 15.4. Готовность к Secret Addition
+
+> "Plan for human reasoning; your thinking should not be hardcoded."
+
+Инструкции агентов учат рассуждать, а не следовать шаблонам. Claims Manager формулирует инструкции, а не фиксированные правила. 30 сценариев с 310 проверками покрывают спектр от простых до граничных случаев.
+
+**План адаптации к Secret Addition:**
+
+1. Обновить входные данные сценариев с учётом нового бизнес-контекста.
+2. Запустить 1–2 итерации цикла самоулучшения: `loop.py --iterations 2`.
+3. Проверить бенчмарк: `benchmark.py --no-llm-judge`.
+4. Продолжить работу в контуре продакшена с адаптированными инструкциями.
+
+### 15.5. Конкурентные преимущества
+
+| Преимущество | Почему выделяет |
+|--------------|-----------------|
+| Claims Manager | 7-й агент оценивает остальных шестерых — встроенный контроль качества |
+| Самообучающийся цикл | Manager → Improver → обновлённые инструкции — замкнутый цикл |
+| Голосовой канал | Полный путь клиента, экономия $50–70K/год |
+| 30 сценариев + 310 проверок | Автоматический бенчмарк, измеримое улучшение |
+| Человек в контуре | AI готовит данные, человек принимает решение по сложным случаям |
+| Разделение моделей | Haiku для работников, Sonnet для управления |
+
+---
+
+## 16. Вне охвата и ограничения
+
+***Прототип для хакатона. Ряд компонентов сознательно исключён.***
+
+### Не реализовано
+
+| Компонент | Причина |
+|-----------|---------|
+| Реальная платёжная система | Finance формирует решение, не проводит транзакцию |
+| Реальная база полисов | Тестовые фикстуры в JSON |
+| Реальное расследование мошенничества | Направление в SIU — конечное состояние |
+| Анализ фотографий | Оценка текстовая, без компьютерного зрения |
+| Веб-интерфейс | Только CLI и голосовой канал |
+| Многоязычность | Инструкции агентов только на английском |
+
+### Известные ограничения
+
+- **Последовательная обработка** — параллельная обработка нескольких заявок не реализована.
+- **Каскадные ошибки** — ошибка раннего агента распространяется на все шаги.
+- **Человек в контуре — по дизайну, не в реальном времени** — эскалация предусмотрена, но человеческое вмешательство моделируется.
+- **Фиксированный набор покрытий** — новые типы требуют изменения инструкций.
+- **Тренировочный сигнал от одной модели** — Manager как единственный источник обратной связи.
+
+---
+
+## 17. Как запустить
+
+***Достаточно Python, SDK Anthropic и API-ключа.***
+
+### 17.1. Установка
+
+```bash
+cd openclaw-hackathon
+pip install -r requirements.txt
+export ANTHROPIC_API_KEY='sk-ant-...'
+```
+
+### 17.2. Тренировочный цикл
+
+```bash
+# Пробный прогон (один прогон + оценка)
+python loop.py --run-once
+
+# Конкретный сценарий
+python loop.py --run-once --scenario TC-005
+
+# Полный тренировочный цикл (10 итераций)
+python loop.py --iterations 10
+
+# Оценка без перезаписи инструкций
+python loop.py --dry-run
+
+# Пользовательские параметры
+python loop.py --iterations 5 --passing-score 90
+```
+
+### 17.3. Бенчмарк
+
+```bash
+# Быстрый бенчмарк (только автоматические проверки)
+python3 benchmark.py --no-llm-judge
+
+# Бенчмарк конкретной итерации
+python3 benchmark.py --iter 0
+
+# История итераций
+python3 benchmark.py --history
+```
+
+### 17.4. Где искать результаты
+
+| Что | Где |
+|-----|-----|
+| Логи прогона | `logs/iter_NNN/TC-XXX/pipeline.json` |
+| Результаты оценки | `logs/iter_NNN/TC-XXX/eval.json` |
+| Сводка по итерациям | `results/loop_summary.json` |
+| Прогресс агентов | `results/agent_progress/{agent}.json` |
+| Резервные копии инструкций | `agents/backups/iter_NNN/{agent}.md` |
+
+---
+
+## 18. Глоссарий
+
+***Три области терминологии: страховой домен, системные термины, голосовой канал.***
+
+### Страховые термины
+
+| Термин | Определение |
+|--------|------------|
+| **ACV (Actual Cash Value)** | Рыночная стоимость автомобиля на момент инцидента с учётом износа |
+| **Недобросовестность (Bad Faith)** | Необоснованный отказ, затягивание или занижение суммы страховой компанией. Влечёт судебные иски и регуляторные штрафы |
+| **BI/PD** | Два компонента Liability: вред здоровью (BI) и имуществу (PD) третьих лиц |
+| **Лимит покрытия** | Максимальная сумма выплаты по конкретному типу покрытия |
+| **Франшиза (deductible)** | Сумма, которую клиент оплачивает до начала страховой выплаты |
+| **Исключение (exclusion)** | Обстоятельство, дающее право на отказ: DUI, коммерческое использование, гонки, умысел |
+| **FNOL** | Первичное уведомление о страховом случае |
+| **Liability** | Покрытие ответственности перед третьими лицами (аналог ОСАГО) |
+| **No-fault** | Система, при которой каждый водитель обращается в свою страховую вне зависимости от виновности |
+| **PIP/MedPay** | Покрытие медицинских расходов водителя и пассажиров вне зависимости от виновности |
+| **SIU** | Подразделение по расследованию мошенничества |
+| **Суброгация** | Право страховой предъявить требования к виновнику для возврата выплаченных средств |
+| **Tort** | Система, при которой виновник несёт финансовую ответственность |
+| **Полная гибель (total loss)** | Ремонт > 75% от ACV — авто признаётся невосстановимым, выплачивается ACV |
+| **UM/UIM** | Покрытие при отсутствии или недостаточности страховки виновника |
+
+### Схемы мошенничества
+
+| Схема | Определение |
+|-------|------------|
+| **Подставное столкновение (Swoop-and-Squat)** | Умышленная провокация наезда сзади с множеством "пострадавших" пассажиров |
+| **Фиктивная авария (Paper Accident)** | Аварии не было — документация сфабрикована |
+| **Завышение ущерба (Inflated Claims)** | Реальная авария, но ремонт или лечение завышены |
+| **Задним числом (Past-Posting)** | Инцидент произошёл до начала действия полиса |
+| **Ложный угон (Owner Give-Up)** | Владелец организует уничтожение или "кражу" автомобиля |
+| **Несуществующие пассажиры (Phantom Passengers)** | Вымышленные лица, якобы получившие травмы |
+| **Сеть мошеннических клиник (Medical Mill)** | Сеть провайдеров, выставляющих счета за ненужное лечение |
+
+### Системные термины
+
+| Термин | Определение |
+|--------|------------|
+| **Агент** | Автономный модуль конвейера с выделенной ролью на основе LLM и системной инструкции |
+| **Автоматические проверки (assertions)** | Детерминированные проверки выходных данных: наличие полей, корректность значений, пороговые правила |
+| **Бенчмарк** | Оценка качества по 30 сценариям: автоматические проверки (40%) + LLM-судья (60%) |
+| **Claims Manager** | Седьмой агент-оценщик, анализирующий работу шести агентов конвейера |
+| **Цепочка передач (handoff chain)** | Последовательность передач контекста. Качество: sufficient / partial / insufficient |
+| **Человек в контуре** | AI готовит данные, человек принимает финальное решение по сложным случаям |
+| **Improver (тренер)** | Модуль, перезаписывающий инструкции агентов с низким баллом |
+| **LLM-судья** | Качественная оценка решений сильной моделью (claude-opus-4-6) |
+| **Взаимная оценка (peer assessment)** | Каждый downstream-агент оценивает качество входных данных от предыдущего |
+| **Конвейер (pipeline)** | Цепочка из шести агентов, обрабатывающих заявку от регистрации до выплаты |
+| **Избирательная подача полиса** | Данные полиса получают только Claims Officer, Senior Reviewer и Finance |
+| **Паттерн пропуска (skip)** | Агент пропускает обработку (action="skip") при отказе в покрытии |
+| **Цикл самоулучшения** | Run → Evaluate → Improve → Repeat до достижения порога 85 баллов |
+
+### Термины ClawdTalk
+
+| Термин | Определение |
+|--------|------------|
+| **Caller ID** | Определение номера телефона для идентификации клиента |
+| **Шлюз (gateway)** | Точка входа телефонии для приёма и маршрутизации звонков |
+| **Предварительная аутентификация (pre-auth)** | Проверка личности по Caller ID и PIN до сбора данных |
+| **STT (Speech-to-Text)** | Преобразование голоса в текст |
+| **TTS (Text-to-Speech)** | Преобразование текста в голос |

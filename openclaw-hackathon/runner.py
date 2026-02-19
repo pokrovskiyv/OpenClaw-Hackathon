@@ -9,7 +9,7 @@ import sys
 import time
 from datetime import datetime, timezone
 
-from lib.config import AGENT_MODEL, AGENT_ORDER, AGENTS_DIR, CLAIMS_DIR, LOGS_DIR
+from lib.config import AGENT_MODEL, AGENT_ORDER, AGENTS_DIR, CLAIMS_DIR, LOGS_DIR, MANAGER_MODEL
 from lib.llm import call_llm_json
 
 
@@ -49,6 +49,55 @@ def build_user_message(agent_name: str, scenario: dict, pipeline_state: dict) ->
     )
 
     return "\n".join(parts)
+
+
+def build_manager_message(scenario: dict, pipeline_state: dict) -> str:
+    """Build the user message for the Claims Manager, including all agent outputs."""
+    parts = []
+
+    parts.append("## Original Claim\n```json\n" + json.dumps(scenario["input"], indent=2) + "\n```")
+    parts.append("\n## Policy Data\n```json\n" + json.dumps(scenario.get("policy", {}), indent=2) + "\n```")
+
+    for agent_name in AGENT_ORDER:
+        if agent_name in pipeline_state:
+            output = pipeline_state[agent_name]
+            parts.append(
+                f"\n## {agent_name.replace('_', ' ').title()} Output\n```json\n"
+                + json.dumps(output, indent=2)
+                + "\n```"
+            )
+
+    parts.append(
+        "\n## Your Task\n"
+        "Evaluate the quality of each agent's work on this claim. "
+        "Respond with ONLY a valid JSON object matching your output format. "
+        "No markdown, no explanation — just the JSON."
+    )
+
+    return "\n".join(parts)
+
+
+def run_manager(scenario: dict, pipeline_state: dict, verbose: bool = True) -> dict:
+    """Run the Claims Manager as the final evaluation step."""
+    if verbose:
+        print(f"  [manager] Evaluating pipeline...", end=" ", flush=True)
+
+    t0 = time.time()
+    system_prompt = load_agent_prompt("manager")
+    user_message = build_manager_message(scenario, pipeline_state)
+
+    try:
+        result = call_llm_json(system_prompt, user_message, MANAGER_MODEL)
+        elapsed = time.time() - t0
+        if verbose:
+            status = "✓" if not result.get("_parse_error") else "⚠ JSON parse error"
+            print(f"{status} ({elapsed:.1f}s)")
+        return result
+    except Exception as e:
+        elapsed = time.time() - t0
+        if verbose:
+            print(f"✗ Error: {e}")
+        return {"_error": str(e)}
 
 
 def run_pipeline(scenario: dict, verbose: bool = True) -> dict:
@@ -102,6 +151,11 @@ def run_pipeline(scenario: dict, verbose: bool = True) -> dict:
 
     run_log["completed_at"] = datetime.now(timezone.utc).isoformat()
     run_log["pipeline_state"] = pipeline_state
+
+    # ── Manager evaluation (peer-chain review) ──
+    manager_eval = run_manager(scenario, pipeline_state, verbose)
+    run_log["manager_eval"] = manager_eval
+    pipeline_state["manager"] = manager_eval
 
     return run_log
 

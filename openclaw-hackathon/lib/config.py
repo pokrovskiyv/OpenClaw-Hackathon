@@ -16,6 +16,9 @@ EVAL_MODEL = "claude-sonnet-4-6"
 # Model for improvement (the "coach") — strongest available
 IMPROVER_MODEL = "claude-sonnet-4-6"
 
+# Model for Claims Manager evaluation (peer-chain final reviewer)
+MANAGER_MODEL = "claude-sonnet-4-6"
+
 # --- Pipeline Configuration ---
 AGENT_ORDER = [
     "front_desk",

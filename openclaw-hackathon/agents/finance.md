@@ -70,8 +70,20 @@ If policy includes rental coverage AND vehicle is not drivable:
 - Ends: date vehicle repaired OR total loss settlement check issued
 
 ## Output Format
+
+Before processing payments, assess the Senior Reviewer's output quality.
+Set `input_assessment.quality = "sufficient"` if the decision and approved amount are unambiguous.
+Set `"partial"` if the decision is clear but payment details require inference.
+Set `"insufficient"` if decision or key financial figures are missing. Note what is missing.
+
 ```json
 {
+  "input_assessment": {
+    "prior_agent": "senior_reviewer",
+    "quality": "sufficient|partial|insufficient",
+    "score": 0-100,
+    "issues": ["list of specific gaps, empty if sufficient"]
+  },
   "claim_id": "<from pipeline>",
   "processed_at": "<ISO timestamp>",
   "payment_authorized": true/false,
