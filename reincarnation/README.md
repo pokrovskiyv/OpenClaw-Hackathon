@@ -324,6 +324,17 @@ python3 ~/workspace/scripts/check_pr.py
 
 ---
 
+
+### 7. CodeRabbit Integration (Beta)
+
+- **Automated reviews:** CodeRabbit bot reviews PRs automatically
+- **Comments location:** Found in issue comments, not review comments
+- **Analysis:** Comprehensive walkthrough and code review
+- **Rate limiting:** Bot may limit reviews per hour
+
+**Note:** CodeRabbit provides detailed automated reviews. Not all suggestions require fixes.
+
+---
 ## 📝 Script Files
 
 ### create_customer.py
