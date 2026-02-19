@@ -492,6 +492,37 @@ tailscale down
 tailscale up
 ```
 
+## 🔥 Firewall (UFW)
+
+**Configured to block all unnecessary ports**
+
+**Status:** Active  
+**Default Policy:** DENY incoming, ALLOW outgoing
+
+**Allowed Ports:**
+| Port | Protocol | Source | Purpose |
+|------|----------|--------|---------|
+| 22/tcp | TCP | Anywhere | SSH access |
+| Any | Any | 100.64.0.0/10 | Tailscale VPN |
+| 43482/tcp | TCP | 127.0.0.1 | Local Gateway only |
+
+**All other ports are BLOCKED!**
+
+**Commands:**
+```bash
+# Check status
+ufw status numbered
+
+# View verbose status
+ufw status verbose
+
+# Disable (emergency only)
+ufw disable
+
+# Reset to defaults
+ufw reset
+```
+
 ## 🔌 Configuration Files
 
 ### Customer Profile Structure
