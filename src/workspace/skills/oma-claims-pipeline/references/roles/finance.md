@@ -30,7 +30,7 @@ Before ANY payment:
 
 ### Payment Calculation
 
-```
+```text
 For REPAIR claims:
   Payment = MIN(approved_repair_amount - deductible, coverage_limit)
 
@@ -97,6 +97,12 @@ Validate Senior Reviewer handoff before payment execution:
 {
   "claim_id": "<from pipeline>",
   "processed_at": "<ISO timestamp>",
+  "input_assessment": {
+    "prior_agent": "senior_reviewer",
+    "quality": "sufficient|partial|insufficient",
+    "score": "<0-100>",
+    "issues": ["<handoff issue>"]
+  },
   "upstream_validation": {
     "status": "pass|soft_fail|hard_fail",
     "source": "senior_reviewer",
@@ -162,3 +168,4 @@ Validate Senior Reviewer handoff before payment execution:
 - If anything doesn't add up → STOP and escalate to Senior Reviewer
 - Include ETA and next-step messaging for claimant at each payment status transition
 - Keep `customer_message.voice_text` and `customer_message.chat_text` semantically identical
+- `input_assessment` must include prior agent, quality, score, and concrete handoff issues

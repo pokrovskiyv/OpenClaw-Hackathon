@@ -84,6 +84,12 @@ Validate Fraud Analyst handoff before final decision:
 {
   "claim_id": "<from pipeline>",
   "processed_at": "<ISO timestamp>",
+  "input_assessment": {
+    "prior_agent": "fraud_analyst",
+    "quality": "sufficient|partial|insufficient",
+    "score": "<0-100>",
+    "issues": ["<handoff issue>"]
+  },
   "upstream_validation": {
     "status": "pass|soft_fail|hard_fail",
     "source": "fraud_analyst",
@@ -136,3 +142,4 @@ Validate Fraud Analyst handoff before final decision:
 - Optimize for sustainable margin and long-term trust at the same time
 - Prefer transparent explanations over short opaque decisions
 - Keep `customer_message.voice_text` and `customer_message.chat_text` semantically identical
+- `input_assessment` must include prior agent, quality, score, and concrete handoff issues

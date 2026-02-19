@@ -7,6 +7,8 @@ from pathlib import Path
 
 def normalize_phone(phone: str) -> str:
     digits = "".join(ch for ch in phone if ch.isdigit())
+    if not digits and not phone.startswith("+"):
+        raise ValueError(f"No digits found in phone: {phone!r}")
     if len(digits) == 10:
         return "+1" + digits
     if digits.startswith("1") and len(digits) == 11:
@@ -69,6 +71,10 @@ def find_customer_key(
 
 def verify_pin(policy_number: str, pin: str) -> tuple[bool, str]:
     expected_pin = "".join(ch for ch in policy_number.split("-")[-1] if ch.isdigit())[-4:]
+    if len(expected_pin) != 4:
+        return False, "demo_pin_rule_invalid_policy_suffix"
+    if not pin:
+        return False, "pin_empty"
     expected_hash = hashlib.sha256(expected_pin.encode("utf-8")).hexdigest()
     provided_hash = hashlib.sha256(pin.encode("utf-8")).hexdigest()
     return provided_hash == expected_hash, "demo_pin_rule:last4_of_policy_suffix"
@@ -108,9 +114,9 @@ def main() -> None:
         customer_dir = customers_dir / customer_key
         client = load_client(customer_dir)
         policy_doc = load_policy(customer_dir, args.policy)
-    except Exception as error:
+    except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as error:
         print(json.dumps({"verified": False, "stage": "customer_lookup", "error": str(error)}))
-        raise SystemExit(2)
+        raise SystemExit(2) from error
 
     phone_in = normalize_phone(args.phone)
     holder_phone = normalize_phone(client.get("phone", ""))

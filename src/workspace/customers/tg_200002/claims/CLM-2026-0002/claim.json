@@ -17,42 +17,42 @@
     {
       "from": "intake",
       "to": "preauth_verified",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:18:37.007865Z",
       "reason": "preauth_passed",
       "actor": "front_desk"
     },
     {
       "from": "preauth_verified",
       "to": "docs_collecting",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:18:44.007865Z",
       "reason": "documents_received",
       "actor": "claims_officer"
     },
     {
       "from": "docs_collecting",
       "to": "coverage_review",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:18:57.007865Z",
       "reason": "docs_complete",
       "actor": "claims_officer"
     },
     {
       "from": "coverage_review",
       "to": "assessment",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:19:11.007865Z",
       "reason": "coverage_confirmed",
       "actor": "claims_officer"
     },
     {
       "from": "assessment",
       "to": "fraud_review",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:19:25.007865Z",
       "reason": "estimate_finalized",
       "actor": "assessor"
     },
     {
       "from": "fraud_review",
       "to": "senior_review",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:19:40.007865Z",
       "reason": "fraud_risk_low",
       "actor": "fraud_analyst"
     }

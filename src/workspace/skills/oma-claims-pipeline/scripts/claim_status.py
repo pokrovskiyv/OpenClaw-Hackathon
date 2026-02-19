@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import fcntl
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -45,36 +46,40 @@ def main() -> None:
     if not claim_path.exists():
         raise FileNotFoundError(f"Claim file not found: {claim_path}")
 
-    with claim_path.open("r", encoding="utf-8") as file:
+    with claim_path.open("r+", encoding="utf-8") as file:
+        fcntl.flock(file.fileno(), fcntl.LOCK_EX)
         claim = json.load(file)
 
-    current = claim.get("status", "intake")
-    target = args.to
+        current = claim.get("status", "intake")
+        target = args.to
 
-    if target not in TRANSITIONS:
-        raise ValueError(f"Unknown target status: {target}")
+        if target not in TRANSITIONS:
+            raise ValueError(f"Unknown target status: {target}")
 
-    allowed = TRANSITIONS.get(current, set())
-    if target not in allowed:
-        raise ValueError(f"Invalid transition: {current} -> {target}. Allowed: {sorted(allowed)}")
+        allowed = TRANSITIONS.get(current, set())
+        if target not in allowed:
+            raise ValueError(f"Invalid transition: {current} -> {target}. Allowed: {sorted(allowed)}")
 
-    history = claim.get("status_history", [])
-    history.append(
-        {
-            "from": current,
-            "to": target,
-            "at": now_iso(),
-            "reason": args.reason,
-            "actor": args.actor,
-        }
-    )
+        history = claim.get("status_history", [])
+        history.append(
+            {
+                "from": current,
+                "to": target,
+                "at": now_iso(),
+                "reason": args.reason,
+                "actor": args.actor,
+            }
+        )
 
-    claim["status"] = target
-    claim["status_history"] = history
-    claim["updated_at"] = now_iso()
+        claim["status"] = target
+        claim["status_history"] = history
+        claim["updated_at"] = now_iso()
 
-    with claim_path.open("w", encoding="utf-8") as file:
+        file.seek(0)
+        file.truncate()
         json.dump(claim, file, indent=2)
+        file.flush()
+        fcntl.flock(file.fileno(), fcntl.LOCK_UN)
 
     print(
         json.dumps(

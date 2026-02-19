@@ -13,7 +13,19 @@ PIPELINE_ORDER = [
     "fraud_analyst",
     "senior_reviewer",
     "finance",
+    "claims_manager",
 ]
+
+FRAUD_ESCALATION_THRESHOLD = 46
+AMOUNT_ESCALATION_THRESHOLD = 25000
+
+
+def load_artifact(path: Path) -> dict:
+    with path.open("r", encoding="utf-8") as file:
+        data = json.load(file)
+    if not isinstance(data, dict):
+        raise ValueError(f"Artifact must be JSON object: {path}")
+    return data
 
 
 def run_validator(script_path: Path, role: str, input_path: Path) -> tuple[int, dict]:
@@ -25,7 +37,17 @@ def run_validator(script_path: Path, role: str, input_path: Path) -> tuple[int, 
         "--input",
         str(input_path),
     ]
-    completed = subprocess.run(command, capture_output=True, text=True, check=False)
+    try:
+        completed = subprocess.run(command, capture_output=True, text=True, check=False, timeout=30)
+    except subprocess.TimeoutExpired:
+        return 2, {
+            "status": "hard_fail",
+            "role": role,
+            "input": str(input_path),
+            "missing_fields": [],
+            "inconsistencies": ["validator_timeout"],
+            "action": "escalate",
+        }
 
     payload: dict
     stdout = completed.stdout.strip()
@@ -109,6 +131,7 @@ def main() -> None:
                     capture_output=True,
                     text=True,
                     check=False,
+                    timeout=60,
                 )
                 result["invocation"] = {
                     "command": rendered,
@@ -118,11 +141,21 @@ def main() -> None:
                 }
                 result["status"] = "invoked_next_agent" if invoke_completed.returncode == 0 else "invoke_failed"
                 result["can_invoke_next"] = invoke_completed.returncode != 0
+            except subprocess.TimeoutExpired:
+                result["invocation"] = {
+                    "command": rendered,
+                    "exit_code": 124,
+                    "stdout": "",
+                    "stderr": "invoke_next_cmd_timeout",
+                }
+                result["status"] = "invoke_failed"
+                result["can_invoke_next"] = True
 
             print(json.dumps(result, indent=2))
             raise SystemExit(0 if result["status"] in {"ready_for_next_agent", "invoked_next_agent"} else 1)
 
         return_code, validation = run_validator(validator_script, role, artifact)
+        artifact_data = load_artifact(artifact)
         checks.append(
             {
                 "role": role,
@@ -172,6 +205,52 @@ def main() -> None:
             }
             print(json.dumps(result, indent=2))
             raise SystemExit(2)
+
+        if role == "fraud_analyst":
+            fraud_score = artifact_data.get("fraud_score")
+            if isinstance(fraud_score, (int, float)) and fraud_score >= FRAUD_ESCALATION_THRESHOLD:
+                result = {
+                    "status": "blocked_human_review",
+                    "claim_id": args.claim_id,
+                    "blocked_at": role,
+                    "next_agent": None,
+                    "can_invoke_next": False,
+                    "action": "escalate_to_human",
+                    "reason": f"fraud_score_threshold:{fraud_score}>={FRAUD_ESCALATION_THRESHOLD}",
+                    "checks": checks,
+                }
+                print(json.dumps(result, indent=2))
+                raise SystemExit(3)
+
+        if role == "senior_reviewer":
+            approved_amount = artifact_data.get("approved_amount")
+            decision = str(artifact_data.get("decision", "")).lower()
+            if isinstance(approved_amount, (int, float)) and approved_amount > AMOUNT_ESCALATION_THRESHOLD:
+                result = {
+                    "status": "blocked_human_review",
+                    "claim_id": args.claim_id,
+                    "blocked_at": role,
+                    "next_agent": None,
+                    "can_invoke_next": False,
+                    "action": "escalate_to_human",
+                    "reason": f"approved_amount_threshold:{approved_amount}>{AMOUNT_ESCALATION_THRESHOLD}",
+                    "checks": checks,
+                }
+                print(json.dumps(result, indent=2))
+                raise SystemExit(3)
+            if decision in {"investigate", "referred"}:
+                result = {
+                    "status": "blocked_human_review",
+                    "claim_id": args.claim_id,
+                    "blocked_at": role,
+                    "next_agent": None,
+                    "can_invoke_next": False,
+                    "action": "escalate_to_human",
+                    "reason": f"decision_requires_human_review:{decision}",
+                    "checks": checks,
+                }
+                print(json.dumps(result, indent=2))
+                raise SystemExit(3)
 
         is_last = index == len(PIPELINE_ORDER) - 1
         if is_last:

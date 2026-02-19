@@ -36,6 +36,9 @@ def main() -> None:
 
     now = now_iso()
     claim_path = claim_dir / "claim.json"
+    if claim_path.exists():
+        raise FileExistsError(f"Claim already initialized: {claim_path}")
+
     claim_payload = {
         "claim_id": args.claim_id,
         "telegram_id": str(args.telegram_id),
@@ -58,7 +61,7 @@ def main() -> None:
         "updated_at": now,
     }
 
-    with claim_path.open("w", encoding="utf-8") as file:
+    with claim_path.open("x", encoding="utf-8") as file:
         json.dump(claim_payload, file, indent=2)
 
     print(

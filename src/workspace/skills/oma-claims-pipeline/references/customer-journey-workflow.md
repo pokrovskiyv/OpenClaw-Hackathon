@@ -29,7 +29,7 @@ Photo handling (simple server-local setup):
 
 ## Phase 3 — Pre-Auth + Claim Initialization
 
-1. Resolve customer via `customers/index.json` and `customer_{telegram_id}.json`.
+1. Resolve customer via `customers/index.json` and `customers/tg_{telegram_id}/client.json`.
 2. Validate policy status and PIN.
 3. Open claim context with a deterministic claim ID.
 

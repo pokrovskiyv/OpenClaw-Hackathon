@@ -26,8 +26,8 @@
       "telegram_id": "200002",
       "part": "hood",
       "file": "customers/tg_200002/claims/CLM-2026-0001/photos/20260219T172812Z_hood.jpg",
-      "source": "customers/tg_200002/claims/CLM-2026-0001/photos/front_bumper.jpg",
-      "note": "relative_path_check",
+      "source": "sample_seed",
+      "note": "demo example",
       "customer_file": "customers/tg_200002/client.json"
     }
   ]

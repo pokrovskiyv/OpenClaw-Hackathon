@@ -17,8 +17,8 @@
       "telegram_id": "200002",
       "part": "rear_door",
       "file": "customers/tg_200002/claims/CLM-2026-0002/photos/20260219T172519Z_rear_door.jpg",
-      "source": "customers/tg_200002/claims/CLM-2026-0002/photos/right_fender.jpg",
-      "note": "smoke_test_after_path_cleanup",
+      "source": "sample_seed",
+      "note": "demo example",
       "customer_file": "customers/tg_200002/client.json"
     }
   ]

@@ -66,6 +66,12 @@ Validate Front Desk handoff before running coverage checks:
 {
   "claim_id": "<from front desk>",
   "processed_at": "<ISO timestamp>",
+   "input_assessment": {
+      "prior_agent": "front_desk",
+      "quality": "sufficient|partial|insufficient",
+      "score": "<0-100>",
+      "issues": ["<handoff issue>"]
+   },
    "upstream_validation": {
       "status": "pass|soft_fail|hard_fail",
       "source": "front_desk",
@@ -107,3 +113,4 @@ Validate Front Desk handoff before running coverage checks:
 - If policy has notes about previous issues, include them in your analysis
 - If required documents are missing, request them as a numbered mini-checklist (max 3 bullets)
 - Keep `customer_message.voice_text` and `customer_message.chat_text` semantically identical
+- `input_assessment` must include prior agent, quality, score, and concrete handoff issues

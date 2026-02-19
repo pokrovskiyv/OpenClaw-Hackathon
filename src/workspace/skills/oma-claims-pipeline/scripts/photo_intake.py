@@ -22,25 +22,6 @@ def manifest_path_value(path: Path, workspace: Path) -> str:
         return resolved.name
 
 
-def ensure_claim_json(claim_root: Path, claim_id: str, telegram_id: str) -> Path:
-    claim_json = claim_root / "claim.json"
-    if claim_json.exists():
-        return claim_json
-
-    payload = {
-        "claim_id": claim_id,
-        "telegram_id": telegram_id,
-        "customer_id": f"tg_{telegram_id}",
-        "status": "intake",
-        "photo_count": 0,
-        "created_at": utc_now(),
-        "updated_at": utc_now(),
-    }
-    with claim_json.open("w", encoding="utf-8") as file:
-        json.dump(payload, file, indent=2)
-    return claim_json
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Store claim photos in workspace-local claim storage")
     parser.add_argument("--claim-id", required=True, help="Claim ID, e.g. CLM-2026-0001")
@@ -67,11 +48,16 @@ def main() -> None:
         raise FileNotFoundError(f"Customer file not found: {customer_file}")
 
     claim_root = customer_dir / "claims" / args.claim_id
+    claim_json_path = claim_root / "claim.json"
+    if not claim_json_path.exists():
+        raise FileNotFoundError(f"Claim file not found: {claim_json_path}")
+
     claims_dir = claim_root / "photos"
     claims_dir.mkdir(parents=True, exist_ok=True)
-    claim_json_path = ensure_claim_json(claim_root, args.claim_id, str(args.telegram_id))
 
-    ext = source_path.suffix.lower() or ".jpg"
+    ext = source_path.suffix.lower()
+    if not ext:
+        raise ValueError(f"Source photo has no file extension: {source_path}")
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     filename = f"{timestamp}_{safe_part_name(args.part)}{ext}"
     target_path = claims_dir / filename

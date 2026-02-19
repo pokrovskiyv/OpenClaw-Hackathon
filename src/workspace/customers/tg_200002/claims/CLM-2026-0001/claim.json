@@ -17,14 +17,14 @@
     {
       "from": "intake",
       "to": "preauth_verified",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:18:37.007865Z",
       "reason": "preauth_passed",
       "actor": "front_desk"
     },
     {
       "from": "preauth_verified",
       "to": "docs_collecting",
-      "at": "2026-02-19T17:18:29.007865Z",
+      "at": "2026-02-19T17:18:49.007865Z",
       "reason": "photos_requested",
       "actor": "claims_officer"
     },
@@ -32,8 +32,8 @@
       "from": "docs_collecting",
       "to": "coverage_review",
       "at": "2026-02-19T17:25:06.231598Z",
-      "reason": "smoke_test",
-      "actor": "tester"
+      "reason": "coverage_review_requested",
+      "actor": "claims_officer"
     }
   ],
   "photo_count": 3,

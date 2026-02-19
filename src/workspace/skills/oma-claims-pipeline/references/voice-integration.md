@@ -16,10 +16,24 @@ Phone call -> STT/TTS provider -> WebSocket client -> OpenClaw Gateway -> main o
 
 ## Pre-Auth Gate (before role execution)
 
-1. Lookup customer by phone index (`workspace/customers/index.json`).
+1. Look up customer by phone index (`workspace/customers/index.json`).
 2. Load `tg_{telegram_id}/client.json`.
 3. Verify policy status and PIN.
 4. Only then allow role execution.
+
+## Live Operator Escape (mandatory)
+
+The customer can request a live operator at any step, without explanation.
+
+Escalate immediately to human operator when any of the following is true:
+
+- customer explicitly asks for human support,
+- injury or possible injury is reported,
+- identity or policy verification fails,
+- repeated understanding failures (3+),
+- stress/aggression signals indicate poor bot fit.
+
+Do not force repeated authentication after transfer if pre-auth already succeeded.
 
 ## Customer Data Contract
 

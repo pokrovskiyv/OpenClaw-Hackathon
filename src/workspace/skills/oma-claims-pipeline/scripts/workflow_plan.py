@@ -10,6 +10,7 @@ AGENT_ORDER = [
     "fraud_analyst",
     "senior_reviewer",
     "finance",
+    "claims_manager",
 ]
 
 
@@ -50,6 +51,7 @@ def main() -> None:
 
     if args.upstream_validation != "pass":
         next_action = "request_fix" if args.upstream_validation == "soft_fail" else "escalate"
+        exit_code = 1 if args.upstream_validation == "soft_fail" else 2
         print(
             json.dumps(
                 {
@@ -65,17 +67,18 @@ def main() -> None:
                 indent=2,
             )
         )
-        raise SystemExit(1)
+        raise SystemExit(exit_code)
 
     output = {
         "claim_id": args.claim_id,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "journey": {
             "phase_1": "care_and_safety_triage",
             "phase_2": "incident_guidance",
             "phase_3": "preauth_and_claim_init",
             "phase_4": "six_role_pipeline",
             "phase_5": "payout_status_updates",
+            "phase_6": "quality_control_review",
         },
         "caller": {
             "customer_name": args.customer,

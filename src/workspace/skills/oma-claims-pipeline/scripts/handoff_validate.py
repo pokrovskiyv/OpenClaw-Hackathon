@@ -9,6 +9,7 @@ ROLE_REQUIRED_FIELDS: dict[str, list[str]] = {
     "front_desk": ["claim_id", "policy_number", "category", "customer_care", "fnol_complete", "routing"],
     "claims_officer": [
         "claim_id",
+        "input_assessment",
         "coverage_valid",
         "coverage_type",
         "deductible",
@@ -16,10 +17,42 @@ ROLE_REQUIRED_FIELDS: dict[str, list[str]] = {
         "recommendation",
         "routing",
     ],
-    "assessor": ["claim_id", "damage_catalog", "repair_estimate", "total_loss", "recommendation", "routing"],
-    "fraud_analyst": ["claim_id", "fraud_score", "risk_level", "indicators_found", "recommendation", "routing"],
-    "senior_reviewer": ["claim_id", "decision", "approved_amount", "deductible_applied", "payout_breakdown", "routing"],
-    "finance": ["claim_id", "payment_authorized", "payment_details", "financial_summary"],
+    "assessor": [
+        "claim_id",
+        "input_assessment",
+        "damage_catalog",
+        "repair_estimate",
+        "total_loss",
+        "recommendation",
+        "routing",
+    ],
+    "fraud_analyst": [
+        "claim_id",
+        "input_assessment",
+        "fraud_score",
+        "risk_level",
+        "indicators_found",
+        "recommendation",
+        "routing",
+    ],
+    "senior_reviewer": [
+        "claim_id",
+        "input_assessment",
+        "decision",
+        "approved_amount",
+        "deductible_applied",
+        "payout_breakdown",
+        "routing",
+    ],
+    "finance": ["claim_id", "input_assessment", "payment_authorized", "payment_details", "financial_summary"],
+    "claims_manager": [
+        "claim_id",
+        "agent_grades",
+        "handoff_chain",
+        "overall_score",
+        "verdict",
+        "improvement_notes",
+    ],
 }
 
 CUSTOMER_MESSAGE_FIELDS = ["voice_text", "chat_text", "next_action", "confirm_question"]
@@ -36,7 +69,14 @@ def load_payload(path: Path) -> dict:
 def missing_fields(payload: dict, required: list[str]) -> list[str]:
     missing: list[str] = []
     for field in required:
-        if field not in payload or payload[field] in (None, "", []):
+        if field not in payload:
+            missing.append(field)
+            continue
+        value = payload[field]
+        if value is None:
+            missing.append(field)
+            continue
+        if isinstance(value, str) and value == "":
             missing.append(field)
     return missing
 
@@ -54,6 +94,28 @@ def validate_customer_message(payload: dict) -> list[str]:
 
 def detect_inconsistencies(role: str, payload: dict) -> list[str]:
     issues: list[str] = []
+
+    if role in {"claims_officer", "assessor", "fraud_analyst", "senior_reviewer", "finance"}:
+        input_assessment = payload.get("input_assessment")
+        if isinstance(input_assessment, str):
+            if input_assessment not in {"sufficient", "partial", "insufficient"}:
+                issues.append(f"{role}:invalid_input_assessment")
+        elif isinstance(input_assessment, dict):
+            quality = input_assessment.get("quality")
+            prior_agent = input_assessment.get("prior_agent")
+            score = input_assessment.get("score")
+            assessment_issues = input_assessment.get("issues")
+
+            if quality not in {"sufficient", "partial", "insufficient"}:
+                issues.append(f"{role}:invalid_input_assessment_quality")
+            if not isinstance(prior_agent, str) or not prior_agent:
+                issues.append(f"{role}:missing_input_assessment_prior_agent")
+            if score in (None, ""):
+                issues.append(f"{role}:missing_input_assessment_score")
+            if not isinstance(assessment_issues, list):
+                issues.append(f"{role}:invalid_input_assessment_issues")
+        else:
+            issues.append(f"{role}:invalid_input_assessment")
 
     if role == "claims_officer":
         recommendation = payload.get("recommendation")
@@ -82,6 +144,15 @@ def detect_inconsistencies(role: str, payload: dict) -> list[str]:
         if payment_authorized is True:
             if not isinstance(payment_details, dict) or payment_details.get("amount") in (None, ""):
                 issues.append("finance:authorized_payment_missing_amount")
+
+    if role == "claims_manager":
+        handoff_chain = payload.get("handoff_chain", {})
+        if not isinstance(handoff_chain, dict) or handoff_chain.get("quality") not in {
+            "sufficient",
+            "partial",
+            "insufficient",
+        }:
+            issues.append("claims_manager:invalid_handoff_chain_quality")
 
     return issues
 

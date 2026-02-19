@@ -1,0 +1,19 @@
+{
+  "claim_id": "CLM-2026-THR1",
+  "policy_number": "OMA-2026-77882",
+  "category": "collision",
+  "customer_care": {
+    "safety_confirmed": true,
+    "injury_reported": false,
+    "care_message_sent": true,
+    "escalation_required": false
+  },
+  "fnol_complete": true,
+  "routing": "claims_officer",
+  "customer_message": {
+    "voice_text": "Начинаем обработку.",
+    "chat_text": "Начинаем обработку.",
+    "next_action": "Проверка покрытия.",
+    "confirm_question": "Продолжаем?"
+  }
+}

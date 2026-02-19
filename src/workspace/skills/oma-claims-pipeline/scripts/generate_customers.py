@@ -76,6 +76,7 @@ def main() -> None:
     generated_clients = []
     generated_policies = []
     phone_index: dict[str, str] = {}
+    seen_customer_keys: dict[str, str] = {}
 
     for policy_file in policy_files:
         with policy_file.open("r", encoding="utf-8") as file:
@@ -87,6 +88,13 @@ def main() -> None:
 
         telegram_id = build_telegram_id(policy_id)
         customer_key = f"tg_{telegram_id}"
+        if customer_key in seen_customer_keys:
+            raise ValueError(
+                f"Collision detected for {customer_key}: "
+                f"{seen_customer_keys[customer_key]} and {policy_id}"
+            )
+        seen_customer_keys[customer_key] = policy_id
+
         customer_dir = customers_dir / customer_key
         policies_subdir = customer_dir / "policies"
         claims_subdir = customer_dir / "claims"
@@ -136,7 +144,6 @@ def main() -> None:
             },
             "auth": {
                 "pin_sha256": build_pin_hash(policy_id),
-                "pin_rule_note": "demo_pin_is_last4_of_policy_suffix",
             },
             "created_at": now,
             "updated_at": now,

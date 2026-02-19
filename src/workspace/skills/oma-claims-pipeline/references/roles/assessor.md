@@ -93,6 +93,12 @@ Flag if:
 {
   "claim_id": "<from pipeline>",
   "processed_at": "<ISO timestamp>",
+  "input_assessment": {
+    "prior_agent": "claims_officer",
+    "quality": "sufficient|partial|insufficient",
+    "score": "<0-100>",
+    "issues": ["<handoff issue>"]
+  },
   "upstream_validation": {
     "status": "pass|soft_fail|hard_fail",
     "source": "claims_officer",
@@ -139,3 +145,4 @@ Flag if:
 - Do not perform fraud adjudication.
 - If photo evidence is insufficient, set `photo_intake.sufficient=false` and request targeted photos before final estimate.
 - Keep `customer_message.voice_text` and `customer_message.chat_text` semantically identical
+- `input_assessment` must include prior agent, quality, score, and concrete handoff issues

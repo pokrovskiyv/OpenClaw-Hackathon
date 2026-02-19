@@ -120,9 +120,7 @@
         "zai/glm-4.7": {},
         "qwen/qwen-3.5-plus": {
           "alias": "Qwen Plus"
-        },
-        "anthropic/zai": {},
-        "anthropic/qwen": {}
+        }
       },
       "workspace": "~/.openclaw/workspace",
       "compaction": {
@@ -168,6 +166,11 @@
         "id": "finance",
         "name": "OMA Finance",
         "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "claims_manager",
+        "name": "OMA Claims Manager",
+        "workspace": "~/.openclaw/workspace"
       }
     ]
   },
@@ -185,7 +188,7 @@
     "telegram": {
       "enabled": true,
       "dmPolicy": "pairing",
-      "botToken": "...",
+      "botToken": "$TELEGRAM_BOT_TOKEN",
       "groupPolicy": "allowlist",
       "streamMode": "partial"
     }
@@ -196,7 +199,7 @@
     "bind": "loopback",
     "auth": {
       "mode": "token",
-      "token": "..."
+      "token": "$GATEWAY_TOKEN"
     },
     "tailscale": {
       "mode": "off",
@@ -226,7 +229,7 @@
     },
     "entries": {
       "goplaces": {
-        "apiKey": "..."
+        "apiKey": "$OPENCLAW_API_KEY"
       }
     }
   },

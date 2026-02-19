@@ -5,13 +5,13 @@ description: "Ohio Mutual Auto claims workflow for 6-role pipeline, voice-ready 
 
 # OMA Claims Pipeline
 
-Use this skill to run a deterministic 6-role insurance claim workflow.
+Use this skill to run a deterministic 7-stage insurance claim workflow (6 operational roles + 1 quality controller).
 
 ## When to Use
 
 - Incoming motor claim must be processed through all business roles.
 - Voice call ingress is used, but decision logic must remain role-based.
-- You need auditable handoff across Front Desk -> Claims Officer -> Assessor -> Fraud Analyst -> Senior Reviewer -> Finance.
+- You need auditable handoff across Front Desk -> Claims Officer -> Assessor -> Fraud Analyst -> Senior Reviewer -> Finance -> Claims Manager.
 
 ## Required Flow
 
@@ -31,6 +31,9 @@ Use this skill to run a deterministic 6-role insurance claim workflow.
    - `fraud_analyst`
    - `senior_reviewer`
    - `finance`
+
+- `claims_manager`
+
 6. Persist full internal result and return short customer-safe summary.
 7. Keep customer informed about next steps and expected timing until payout completion.
 
@@ -48,6 +51,7 @@ Use this skill to run a deterministic 6-role insurance claim workflow.
 - `references/roles/fraud_analyst.md`
 - `references/roles/senior_reviewer.md`
 - `references/roles/finance.md`
+- `references/roles/claims_manager.md`
 
 ## Output Contracts
 
@@ -55,9 +59,11 @@ Use this skill to run a deterministic 6-role insurance claim workflow.
 - Every role includes `routing` or explicit skip reason.
 - Every role (including front desk against caller input) includes `upstream_validation` with `status: pass|soft_fail|hard_fail`.
 - Pipeline must proceed only when `upstream_validation.status = pass`.
+- Roles 2-6 must include structured `input_assessment` with `prior_agent`, `quality (sufficient|partial|insufficient)`, `score`, and `issues`.
 - Every role includes `customer_message` with both `voice_text` and `chat_text` that keep the same semantic intent.
 - No silent fallback.
 - If coverage is invalid, downstream roles must return skip/acknowledge artifacts.
+- Human review escalation triggers: `fraud_score >= 46`, `approved_amount > 25000`, or Senior Reviewer decision `investigate|referred`.
 
 ## Operational Scripts
 
