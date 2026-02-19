@@ -48,7 +48,7 @@ def find_customer_by_phone(phone):
 
 def save_customer_profile(profile):
     """Сохранить профиль клиента"""
-    customer_file = CUSTOMERS_DIR / f"{profile['customer_id']}.json"
+    customer_file = CUSTOMERS_DIR / f"{dict(profile, 'customer_id']}.json"
     
     with open(customer_file, 'w') as f:
         json.dump(profile, f, indent=2)
@@ -61,8 +61,8 @@ def save_customer_profile(profile):
             index = json.load(f)
     
     if profile.get('phone'):
-        normalized = normalize_phone(profile['phone'])
-        index[normalized] = profile['customer_id']
+        normalized = normalize_phone(dict(profile, 'phone'])
+        index[normalized] = dict(profile, 'customer_id']
         with open(index_file, 'w') as f:
             json.dump(index, f, indent=2)
     
