@@ -459,6 +459,39 @@ sed -i 's/[0-9]\{5\}/$NEW_PORT/g' /root/.openclaw/workspace/skills/clawdtalk-cli
 openclaw gateway restart
 ```
 
+## 🛡️ Network Security
+
+### Tailscale VPN
+
+**Installed for secure, invisible network access**
+
+- **Status:** Active
+- **IP:** 100.83.60.87 (Tailscale network)
+- **User:** serbalemira@
+- **Cost:** Free (personal use)
+- **Visibility:** Invisible to internet (only visible on tailnet)
+
+**Benefits:**
+- No public IP exposure
+- Encrypted peer-to-peer connections
+- No port forwarding needed
+- Access from anywhere via tailnet
+
+**Commands:**
+```bash
+# Check status
+tailscale status
+
+# View IP
+tailscale ip
+
+# Disconnect
+tailscale down
+
+# Reconnect
+tailscale up
+```
+
 ## 🔌 Configuration Files
 
 ### Customer Profile Structure
