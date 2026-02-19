@@ -433,6 +433,32 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
 
 ---
 
+## 🔒 Security Configuration
+
+### Gateway Port
+
+**Default port changed from 18789 to random port for security**
+
+- **Port:** Randomized (not 18789 - public knowledge)
+- **Location:** `/root/.openclaw/openclaw.json`
+- **Range:** 40000-60000 (ephemeral ports)
+- **Reason:** Prevent automated scans targeting default port
+
+**To change port:**
+```bash
+# Generate random port
+NEW_PORT=$((RANDOM % 20000 + 40000))
+
+# Update openclaw.json
+sed -i "s/\"port\": [0-9]*/\"port\": $NEW_PORT/" /root/.openclaw/openclaw.json
+
+# Update clawdtalk-client
+sed -i 's/[0-9]\{5\}/$NEW_PORT/g' /root/.openclaw/workspace/skills/clawdtalk-client/scripts/ws-client.js
+
+# Restart gateway
+openclaw gateway restart
+```
+
 ## 🔌 Configuration Files
 
 ### Customer Profile Structure
