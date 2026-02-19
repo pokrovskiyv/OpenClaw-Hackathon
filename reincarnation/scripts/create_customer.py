@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+from customer_store import normalize_phone, save_customer_profile
 import re
 import uuid
 import subprocess

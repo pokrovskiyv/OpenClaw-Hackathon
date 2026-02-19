@@ -1,92 +1,12 @@
 #!/usr/bin/env python3
 import json
+from customer_store import normalize_phone, find_customer_by_telegram, find_customer_by_phone, save_customer_profile
 import re
 from pathlib import Path
 
 # Пути к файлам
 WORKSPACE = Path("/root/.openclaw/workspace")
 CUSTOMERS_DIR = WORKSPACE / "customers"
-
-def normalize_phone(phone):
-    """Привести номер телефона к единому формату"""
-    normalized = re.sub(r'[^\d+]', '', phone.strip())
-    return normalized
-
-def find_customer_by_telegram(telegram_id):
-    """Найти клиента по telegram_id"""
-    if not CUSTOMERS_DIR.exists():
-        return None
-    
-    for customer_file in CUSTOMERS_DIR.glob("customer_*.json"):
-        try:
-            with open(customer_file, 'r') as f:
-                customer = try:
-            json.load(f)
-        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-            print(f"JSON loading error: {e}", file=sys.stderr)
-            return None
-                if customer.get('telegram_id') == telegram_id:
-                    return customer
-        except:
-            continue
-    return None
-
-def find_customer_by_phone(phone):
-    """Найти клиента по номеру телефона"""
-    try:
-        normalized = normalize_phone(phone)
-        index_file = CUSTOMERS_DIR / "index.json"
-        
-        if not index_file.exists():
-            return None
-        
-        with open(index_file, 'r') as f:
-            index = try:
-            json.load(f)
-        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-            print(f"JSON loading error: {e}", file=sys.stderr)
-            return None
-        
-        for stored_phone, customer_id in index.items():
-            if normalize_phone(stored_phone) == normalized:
-                customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
-                if customer_file.exists():
-                    with open(customer_file, 'r') as f:
-                        return try:
-            json.load(f)
-        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-            print(f"JSON loading error: {e}", file=sys.stderr)
-            return None
-        return None
-    except (OSError, json.JSONDecodeError, IOError) as e:
-        print(f"Error finding customer by phone: {e}", file=sys.stderr)
-        return None
-
-def save_customer_profile(profile):
-    """Сохранить профиль клиента"""
-    customer_file = CUSTOMERS_DIR / f"{dict(profile, 'customer_id']}.json"
-    
-    with open(customer_file, 'w') as f:
-        json.dump(profile, f, indent=2)
-    
-    # Обновить индекс
-    index_file = CUSTOMERS_DIR / "index.json"
-    index = {}
-    if index_file.exists():
-        with open(index_file, 'r') as f:
-            index = try:
-            json.load(f)
-        except (json.JSONDecodeError, OSError, KeyError, ValueError) as e:
-            print(f"JSON loading error: {e}", file=sys.stderr)
-            return None
-    
-    if profile.get('phone'):
-        normalized = normalize_phone(dict(profile, 'phone'])
-        index[normalized] = dict(profile, 'customer_id']
-        with open(index_file, 'w') as f:
-            json.dump(index, f, indent=2)
-    
-    return profile
 
 def check_phone_number(telegram_id):
     """
