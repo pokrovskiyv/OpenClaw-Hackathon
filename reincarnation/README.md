@@ -433,6 +433,141 @@ python3 make_call.py "+1234567890" "Hello, Venik here!"
 
 ---
 
+## 🔒 Security Configuration
+
+### Gateway Port
+
+**Default port changed from 18789 to random port for security**
+
+- **Port:** Randomized (not 18789 - public knowledge)
+- **Location:** `/root/.openclaw/openclaw.json`
+- **Range:** 40000-59999 (ephemeral ports)
+- **Reason:** Prevent automated scans targeting default port
+
+**To change port:**
+```bash
+# Generate random port
+NEW_PORT=$((RANDOM % 20000 + 40000))
+
+# Update openclaw.json
+sed -i "s/\"port\": [0-9]\+/\"port\": $NEW_PORT/" /root/.openclaw/openclaw.json
+
+# Update clawdtalk-client
+sed -i 's/[0-9]\{5\}/$NEW_PORT/g' /root/.openclaw/workspace/skills/clawdtalk-client/scripts/ws-client.js
+
+# Restart gateway
+openclaw gateway restart
+```
+
+## 🛡️ Network Security
+
+### Tailscale VPN
+
+**Installed for secure, invisible network access**
+
+- **Status:** Active
+- **IP:** 100.x.x.x (Tailscale network)
+- **User:** your-tailscale-email@
+- **Cost:** Free (personal use)
+- **Visibility:** Invisible to internet (only visible on tailnet)
+
+**Benefits:**
+- No public IP exposure
+- Encrypted peer-to-peer connections
+- No port forwarding needed
+- Access from anywhere via tailnet
+
+**Commands:**
+```bash
+# Check status
+tailscale status
+
+# View IP
+tailscale ip
+
+# Disconnect
+tailscale down
+
+# Reconnect
+tailscale up
+```
+
+## 🔥 Firewall (UFW)
+
+**Configured to block all unnecessary ports**
+
+**Status:** Active  
+**Default Policy:** DENY incoming, ALLOW outgoing
+
+**Allowed Ports:**
+| Port | Protocol | Source | Purpose |
+|------|----------|--------|---------|
+| 22/tcp | TCP | Anywhere | SSH access |
+| Any | Any | 100.64.0.0/10 | Tailscale VPN |
+| 43482/tcp | TCP | 127.0.0.1 | Local Gateway only |
+
+**All other ports are BLOCKED!**
+
+**Commands:**
+```bash
+# Check status
+ufw status numbered
+
+# View verbose status
+ufw status verbose
+
+# Disable (emergency only)
+ufw disable
+
+# Reset to defaults
+ufw reset
+```
+
+## 🔒 Security Audit Report
+
+**Last Audit:** 2026-02-19
+
+### Summary
+
+| Security Control | Status | Details |
+|-----------------|--------|---------|
+| Firewall (UFW) | ✅ Active | DENY incoming, ALLOW outgoing |
+| VPN (Tailscale) | ✅ Active | 100.x.x.x |
+| Gateway Port | ✅ Randomized | 43482 (not 18789) |
+| SSH Access | ✅ Restricted | Port 22 |
+| Network Exposure | ✅ Minimal | Only Tailscale + localhost |
+
+### Allowed Ports
+
+| Port | Protocol | Source | Purpose |
+|------|----------|--------|---------|
+| 22/tcp | TCP | Anywhere | SSH access |
+| Any | Any | 100.64.0.0/10 | Tailscale VPN |
+| 43482/tcp | TCP | 127.0.0.1 | Local Gateway only |
+
+### Security Measures
+
+1. **Randomized Gateway Port** - Changed from default 18789 to random (43482)
+2. **Tailscale VPN** - Invisible to internet, only visible on tailnet
+3. **UFW Firewall** - All ports blocked except explicitly allowed
+4. **Localhost-only Gateway** - Gateway only accessible from 127.0.0.1
+
+### Audit Commands
+
+```bash
+# Check firewall
+ufw status numbered
+
+# Check Tailscale
+tailscale status
+
+# Check open ports
+ss -tlnp | grep openclaw
+
+# Check gateway port
+grep '"port"' /root/.openclaw/openclaw.json
+```
+
 ## 🔌 Configuration Files
 
 ### Customer Profile Structure
