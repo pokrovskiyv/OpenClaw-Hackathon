@@ -42,14 +42,22 @@ def make_call(phone_number=None, greeting="", purpose=""):
         '-d', json.dumps(payload)
     ], capture_output=True, text=True)
     
-    return json.loads(result.stdout), result.returncode
+    try:
+        return json.loads(result.stdout)
+    except (json.JSONDecodeError, KeyError, ValueError) as e:
+        print(f"Error parsing response: {e}", file=sys.stderr)
+        return {}, result.returncode
 
 if __name__ == "__main__":
     import sys
     
-    phone = sys.argv[1] if len(sys.argv) > 1 else None
-    greeting = sys.argv[2] if len(sys.argv) > 2 else ""
-    purpose = sys.argv[3] if len(sys.argv) > 3 else ""
+    try:
+        phone = sys.argv[1] if len(sys.argv) > 1 else None
+        greeting = sys.argv[2] if len(sys.argv) > 2 else ""
+        purpose = sys.argv[3] if len(sys.argv) > 3 else ""
+    except IndexError:
+        print("Usage: python3 make_call.py <phone_number> [greeting] [purpose]", file=sys.stderr)
+        sys.exit(1)
     
     result, code = make_call(phone, greeting, purpose)
     

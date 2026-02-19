@@ -3,7 +3,7 @@ import json
 import re
 import uuid
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timezone
 from pathlib import Path
 
 # Пути к файлам

@@ -29,22 +29,26 @@ def find_customer_by_telegram(telegram_id):
 
 def find_customer_by_phone(phone):
     """Найти клиента по номеру телефона"""
-    normalized = normalize_phone(phone)
-    index_file = CUSTOMERS_DIR / "index.json"
-    
-    if not index_file.exists():
+    try:
+        normalized = normalize_phone(phone)
+        index_file = CUSTOMERS_DIR / "index.json"
+        
+        if not index_file.exists():
+            return None
+        
+        with open(index_file, 'r') as f:
+            index = json.load(f)
+        
+        for stored_phone, customer_id in index.items():
+            if normalize_phone(stored_phone) == normalized:
+                customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
+                if customer_file.exists():
+                    with open(customer_file, 'r') as f:
+                        return json.load(f)
         return None
-    
-    with open(index_file, 'r') as f:
-        index = json.load(f)
-    
-    for stored_phone, customer_id in index.items():
-        if normalize_phone(stored_phone) == normalized:
-            customer_file = CUSTOMERS_DIR / f"{customer_id}.json"
-            if customer_file.exists():
-                with open(customer_file, 'r') as f:
-                    return json.load(f)
-    return None
+    except (OSError, json.JSONDecodeError, IOError) as e:
+        print(f"Error finding customer by phone: {e}", file=sys.stderr)
+        return None
 
 def save_customer_profile(profile):
     """Сохранить профиль клиента"""
@@ -93,7 +97,8 @@ def save_phone_number(telegram_id, phone):
     if not customer:
         return False, "Customer not found"
     
-    customer['phone'] = normalize_phone(phone)
+    customer = dict(customer, phone=normalize_phone(phone))
+    save_customer_profile(customer)
     save_customer_profile(customer)
     return True, f"Phone number saved: {phone}"
 
