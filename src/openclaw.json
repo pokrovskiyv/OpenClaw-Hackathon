@@ -1,0 +1,246 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.17",
+    "lastTouchedAt": "2026-02-19T15:09:43.078Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-02-19T10:54:15.724Z",
+    "lastRunVersion": "2026.2.17",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "auth": {
+    "profiles": {
+      "zai:default": {
+        "provider": "zai",
+        "mode": "api_key"
+      },
+      "qwen:default": {
+        "provider": "qwen",
+        "mode": "api_key"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "zai": {
+        "baseUrl": "https://api.z.ai/api/coding/paas/v4",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "glm-5",
+            "name": "GLM-5",
+            "reasoning": true,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 204800,
+            "maxTokens": 131072
+          },
+          {
+            "id": "glm-4.7",
+            "name": "GLM-4.7",
+            "reasoning": true,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 204800,
+            "maxTokens": 131072
+          },
+          {
+            "id": "glm-4.7-flash",
+            "name": "GLM-4.7 Flash",
+            "reasoning": true,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 204800,
+            "maxTokens": 131072
+          },
+          {
+            "id": "glm-4.7-flashx",
+            "name": "GLM-4.7 FlashX",
+            "reasoning": true,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 204800,
+            "maxTokens": 131072
+          }
+        ]
+      },
+      "qwen": {
+        "baseUrl": "https://coding-intl.dashscope.aliyuncs.com/v1",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen3.5-plus",
+            "name": "Qwen 3.5 Plus",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 131072,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "qwen/qwen-3.5-plus"
+      },
+      "models": {
+        "zai/glm-5": {
+          "alias": "GLM"
+        },
+        "zai/glm-4.7": {},
+        "qwen/qwen-3.5-plus": {
+          "alias": "Qwen Plus"
+        }
+      },
+      "workspace": "~/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "voice",
+        "name": "Voice",
+        "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "front_desk",
+        "name": "OMA Front Desk",
+        "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "claims_officer",
+        "name": "OMA Claims Officer",
+        "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "assessor",
+        "name": "OMA Assessor",
+        "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "fraud_analyst",
+        "name": "OMA Fraud Analyst",
+        "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "senior_reviewer",
+        "name": "OMA Senior Reviewer",
+        "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "finance",
+        "name": "OMA Finance",
+        "workspace": "~/.openclaw/workspace"
+      },
+      {
+        "id": "claims_manager",
+        "name": "OMA Claims Manager",
+        "workspace": "~/.openclaw/workspace"
+      }
+    ]
+  },
+  "tools": {
+    "allow": ["sessions_send", "read", "bash"]
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "$TELEGRAM_BOT_TOKEN",
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "port": 43482,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "$GATEWAY_TOKEN"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "http": {
+      "endpoints": {
+        "chatCompletions": {
+          "enabled": true
+        }
+      }
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "calendar.add",
+        "contacts.add",
+        "reminders.add"
+      ]
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "pnpm"
+    },
+    "entries": {
+      "goplaces": {
+        "apiKey": "$OPENCLAW_API_KEY"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "qwen-portal-auth": {
+        "enabled": true
+      }
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "claim_id": "CLM-2026-0002",
+  "created_at": "2026-02-19T17:18:29.007865Z",
+  "updated_at": "2026-02-19T17:25:19.244833Z",
+  "photos": [
+    {
+      "stored_at": "2026-02-19T17:18:29.007865Z",
+      "telegram_id": "200002",
+      "part": "right_fender",
+      "file": "customers/tg_200002/claims/CLM-2026-0002/photos/right_fender.jpg",
+      "source": "sample_seed",
+      "note": "demo example",
+      "customer_file": "customers/tg_200002/client.json"
+    },
+    {
+      "stored_at": "2026-02-19T17:25:19.244820Z",
+      "telegram_id": "200002",
+      "part": "rear_door",
+      "file": "customers/tg_200002/claims/CLM-2026-0002/photos/20260219T172519Z_rear_door.jpg",
+      "source": "sample_seed",
+      "note": "demo example",
+      "customer_file": "customers/tg_200002/client.json"
+    }
+  ]
+}

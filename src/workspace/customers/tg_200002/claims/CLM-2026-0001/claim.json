@@ -1,0 +1,42 @@
+{
+  "claim_id": "CLM-2026-0001",
+  "telegram_id": "200002",
+  "customer_id": "tg_200002",
+  "policy_id": "OMA-2026-77882",
+  "incident_type": "collision",
+  "summary": "Rear bumper damage in parking lot",
+  "status": "coverage_review",
+  "status_history": [
+    {
+      "from": null,
+      "to": "intake",
+      "at": "2026-02-19T17:18:29.007865Z",
+      "reason": "claim_initialized",
+      "actor": "system"
+    },
+    {
+      "from": "intake",
+      "to": "preauth_verified",
+      "at": "2026-02-19T17:18:37.007865Z",
+      "reason": "preauth_passed",
+      "actor": "front_desk"
+    },
+    {
+      "from": "preauth_verified",
+      "to": "docs_collecting",
+      "at": "2026-02-19T17:18:49.007865Z",
+      "reason": "photos_requested",
+      "actor": "claims_officer"
+    },
+    {
+      "from": "docs_collecting",
+      "to": "coverage_review",
+      "at": "2026-02-19T17:25:06.231598Z",
+      "reason": "coverage_review_requested",
+      "actor": "claims_officer"
+    }
+  ],
+  "photo_count": 3,
+  "created_at": "2026-02-19T17:18:29.007865Z",
+  "updated_at": "2026-02-19T17:28:12.068629Z"
+}
