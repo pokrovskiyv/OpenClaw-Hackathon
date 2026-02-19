@@ -62,7 +62,7 @@ def load_payload(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as file:
         payload = json.load(file)
     if not isinstance(payload, dict):
-        raise ValueError("Input payload must be a JSON object")
+        raise TypeError("Input payload must be a JSON object")
     return payload
 
 
@@ -140,13 +140,13 @@ def detect_inconsistencies(role: str, payload: dict) -> list[str]:
 
     if role == "finance":
         payment_authorized = payload.get("payment_authorized")
-        payment_details = payload.get("payment_details", {})
+        payment_details = payload.get("payment_details")
         if payment_authorized is True:
             if not isinstance(payment_details, dict) or payment_details.get("amount") in (None, ""):
                 issues.append("finance:authorized_payment_missing_amount")
 
     if role == "claims_manager":
-        handoff_chain = payload.get("handoff_chain", {})
+        handoff_chain = payload.get("handoff_chain")
         if not isinstance(handoff_chain, dict) or handoff_chain.get("quality") not in {
             "sufficient",
             "partial",
@@ -175,7 +175,7 @@ def main() -> None:
     payload = load_payload(input_path)
 
     missing = missing_fields(payload, ROLE_REQUIRED_FIELDS[args.role])
-    if args.role != "caller_input":
+    if args.role not in {"caller_input", "claims_manager"}:
         missing.extend(validate_customer_message(payload))
 
     inconsistencies = detect_inconsistencies(args.role, payload)

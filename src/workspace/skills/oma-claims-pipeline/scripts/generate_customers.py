@@ -8,17 +8,26 @@ from pathlib import Path
 
 def build_telegram_id(policy_number: str) -> str:
     suffix = "".join(ch for ch in policy_number.split("-")[-1] if ch.isdigit())
+    if not suffix:
+        raise ValueError(f"Policy number has no numeric suffix: {policy_number}")
     return str(100000 + int(suffix[-5:]))
 
 
 def build_pin_hash(policy_number: str) -> str:
     suffix = "".join(ch for ch in policy_number.split("-")[-1] if ch.isdigit())
-    pin = suffix[-4:]
+    if not suffix:
+        pin = "0000"
+    elif len(suffix) < 4:
+        pin = suffix.zfill(4)
+    else:
+        pin = suffix[-4:]
     return hashlib.sha256(pin.encode("utf-8")).hexdigest()
 
 
 def normalize_phone(phone: str) -> str:
     digits = "".join(ch for ch in phone if ch.isdigit())
+    if not digits and not phone.startswith("+"):
+        raise ValueError(f"No digits found in phone: {phone!r}")
     if len(digits) == 10:
         return "+1" + digits
     if digits.startswith("1") and len(digits) == 11:
@@ -101,7 +110,10 @@ def main() -> None:
         policies_subdir.mkdir(parents=True, exist_ok=True)
         claims_subdir.mkdir(parents=True, exist_ok=True)
 
-        normalized_phone = normalize_phone(holder.get("phone", ""))
+        raw_phone = holder.get("phone")
+        if not raw_phone:
+            raise ValueError(f"Missing holder.phone for policy {policy_id}")
+        normalized_phone = normalize_phone(raw_phone)
         now = iso_now()
 
         policy_payload = {

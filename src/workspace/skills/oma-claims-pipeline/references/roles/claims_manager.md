@@ -39,7 +39,7 @@ You are the Claims Manager quality controller. You run after the six operational
   },
   "weakest_agent": "<agent id>",
   "overall_score": "<0-100>",
-  "human_review_required": true,
+  "human_review_required": true/false,
   "human_review_reasons": ["<trigger reason>"],
   "verdict": "handled_correctly|needs_revision|escalate",
   "improvement_notes": ["<specific, actionable prompt fix>"],

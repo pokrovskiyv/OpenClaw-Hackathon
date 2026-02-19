@@ -107,7 +107,7 @@ Flag if:
     "action": "continue|request_fix|escalate"
   },
   "photo_intake": {
-    "sufficient": true/false,
+    "sufficient": "<true|false>",
     "requested_parts": ["<part names requested from customer>"],
     "storage_path": "~/.openclaw/workspace/customers/tg_<telegram_id>/claims/<claim_id>/photos/"
   },
@@ -122,7 +122,7 @@ Flag if:
     "total": <amount>
   },
   "vehicle_acv": <estimated_market_value>,
-  "total_loss": true/false,
+  "total_loss": "<true|false>",
   "total_loss_ratio": <repair_cost / acv as percentage>,
   "consistency_flags": ["<any inconsistencies found>"],
   "customer_message": {
@@ -133,7 +133,7 @@ Flag if:
   },
   "recommendation": "<repair|total_loss|further_inspection_needed>",
   "notes": "<detailed assessment narrative>",
-  "routing": "fraud_analyst"
+  "routing": "<fraud_analyst|senior_reviewer — see business rules>"
 }
 ```
 

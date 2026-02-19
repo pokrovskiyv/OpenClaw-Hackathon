@@ -50,7 +50,10 @@ def main() -> None:
         fcntl.flock(file.fileno(), fcntl.LOCK_EX)
         claim = json.load(file)
 
-        current = claim.get("status", "intake")
+        if "status" not in claim:
+            raise KeyError(f"Missing required field 'status' in claim: {claim_path}")
+
+        current = claim["status"]
         target = args.to
 
         if target not in TRANSITIONS:

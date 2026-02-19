@@ -111,14 +111,14 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "qwen/qwen-3.5-plus"
+        "primary": "qwen/qwen3.5-plus"
       },
       "models": {
         "zai/glm-5": {
           "alias": "GLM"
         },
         "zai/glm-4.7": {},
-        "qwen/qwen-3.5-plus": {
+        "qwen/qwen3.5-plus": {
           "alias": "Qwen Plus"
         }
       },

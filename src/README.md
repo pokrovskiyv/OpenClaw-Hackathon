@@ -33,7 +33,7 @@ Run:
 
 1. `python ~/.openclaw/workspace/skills/oma-claims-pipeline/scripts/path_doctor.py --openclaw-home ~/.openclaw`
 2. `python ~/.openclaw/workspace/skills/oma-claims-pipeline/scripts/generate_customers.py --policies-dir /path/to/policies`
-3. `python ~/.openclaw/workspace/skills/oma-claims-pipeline/scripts/preauth_check.py --policy OMA-2026-77882 --phone +16145550002 --pin 7882`
+3. `python ~/.openclaw/workspace/skills/oma-claims-pipeline/scripts/preauth_check.py --policy OMA-2026-77882 --phone +16145550002 --pin <YOUR_PIN>`
 4. `python ~/.openclaw/workspace/skills/oma-claims-pipeline/scripts/handoff_validate.py --role front_desk --input /path/to/front_desk_output.json`
 5. `python ~/.openclaw/workspace/skills/oma-claims-pipeline/scripts/claim_init.py --telegram-id 200002 --claim-id CLM-2026-0003 --policy-id OMA-2026-77882 --incident-type collision --summary "rear bumper damage in parking lot"`
 6. `python ~/.openclaw/workspace/skills/oma-claims-pipeline/scripts/claim_status.py --telegram-id 200002 --claim-id CLM-2026-0003 --to preauth_verified --reason "identity and policy verified"`

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import fcntl
 import json
 import shutil
 from datetime import datetime, timezone
@@ -85,26 +86,37 @@ def main() -> None:
     with manifest_path.open("w", encoding="utf-8") as file:
         json.dump(manifest, file, indent=2)
 
-    with claim_json_path.open("r", encoding="utf-8") as file:
+    with claim_json_path.open("r+", encoding="utf-8") as file:
+        fcntl.flock(file.fileno(), fcntl.LOCK_EX)
         claim_doc = json.load(file)
-    claim_doc["photo_count"] = len(manifest["photos"])
-    current_status = claim_doc.get("status", "intake")
-    if current_status in {"intake", "preauth_verified"}:
-        claim_doc["status"] = "docs_collecting"
-        history = claim_doc.get("status_history", [])
-        history.append(
-            {
-                "from": current_status,
-                "to": "docs_collecting",
-                "at": utc_now(),
-                "reason": "photo_uploaded",
-                "actor": "photo_intake",
-            }
-        )
-        claim_doc["status_history"] = history
-    claim_doc["updated_at"] = utc_now()
-    with claim_json_path.open("w", encoding="utf-8") as file:
+
+        if "status" not in claim_doc:
+            raise KeyError(f"Missing required field 'status' in claim: {claim_json_path}")
+        if "status_history" not in claim_doc or not isinstance(claim_doc["status_history"], list):
+            raise KeyError(f"Missing required list field 'status_history' in claim: {claim_json_path}")
+
+        claim_doc["photo_count"] = len(manifest["photos"])
+        current_status = claim_doc["status"]
+        if current_status in {"intake", "preauth_verified"}:
+            claim_doc["status"] = "docs_collecting"
+            history = claim_doc["status_history"]
+            history.append(
+                {
+                    "from": current_status,
+                    "to": "docs_collecting",
+                    "at": utc_now(),
+                    "reason": "photo_uploaded",
+                    "actor": "photo_intake",
+                }
+            )
+            claim_doc["status_history"] = history
+
+        claim_doc["updated_at"] = utc_now()
+        file.seek(0)
+        file.truncate()
         json.dump(claim_doc, file, indent=2)
+        file.flush()
+        fcntl.flock(file.fileno(), fcntl.LOCK_UN)
 
     print(
         json.dumps(

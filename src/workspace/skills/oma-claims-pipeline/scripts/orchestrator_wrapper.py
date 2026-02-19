@@ -126,30 +126,31 @@ def main() -> None:
                     claim_id=args.claim_id,
                     artifacts_dir=str(artifacts_dir),
                 )
-                invoke_completed = subprocess.run(
-                    shlex.split(rendered),
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                    timeout=60,
-                )
-                result["invocation"] = {
-                    "command": rendered,
-                    "exit_code": invoke_completed.returncode,
-                    "stdout": invoke_completed.stdout.strip(),
-                    "stderr": invoke_completed.stderr.strip(),
-                }
-                result["status"] = "invoked_next_agent" if invoke_completed.returncode == 0 else "invoke_failed"
-                result["can_invoke_next"] = invoke_completed.returncode != 0
-            except subprocess.TimeoutExpired:
-                result["invocation"] = {
-                    "command": rendered,
-                    "exit_code": 124,
-                    "stdout": "",
-                    "stderr": "invoke_next_cmd_timeout",
-                }
-                result["status"] = "invoke_failed"
-                result["can_invoke_next"] = True
+                try:
+                    invoke_completed = subprocess.run(
+                        shlex.split(rendered),
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=60,
+                    )
+                    result["invocation"] = {
+                        "command": rendered,
+                        "exit_code": invoke_completed.returncode,
+                        "stdout": invoke_completed.stdout.strip(),
+                        "stderr": invoke_completed.stderr.strip(),
+                    }
+                    result["status"] = "invoked_next_agent" if invoke_completed.returncode == 0 else "invoke_failed"
+                    result["can_invoke_next"] = invoke_completed.returncode != 0
+                except subprocess.TimeoutExpired:
+                    result["invocation"] = {
+                        "command": rendered,
+                        "exit_code": 124,
+                        "stdout": "",
+                        "stderr": "invoke_next_cmd_timeout",
+                    }
+                    result["status"] = "invoke_failed"
+                    result["can_invoke_next"] = True
 
             print(json.dumps(result, indent=2))
             raise SystemExit(0 if result["status"] in {"ready_for_next_agent", "invoked_next_agent"} else 1)

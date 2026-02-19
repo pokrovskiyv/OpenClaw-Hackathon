@@ -42,6 +42,11 @@ Photo handling (simple server-local setup):
 5. Senior Reviewer — final decision and rationale.
 6. Finance — payout execution and subrogation handling.
 
+## Phase 4.5 — Quality Control (Claims Manager)
+
+- Claims Manager runs after Finance to evaluate handoff quality and overall case handling.
+- Outputs quality score, weakest stage, and actionable improvement notes.
+
 ## Phase 5 — Customer Communication Until Payout
 
 - Keep customer updates short and specific.

@@ -7,7 +7,7 @@
       "stored_at": "2026-02-19T17:18:29.007865Z",
       "telegram_id": "200002",
       "part": "front_bumper",
-      "file": "customers/tg_200002/claims/CLM-2026-0001/photos/front_bumper.jpg",
+      "file": "customers/tg_200002/claims/CLM-2026-0001/photos/20260219T171829Z_front_bumper.jpg",
       "source": "sample_seed",
       "note": "demo example",
       "customer_file": "customers/tg_200002/client.json"
@@ -16,7 +16,7 @@
       "stored_at": "2026-02-19T17:18:29.007865Z",
       "telegram_id": "200002",
       "part": "rear_bumper",
-      "file": "customers/tg_200002/claims/CLM-2026-0001/photos/rear_bumper.jpg",
+      "file": "customers/tg_200002/claims/CLM-2026-0001/photos/20260219T171829Z_rear_bumper.jpg",
       "source": "sample_seed",
       "note": "demo example",
       "customer_file": "customers/tg_200002/client.json"
