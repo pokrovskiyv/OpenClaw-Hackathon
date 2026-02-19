@@ -11,7 +11,11 @@ def get_pr_comments(owner, repo, pr_number, token):
     ], capture_output=True, text=True)
     
     if result.returncode == 0:
+        return try:
         return json.loads(result.stdout)
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Error parsing JSON: {e}", file=sys.stderr)
+        return []
     return []
 
 def get_pr_commits(owner, repo, pr_number, token):
@@ -23,7 +27,11 @@ def get_pr_commits(owner, repo, pr_number, token):
     ], capture_output=True, text=True)
     
     if result.returncode == 0:
+        return try:
         return json.loads(result.stdout)
+    except (json.JSONDecodeError, OSError) as e:
+        print(f"Error parsing JSON: {e}", file=sys.stderr)
+        return []
     return []
 
 def analyze_comment(comment_body):
@@ -44,19 +52,22 @@ def analyze_comment(comment_body):
         'major', 'critical', 'issue'
     ]
     
-    # Неполезные комментарии (просто информационные)
+    # Предупреждения (информационные, не требуют исправлений)
+    warning_patterns = [
+        'rate limit', 'warning', 'potential',
+        'pre-merge'
+    ]
+    
+    # Неполезные (просто информационные)
     not_useful_patterns = [
         'good job', 'nice', 'отлично', 'молодец',
         'thanks', 'спасибо', 'thank you',
         'merge when ready', 'ready to merge',
         'approve', '+1', 'lgtm', 'look good',
-        'walkthrough', 'finishing touches'
-    ]
-    
-    # Предупреждения (важные, но не обязательно требуют исправлений)
-    warning_patterns = [
-        'rate limit', 'warning', 'potential',
-        'pre-merge', 'walkthrough'
+        'walkthrough', 'finishing touches',
+        'summarize', 'summary',
+        'rate limited',
+        'exceeded'
     ]
     
     for pattern in useful_patterns:
@@ -71,42 +82,7 @@ def analyze_comment(comment_body):
         if pattern in lower_body:
             return (True, "requires_fix", "warning")
     
-    return (False, "resolved", "unprocessed")
-
-def resolve_comment(owner, repo, issue_number, comment_id, token, state="resolved"):
-    """Отметить комментарий как resolved"""
-    result = subprocess.run([
-        'curl', '-X', 'PATCH',
-        '-H', f'Authorization: Bearer {token}',
-        f'https://api.github.com/repos/{owner}/{repo}/issues/comments/{comment_id}'
-        '-H', 'Content-Type: application/json',
-        '-d', f'{{"state": "{state}"}}'
-    ], capture_output=True, text=True)
-    
-    return result.returncode == 0
-
-def classify_comments(comments):
-    """Классифицировать комментарии по типу"""
-    classified = {
-        'useful': [],
-        'warnings': [],
-        'resolved': []
-    }
-    
-    for comment in comments:
-        if not isinstance(comment, dict) or not comment.get('body'):
-            continue
-            
-        is_useful, comment_type, _ = analyze_comment(comment['body'])
-        
-        if comment_type == "useful":
-            classified['useful'].append(comment)
-        elif comment_type == "warning":
-            classified['warnings'].append(comment)
-        elif comment_type == "resolved":
-            classified['resolved'].append(comment)
-    
-    return classified
+    return (False, "unprocessed", "unknown")
 
 def check_pr(owner, repo, pr_number, token):
     """Проверить PR и вернуть отчёт"""
@@ -118,45 +94,57 @@ def check_pr(owner, repo, pr_number, token):
         return "✅ Нет комментариев в PR"
     
     # Классифицируем
-    classified = classify_comments(comments)
+    classified = {
+        'useful': [],
+        'warnings': [],
+        'resolved': []
+    }
+    
+    for comment in comments:
+        if isinstance(comment, dict) and comment.get('body'):
+            is_useful, comment_type, _ = analyze_comment(comment['body'])
+            
+            if is_useful and comment_type != "unprocessed":
+                classified['useful'].append({
+                    'user': comment.get('user', {}).get('login', 'Unknown'),
+                    'body': comment['body'][:150],
+                    'reason': comment_type
+                })
+            elif comment_type == "warning":
+                classified['warnings'].append({
+                    'user': comment.get('user', {}).get('login', 'Unknown'),
+                    'body': comment['body'][:100],
+                    'reason': comment_type
+                })
+            elif comment_type == "resolved":
+                # Пропускаем уже разрешённые
+                pass
     
     # Формируем отчёт
-    summary = f"📊 Проверка PR #{pr_number}\n"
-    summary += f"📝 Всего комментариев: {len(comments)}\n\n"
+    summary = f"📊 Проверка PR #{pr_number}\n\n"
     
-    # Полезные (требуют исправлений)
     if classified['useful']:
-        summary += f"⚠️ Требуют исправлений: {len(classified['useful'])}\n\n"
+        summary += f"⚠️ Полезных комментариев: {len(classified['useful'])}\n\n"
         for i, comment in enumerate(classified['useful'][:3]):
-            user = comment.get('user', {}).get('login', 'Unknown')
-            body = comment['body'][:120]
-            summary += f"{i}. @{user}: {body}...\n"
+            summary += f"{i}. @{comment['user']}: {comment['body']}\n"
         if len(classified['useful']) > 3:
             summary += f"   ... и ещё {len(classified['useful']) - 3}\n"
-    
-    # Предупреждения
-    if classified['warnings']:
+        
+        summary += f"⚡ Действия:\n"
+        summary += f"• Если критично → исправить и закрыть\n"
+        summary += f"• Если не критично → можно отложить\n"
+    elif classified['warnings']:
         summary += f"⚡ Предупреждения: {len(classified['warnings'])} (информационные, не требуют исправлений)\n\n"
         for i, comment in enumerate(classified['warnings'][:2]):
-            user = comment.get('user', {}).get('login', 'Unknown')
-            body = comment['body'][:80]
-            summary += f"{i}. @{user}: {body}...\n"
-    
-    # Действия
-    if classified['useful'] or classified['warnings']:
-        summary += f"\n⚡ Действия:\n"
-        summary += "• Для предупреждений и неважных → можно оставить без действий\n"
-        summary += "• Для полезных комментариев → нужно исправить и закоммитить\n"
-        summary += "• После исправлений → PR готов к merge\n"
+            summary += f"{i}. @{comment['user']}: {comment['body']}\n"
+        if len(classified['warnings']) > 2:
+            summary += f"   ... и ещё {len(classified['warnings']) - 2}\n"
+        
+        summary += f"ℹ️ Рекомендация: Предупреждения можно оставить без действий или закрыть после просмотра.\n"
+    elif classified['resolved']:
+        summary += f"ℹ️ Отмечено как resolved: {len(classified['resolved'])} (уже обработано)\n"
     else:
         summary += "✅ Нет требуемых исправлений\n"
-    
-    # Уведомления о разрешённых комментариях
-    if classified['resolved']:
-        summary += f"\nℹ️ Отмечено как resolved: {len(classified['resolved'])} комментариев (информационные)\n"
-        for comment in classified['resolved'][:2]:
-            user = comment.get('user', {}).get('login', 'Unknown')
-            summary += f"   @{user}\n"
     
     return summary
 

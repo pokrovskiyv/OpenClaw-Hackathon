@@ -3,7 +3,7 @@ import json
 import re
 import uuid
 import subprocess
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # Пути к файлам
@@ -159,7 +159,7 @@ def create_customer_profile(data, telegram_id=None):
                 "license_plate": data.get('license_plate', '')
             }
         },
-        "created_at": datetime.now().isoformat() + "Z"
+        "created_at": datetime.now(timezone.utc).isoformat()
     }
     
     return profile
@@ -236,7 +236,7 @@ def update_customer(customer_id, new_data):
                 if pol_key != 'vehicle' and pol_val:
                     profile['policy'][pol_key] = pol_val
     
-    profile['updated_at'] = datetime.now().isoformat() + "Z"
+    profile['updated_at'] = datetime.now(timezone.utc).isoformat()
     
     with open(customer_file, 'w') as f:
         json.dump(profile, f, indent=2)
@@ -254,7 +254,7 @@ def process_image(image_path, telegram_id=None):
     output_file = f"/tmp/ocr_temp_{datetime.now().timestamp()}"
     subprocess.run([
         'tesseract', str(image_path), output_file, '-l', 'eng'
-    ], check=True)
+    ], check=True, timeout=60)
     
     with open(f"{output_file}.txt", 'r') as f:
         text = f.read()

@@ -17,6 +17,8 @@ def make_call(phone_number=None, greeting="", purpose=""):
     config = load_config()
     api_key = config.get('api_key')
     server = config.get('server', 'https://clawdtalk.com')
+if not config.get('server'):
+    print("⚠️ Warning: server not specified, using default https://clawdtalk.com", file=sys.stderr)
     
     # Собираем payload
     payload = {}
