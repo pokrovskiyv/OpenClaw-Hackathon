@@ -43,7 +43,7 @@ I know how to:
 - **Runtime:** OpenClaw agent system
 - **OCR:** Tesseract 5.3.4
 - **Languages:** Python 3, Bash
-- **Storage:** JSON files
+- **Storage:** JSON files (⚠️ Warning: For production with PII data, consider SQLite+SQLCipher or PostgreSQL for encryption, access control, and auditing)
 - **Communication:** Telegram, ClawdTalk
 - **Version Control:** Git with SSH
 
