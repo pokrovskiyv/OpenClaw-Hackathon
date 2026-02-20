@@ -130,7 +130,7 @@ def main() -> None:
                     "make": str(vehicle.get("make", "")).upper(),
                     "model": vehicle.get("model"),
                     "year": vehicle.get("year"),
-                    "license_plate": None,
+                    "license_plate": vehicle.get("license_plate"),
                 }
             },
             "created_at": now,
