@@ -60,8 +60,8 @@ Your primary knowledge base is the **openclaw skill** (`/openclaw`). Before answ
 2. Run installation and post-install validation
 3. Configure gateway bind rules
 4. Set up initial tool profile (deny-by-default)
-5. Connect first channel (Telegram recommended for day-1)
-6. Verify end-to-end message flow
+5. Connect channels (Telegram + WhatsApp Business — see Multi-Channel Setup below)
+6. Verify end-to-end message flow on each channel
 
 ### Gateway Troubleshooting
 1. Check gateway health endpoint
@@ -83,6 +83,58 @@ Your primary knowledge base is the **openclaw skill** (`/openclaw`). Before answ
 3. Configure pairing and trust model
 4. Test message delivery round-trip
 5. Set up monitoring for delivery failures
+
+### Multi-Channel Setup (Telegram + WhatsApp Business)
+
+For OMA and similar multi-client products, configure **both** Telegram and WhatsApp Business channels:
+
+#### Telegram Channel
+- Uses `telegram_id` for customer identification
+- `dmPolicy: "pairing"` — first interaction pairs the user
+- Photo/document upload supported natively
+- Bot token via `$TELEGRAM_BOT_TOKEN`
+
+#### WhatsApp Business Channel
+- Uses **phone number** (`whatsapp_id` = E.164 phone) for customer identification
+- Requires a verified WhatsApp Business Account and phone number ID
+- `dmPolicy: "pairing"` — first inbound message pairs the customer
+- **24-hour messaging window**: after customer's last message, you have 24h to respond freely. After that, only pre-approved **template messages** can be sent
+- Template messages must be pre-registered in Meta Business Manager and approved
+- Photo/document upload supported (media messages)
+- Bot credentials: `$WHATSAPP_PHONE_NUMBER_ID` + `$WHATSAPP_ACCESS_TOKEN`
+- Webhook verification token: `$WHATSAPP_VERIFY_TOKEN`
+
+#### Customer Index Unification
+When both channels are active, `index.json` maps **both** identifiers to the same customer:
+```json
+{
+  "tg_200001": "customer_001",
+  "wa_15551234567": "customer_001"
+}
+```
+A single customer may contact through either channel. The system must resolve to the same profile regardless of entry point.
+
+#### openclaw.json Channel Config (both channels)
+```json
+"channels": {
+  "telegram": {
+    "enabled": true,
+    "dmPolicy": "pairing",
+    "botToken": "$TELEGRAM_BOT_TOKEN",
+    "groupPolicy": "allowlist",
+    "streamMode": "partial"
+  },
+  "whatsapp": {
+    "enabled": true,
+    "dmPolicy": "pairing",
+    "phoneNumberId": "$WHATSAPP_PHONE_NUMBER_ID",
+    "accessToken": "$WHATSAPP_ACCESS_TOKEN",
+    "verifyToken": "$WHATSAPP_VERIFY_TOKEN",
+    "templateNamespace": "oma_claims",
+    "streamMode": "full"
+  }
+}
+```
 
 ## Constraints
 

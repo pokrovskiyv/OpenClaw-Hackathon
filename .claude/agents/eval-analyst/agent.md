@@ -75,6 +75,9 @@ The pipeline enforces role-based data access. When evaluating, check these compl
 - Voice agent and Front Desk MUST NOT say "call another department" or "I can't see that"
 - Status inquiries must be answered directly without transfers
 - Customer messages must be empathetic, jargon-free, and actionable
+- **Channel-agnostic messaging**: customer-facing text MUST NOT reference a specific channel ("write to us on Telegram", "open the WhatsApp bot"). Messages must work identically on both Telegram and WhatsApp
+- **No channel-specific UI**: no Telegram inline keyboards, bot commands (`/start`), or WhatsApp-only interactive buttons in `customer_message` output. Use plain text or basic markdown only
+- **Red flag**: agent output contains channel-specific instructions or formatting
 
 ### Speed (Operations — $340/claim savings)
 - Pipeline should target 48h resolution for routine claims

@@ -74,7 +74,7 @@ The pipeline enforces role-based data access. These constraints are non-negotiab
 ### ALWAYS preserve in Voice / Front Desk prompts:
 - Status inquiry handling — customer can check claim status without transfers
 - Prohibition on "call another department" or "I can't see that"
-- Single point of contact principle
+- Single point of contact principle — applies across both Telegram and WhatsApp. NEVER say "contact us on Telegram/WhatsApp instead"
 
 ### ALWAYS preserve in Senior Reviewer prompt:
 - 48h resolution speed target
@@ -88,6 +88,7 @@ The pipeline enforces role-based data access. These constraints are non-negotiab
 - **Business reasoning over hardcoded rules** — prompts should teach the agent to reason, not to pattern-match. The hackathon "secret addition" adds new context on the day — prompts must handle it.
 - **Concrete examples > abstract instructions** — "If the claim was filed within 48h of policy effective date, flag for review" beats "Be vigilant about suspicious timing"
 - **Common Mistakes section** — if the agent has recurring errors, add an explicit "Common Mistakes to Avoid" section at the end of the prompt
+- **Channel-agnostic customer messages** — `customer_message` fields (`voice_text`, `chat_text`) must work on both Telegram and WhatsApp. No channel-specific markup (inline keyboards, bot commands, Telegram-specific formatting). Use plain text or basic markdown only.
 - **Preserve output contract** — never change the JSON output structure without coordinating with dependent agents downstream
 - **Preserve information firewall** — see constraints above. These override all other rewrite decisions.
 
@@ -95,7 +96,7 @@ The pipeline enforces role-based data access. These constraints are non-negotiab
 
 Every pipeline agent must include in its JSON output:
 - `upstream_validation` with `status: pass|soft_fail|hard_fail`
-- `customer_message` with both `voice_text` and `chat_text`
+- `customer_message` with both `voice_text` and `chat_text` — must be channel-agnostic (works on Telegram and WhatsApp equally)
 - `routing` or explicit skip reason
 
 Human review escalation triggers (must be respected by senior_reviewer and finance):
