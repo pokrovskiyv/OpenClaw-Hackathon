@@ -18,11 +18,12 @@ from datetime import datetime, timezone
 
 from lib.config import (
     AGENT_ORDER, TEST_CASES_DIR, LOGS_DIR, RESULTS_DIR,
-    MAX_ITERATIONS, PASSING_SCORE, ANTHROPIC_API_KEY
+    MAX_ITERATIONS, PASSING_SCORE, MIN_AGENT_SCORE, ANTHROPIC_API_KEY
 )
+from lib.oscillation import check_oscillations
 from runner import run_all_scenarios, save_run_log
 from evaluator import evaluate_all, save_eval_results, print_eval_summary
-from improver import run_improvement_cycle
+from improver import run_improvement_cycle, check_and_rollback
 
 
 def load_scenarios():
@@ -91,6 +92,20 @@ def save_agent_progress(eval_results: list, iteration: int):
             json.dump(data, f, indent=2)
 
 
+def compute_agent_avg_scores(eval_results: list) -> dict:
+    """Return {agent_name: avg_score} from a list of eval results."""
+    agent_scores = {}
+    for agent_name in AGENT_ORDER:
+        scores = [e["scores"].get(agent_name, 0) for e in eval_results]
+        agent_scores[agent_name] = round(sum(scores) / len(scores), 1) if scores else 0
+    return agent_scores
+
+
+def agents_below_minimum(agent_scores: dict, min_score: float) -> list:
+    """Return list of (agent_name, score) tuples for agents below min_score."""
+    return [(name, score) for name, score in agent_scores.items() if score < min_score]
+
+
 def print_iteration_header(iteration: int, max_iter: int):
     print("\n" + "█" * 70)
     print(f"█  ITERATION {iteration}/{max_iter}")
@@ -128,6 +143,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Don't write prompt changes")
     parser.add_argument("--scenario", type=str, help="Run specific scenario by ID")
     parser.add_argument("--passing-score", type=float, default=PASSING_SCORE, help="Score to stop at")
+    parser.add_argument("--min-agent-score", type=float, default=MIN_AGENT_SCORE,
+                        help="Minimum per-agent score; loop continues if any agent is below this")
     args = parser.parse_args()
 
     # Validate API key
@@ -152,9 +169,13 @@ def main():
     print(f"   Scenarios: {len(scenarios)}")
     print(f"   Max iterations: {max_iter}")
     print(f"   Passing score: {args.passing_score}")
+    print(f"   Min agent score: {args.min_agent_score}")
     print(f"   Dry run: {args.dry_run}")
 
     summary_path = None
+    previous_agent_scores = {}      # {agent_name: avg_score} from previous iteration
+    agent_score_history = {a: [] for a in AGENT_ORDER}  # per-agent score across iterations
+    frozen_agents = set()           # agents frozen due to oscillation
 
     for iteration in range(1, max_iter + 1):
         print_iteration_header(iteration, max_iter)
@@ -175,20 +196,57 @@ def main():
 
         overall = round(sum(e["overall_score"] for e in eval_results) / len(eval_results), 1) if eval_results else 0
 
+        # ── Compute per-agent scores ──
+        current_agent_scores = compute_agent_avg_scores(eval_results)
+        for agent_name in AGENT_ORDER:
+            agent_score_history[agent_name].append(current_agent_scores[agent_name])
+
+        # ── Check per-agent minimum threshold ──
+        weak_agents = agents_below_minimum(current_agent_scores, args.min_agent_score)
+        if weak_agents:
+            print(f"\n⚠ Agents below minimum ({args.min_agent_score}):")
+            for name, score in weak_agents:
+                print(f"    {name}: {score}")
+
+        # ── Detect oscillation ──
+        oscillating = check_oscillations(agent_score_history, min_swings=3)
+        newly_frozen = [a for a in oscillating if a not in frozen_agents]
+        if newly_frozen:
+            print(f"\n🔄 Oscillation detected — freezing prompts for: {', '.join(newly_frozen)}")
+            for a in newly_frozen:
+                history_str = " -> ".join(str(s) for s in agent_score_history[a])
+                print(f"    {a}: {history_str}")
+            frozen_agents.update(newly_frozen)
+
         # ── Phase 3: Improve ──
-        if not args.run_once and overall < args.passing_score:
-            print(f"\n🔧 PHASE 3: Improving agents (score {overall} < {args.passing_score})...")
-            improvement_log = run_improvement_cycle(eval_results, dry_run=args.dry_run, iteration=iteration)
+        needs_improvement = overall < args.passing_score or weak_agents
+        if not args.run_once and needs_improvement:
+            print(f"\n🔧 PHASE 3: Improving agents (score {overall}, target {args.passing_score})...")
+            improvement_log = run_improvement_cycle(
+                eval_results,
+                dry_run=args.dry_run,
+                iteration=iteration,
+                frozen_agents=frozen_agents,
+            )
+
+            # ── Phase 3b: Rollback check ──
+            if previous_agent_scores and not args.dry_run:
+                rolled_back = check_and_rollback(current_agent_scores, previous_agent_scores, iteration)
+                if rolled_back:
+                    improvement_log.setdefault("agents_rolled_back", []).extend(rolled_back)
         else:
-            improvement_log = {"agents_improved": [], "agents_skipped": AGENT_ORDER}
-            if overall >= args.passing_score:
+            improvement_log = {"agents_improved": [], "agents_skipped": list(AGENT_ORDER)}
+            if overall >= args.passing_score and not weak_agents:
                 print(f"\n✅ Score {overall} >= {args.passing_score} — agents are ready!")
+
+        previous_agent_scores = dict(current_agent_scores)
 
         # ── Save iteration summary ──
         summary_path = save_iteration_summary(iteration, iter_log_dir, improvement_log, overall)
 
         # ── Check stopping condition ──
-        if overall >= args.passing_score:
+        # Stop only if overall score passes AND all agents meet minimum threshold
+        if overall >= args.passing_score and not weak_agents:
             print(f"\n🎉 Passing score reached at iteration {iteration}!")
             break
 

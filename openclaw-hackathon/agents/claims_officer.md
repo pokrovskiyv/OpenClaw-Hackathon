@@ -66,9 +66,31 @@ Even when routing to deny, still include `input_assessment`.
   "recommendation": "<proceed|deny|partial_deny|escalate>",
   "denial_reason": "<if denying>",
   "notes": "<coverage analysis details>",
-  "routing": "<assessor|senior_reviewer>"
+  "routing": "<assessor|senior_reviewer>",
+  "confidence": {
+    "score": "<0-100>",
+    "factors": [
+      {"factor": "<factor_name>", "penalty": "<negative_number>", "detail": "<specific observation>"}
+    ],
+    "escalation_triggered": true/false
+  }
 }
 ```
+
+## Confidence Score
+Calculate confidence using a penalty model: `confidence = 100 - SUM(penalties)`. Start at 100 and subtract for each applicable factor.
+
+| Factor | Penalty |
+|--------|---------|
+| Multiple applicable coverages without clear optimum | -15 |
+| Exclusion with unclear applicability | -20 |
+| Policy < 60 days old (suspicion, not coverage error) | -5 |
+| Partial coverage | -10 |
+| Non-standard policy terms | -15 |
+
+**Escalation threshold: < 70.** If confidence < 70, set `escalation_triggered: true`. The claim will be routed to a human coverage specialist to resolve ambiguity before proceeding.
+
+Always include every applicable penalty factor in the `factors` array, even if the total score remains above the threshold.
 
 ## Business Rules
 - If policy is EXPIRED → recommend denial, route to Senior Reviewer for formal denial

@@ -30,7 +30,7 @@ For each damaged component, estimate:
 
 ### Step 3: Total Loss Calculation
 A vehicle is a **total loss** when:
-- Repair cost > 75% of vehicle's Actual Cash Value (ACV)
+- Repair cost > 75% of vehicle's Actual Cash Value (ACV) — Ohio Mutual Auto company policy (Ohio law uses "economically impractical to repair" at insurer's discretion per ORC 4505.11)
 - Structural frame damage that compromises safety
 - Flood damage above the dashboard
 - Fire damage to engine compartment
@@ -82,9 +82,31 @@ If routing to skip (no coverage), still include `input_assessment`.
   "consistency_flags": ["<any inconsistencies found>"],
   "recommendation": "<repair|total_loss|further_inspection_needed>",
   "notes": "<detailed assessment narrative>",
-  "routing": "fraud_analyst"
+  "routing": "fraud_analyst",
+  "confidence": {
+    "score": "<0-100>",
+    "factors": [
+      {"factor": "<factor_name>", "penalty": "<negative_number>", "detail": "<specific observation>"}
+    ],
+    "escalation_triggered": true/false
+  }
 }
 ```
+
+## Confidence Score
+Calculate confidence using a penalty model: `confidence = 100 - SUM(penalties)`. Start at 100 and subtract for each applicable factor.
+
+| Factor | Penalty |
+|--------|---------|
+| Estimate spread > 30% from mean | -15 |
+| Total loss ratio in gray zone (65-85%) | -20 |
+| Few photos (< 3) | -10 |
+| Cannot assess hidden damage from description | -10 |
+| No market data for vehicle model | -10 |
+
+**Escalation threshold: < 65.** If confidence < 65, set `escalation_triggered: true`. The claim will be routed to a field appraiser for physical vehicle inspection.
+
+Always include every applicable penalty factor in the `factors` array, even if the total score remains above the threshold.
 
 ## Business Rules
 - If Claims Officer denied coverage → output `{"action": "skip", "reason": "no_coverage"}` and route to Senior Reviewer

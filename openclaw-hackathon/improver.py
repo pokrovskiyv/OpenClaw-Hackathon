@@ -11,6 +11,53 @@ from lib.config import IMPROVER_MODEL, AGENT_ORDER, AGENTS_DIR
 from lib.llm import call_llm
 
 
+def check_and_rollback(current_scores: dict, previous_scores: dict, iteration: int) -> list:
+    """Compare current per-agent scores to previous iteration; rollback regressed agents.
+
+    Rollback triggers:
+      - Overall score regressed by > 5 points
+      - Any individual agent regressed by > 10 points
+
+    Args:
+        current_scores:  {agent_name: avg_score} for the just-completed iteration.
+        previous_scores: {agent_name: avg_score} for the previous iteration.
+        iteration:       Current iteration number (backups are at iter_{N-1:03d}).
+
+    Returns:
+        List of agent names that were rolled back.
+    """
+    rolled_back = []
+
+    prev_overall = sum(previous_scores.values()) / len(previous_scores) if previous_scores else 0
+    curr_overall = sum(current_scores.values()) / len(current_scores) if current_scores else 0
+    overall_regressed = (prev_overall - curr_overall) > 5
+
+    for agent_name in AGENT_ORDER:
+        prev = previous_scores.get(agent_name, 0)
+        curr = current_scores.get(agent_name, 0)
+        agent_regressed = (prev - curr) > 10
+
+        if overall_regressed or agent_regressed:
+            # Restore from the backup created at the start of this iteration
+            backup_path = os.path.join(AGENTS_DIR, "backups", f"iter_{iteration:03d}", f"{agent_name}.md")
+            prompt_path = os.path.join(AGENTS_DIR, f"{agent_name}.md")
+
+            if not os.path.exists(backup_path):
+                print(f"    [ROLLBACK] No backup for {agent_name} at iter {iteration}, skipping")
+                continue
+
+            with open(backup_path, "r") as f:
+                backup_prompt = f.read()
+            with open(prompt_path, "w") as f:
+                f.write(backup_prompt)
+
+            reason = "overall regression > 5pts" if overall_regressed else f"agent regression {prev} -> {curr} (>{10}pts)"
+            print(f"    [ROLLBACK] {agent_name}: restored from iter_{iteration:03d} backup ({reason})")
+            rolled_back.append(agent_name)
+
+    return rolled_back
+
+
 IMPROVER_SYSTEM_PROMPT = """You are an expert prompt engineer specializing in insurance claims processing AI agents.
 
 Your job is to analyze Claims Manager evaluation results and rewrite agent system prompts to fix identified weaknesses.
@@ -120,13 +167,20 @@ Rewrite the complete agent prompt to fix the identified issues. Focus primarily 
     return improved.strip()
 
 
-def run_improvement_cycle(eval_results: list, dry_run: bool = False, iteration: int = 0) -> dict:
-    """Analyze all agents and improve the weakest ones based on manager feedback."""
+def run_improvement_cycle(eval_results: list, dry_run: bool = False, iteration: int = 0,
+                          frozen_agents: set = None) -> dict:
+    """Analyze all agents and improve the weakest ones based on manager feedback.
+
+    Args:
+        frozen_agents: Set of agent names to skip (frozen due to oscillation).
+    """
+    frozen = frozen_agents or set()
     improvement_log = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "agents_analyzed": {},
         "agents_improved": [],
         "agents_skipped": [],
+        "agents_frozen": list(frozen),
     }
 
     # Find the global weakest agent across all evals
@@ -138,6 +192,12 @@ def run_improvement_cycle(eval_results: list, dry_run: bool = False, iteration: 
     global_weakest = max(weakest_counts, key=weakest_counts.get) if weakest_counts else None
 
     for agent_name in AGENT_ORDER:
+        # Skip frozen agents (oscillation detected)
+        if agent_name in frozen:
+            print(f"\n  {agent_name}: FROZEN (oscillation) — skipping")
+            improvement_log["agents_skipped"].append(agent_name)
+            continue
+
         print(f"\n  Analyzing {agent_name}...", end=" ", flush=True)
         performance = analyze_agent_performance(agent_name, eval_results)
         improvement_log["agents_analyzed"][agent_name] = {

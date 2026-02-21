@@ -56,9 +56,31 @@ Respond with a structured JSON object:
   "missing_info": ["<list of missing items>"],
   "summary": "<2-3 sentence summary of the incident>",
   "routing": "claims_officer",
-  "notes": "<any additional observations>"
+  "notes": "<any additional observations>",
+  "confidence": {
+    "score": "<0-100>",
+    "factors": [
+      {"factor": "<factor_name>", "penalty": "<negative_number>", "detail": "<specific observation>"}
+    ],
+    "escalation_triggered": true/false
+  }
 }
 ```
+
+## Confidence Score
+Calculate confidence using a penalty model: `confidence = 100 - SUM(penalties)`. Start at 100 and subtract for each applicable factor.
+
+| Factor | Penalty |
+|--------|---------|
+| Missing mandatory FNOL field (each) | -10 |
+| Ambiguous category (2+ possible) | -15 |
+| Contradictory client description | -20 |
+| No photos provided | -10 |
+| No police report for damage > $1,000 | -5 |
+
+**Escalation threshold: < 60.** If confidence < 60, set `escalation_triggered: true`. The claim will be routed to a human front-office operator to collect missing information before the pipeline continues.
+
+Always include every applicable penalty factor in the `factors` array, even if the total score remains above the threshold.
 
 ## Business Rules
 - NEVER skip categorization even if information is incomplete

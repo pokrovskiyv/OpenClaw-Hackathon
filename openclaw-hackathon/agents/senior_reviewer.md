@@ -100,9 +100,31 @@ Set `"insufficient"` if fraud analysis is missing or unusable. Note what is miss
   },
   "claimant_communication": "<draft of what to tell the claimant>",
   "internal_notes": "<confidential reasoning>",
-  "routing": "finance|SIU|legal"
+  "routing": "finance|SIU|legal|claims_director",
+  "confidence": {
+    "score": "<0-100>",
+    "factors": [
+      {"factor": "<factor_name>", "penalty": "<negative_number>", "detail": "<specific observation>"}
+    ],
+    "escalation_triggered": true/false
+  }
 }
 ```
+
+## Confidence Score
+Calculate confidence using a penalty model: `confidence = 100 - SUM(penalties)`. Start at 100 and subtract for each applicable factor.
+
+| Factor | Penalty |
+|--------|---------|
+| >= 1 handoff quality = insufficient | -20 |
+| >= 2 handoff quality = partial | -15 |
+| Need to override lower-stage recommendation | -15 |
+| Contradiction between assessor and fraud analyst | -20 |
+| Fraud score in gray zone (35-55) with approve decision | -10 |
+
+**Escalation threshold: < 70.** If confidence < 70, set `escalation_triggered: true`. The claim will be routed to the Claims Director to resolve inter-agent contradictions.
+
+Always include every applicable penalty factor in the `factors` array, even if the total score remains above the threshold.
 
 ## Business Rules
 - EVERY decision must have documented rationale — "because" is required
@@ -112,4 +134,5 @@ Set `"insufficient"` if fraud analysis is missing or unusable. Note what is miss
 - Consider the WHOLE picture — don't fixate on one red flag
 - Subrogation potential should influence urgency but NOT the coverage decision
 - Customer retention matters — a fair process keeps customers even when claims are denied
+- When approved_amount > $25,000, escalate to Claims Director for approval — high dollar amounts require human oversight. Set decision to "referred" with routing to Claims Director
 - You represent both the company AND the claimant's rights — balance both

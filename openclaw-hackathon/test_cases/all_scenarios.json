@@ -5167,6 +5167,1181 @@
     }
   },
   {
+    "id": "TC-031",
+    "name": "PIP/MedPay-Only Claim - No Vehicle Damage",
+    "difficulty": "medium",
+    "tags": [
+      "medpay",
+      "medical_only",
+      "no_vehicle_damage",
+      "coverage_routing"
+    ],
+    "description": "Policyholder rear-ended at a stoplight with minor whiplash. No vehicle damage claim filed — only medical expenses for chiropractic treatment ($3,200). Policy includes optional MedPay with $5,000 limit and no deductible. Tests whether Claims Officer correctly routes to MedPay, Assessor skips or minimizes vehicle assessment, and Finance pays medical directly within MedPay limit.",
+    "input": {
+      "claimant_name": "Susan Yamamoto",
+      "policy_number": "OMA-2025-38901",
+      "incident_date": "2026-02-14",
+      "incident_type": "collision",
+      "description": "I was stopped at a red light at the intersection of High Street and Broad Street in Columbus when a pickup truck rear-ended me at low speed. I felt a jolt and my neck snapped back. The other driver's bumper barely touched mine — there is no visible damage to either vehicle. However, I started having neck pain and stiffness the next day. I have been seeing Dr. Williams at Central Ohio Chiropractic for treatment (8 visits so far). My total medical bills are $3,200. I am not filing a claim for vehicle damage since there is none — I only need my medical expenses covered under my MedPay coverage.",
+      "police_report": false,
+      "photos": [],
+      "witnesses": 1,
+      "medical_claims": {
+        "type": "chiropractic",
+        "visits": 8,
+        "total_billed": 3200,
+        "provider": "Central Ohio Chiropractic"
+      },
+      "other_party_info": {
+        "name": "Brian Fletcher",
+        "insurance": "Progressive",
+        "policy": "PRG-55210"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-38901",
+      "holder": "Susan Yamamoto",
+      "status": "active",
+      "effective_date": "2025-04-01",
+      "expiry_date": "2026-04-01",
+      "vehicle": {
+        "year": 2021,
+        "make": "Honda",
+        "model": "Accord",
+        "vin": "1HGCV1F32MA123456"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 40000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 40000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "medical_payments": {
+          "limit": 5000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision_with_injury",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "coverage_type": "medpay",
+        "deductible": 0,
+        "exclusions": false
+      },
+      "assessor": {
+        "action": "skip",
+        "reason": "no_vehicle_damage"
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 25
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "approved_amount": 3200
+      },
+      "finance": {
+        "payment_authorized": true,
+        "subrogation": true,
+        "subrogation_target": "Progressive"
+      }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "in",
+        "value": ["collision", "collision_with_injury"],
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "fnol_complete",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_type",
+        "op": "contains",
+        "value": "med",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 0,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": ["low", "moderate"],
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 25,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "lte",
+        "value": 5000,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "medpay_has_zero_deductible",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_type",
+          "op": "contains",
+          "value": "med"
+        },
+        "then": {
+          "agent": "claims_officer",
+          "field": "deductible",
+          "op": "eq",
+          "value": 0
+        }
+      },
+      {
+        "name": "medpay_approved_amount_within_limit",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "lte",
+          "value": 5000
+        }
+      },
+      {
+        "name": "approved_claim_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
+    }
+  },
+  {
+    "id": "TC-032",
+    "name": "Liability-Only Policy - First-Party Claim Denied",
+    "difficulty": "medium",
+    "tags": [
+      "liability_only",
+      "no_collision",
+      "coverage_denial",
+      "at_fault"
+    ],
+    "description": "Policyholder ran a red light and hit another car. Other driver has damage and injuries. Policyholder only carries Liability coverage (no Collision, no Comprehensive). First-party claim for own vehicle damage must be denied — Liability only covers damage to the other party. Tests whether Claims Officer correctly identifies no first-party coverage and Senior Reviewer denies.",
+    "input": {
+      "claimant_name": "Derek Rawlings",
+      "policy_number": "OMA-2025-52340",
+      "incident_date": "2026-02-11",
+      "incident_type": "collision",
+      "description": "I was driving eastbound on Main Street in Dayton and ran a red light at the intersection with Third Street. I hit another car that was proceeding through the green light on their side. My front end is smashed — the hood is buckled, radiator is leaking, and the airbags deployed. The other driver's car also has significant damage to the passenger side, and she is complaining of shoulder pain. Police arrived and cited me for running the red light. I need to get my car fixed. Police report number PR-2026-0811.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0811",
+      "photos": [
+        "front_end_damage.jpg",
+        "deployed_airbags.jpg",
+        "other_car_side_damage.jpg"
+      ],
+      "witnesses": 2,
+      "other_party_info": {
+        "name": "Jennifer Cole",
+        "insurance": "Allstate",
+        "policy": "ALL-90213",
+        "injuries": "shoulder_pain"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-52340",
+      "holder": "Derek Rawlings",
+      "status": "active",
+      "effective_date": "2025-08-15",
+      "expiry_date": "2026-08-15",
+      "vehicle": {
+        "year": 2017,
+        "make": "Chevrolet",
+        "model": "Malibu",
+        "vin": "1G1ZB5ST3HF234567"
+      },
+      "coverage": {
+        "liability": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "notes": "Liability-only policy. No collision or comprehensive coverage elected."
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision_with_injury",
+        "severity": "high",
+        "priority": "high"
+      },
+      "claims_officer": {
+        "coverage_valid": false,
+        "denial_reason": "no_collision_coverage",
+        "note": "Liability covers other party only, not policyholder vehicle"
+      },
+      "assessor": {
+        "action": "skip",
+        "reason": "no_coverage"
+      },
+      "fraud_analyst": {
+        "action": "skip",
+        "reason": "no_coverage"
+      },
+      "senior_reviewer": {
+        "decision": "denied",
+        "reason": "no_first_party_coverage"
+      },
+      "finance": {
+        "payment_authorized": false
+      }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "in",
+        "value": ["collision", "collision_with_injury"],
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "denial_reason",
+        "op": "exists",
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "action",
+        "op": "eq",
+        "value": "skip",
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "action",
+        "op": "eq",
+        "value": "skip",
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "denied",
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "no_collision_coverage_denies_first_party",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        }
+      },
+      {
+        "name": "denial_blocks_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "denied"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": false
+        }
+      },
+      {
+        "name": "no_coverage_skips_assessor",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": false
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "action",
+          "op": "eq",
+          "value": "skip"
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
+    }
+  },
+  {
+    "id": "TC-033",
+    "name": "Multi-Coverage Routing - Windshield (Comprehensive vs Collision)",
+    "difficulty": "medium",
+    "tags": [
+      "coverage_routing",
+      "comprehensive",
+      "windshield",
+      "optimal_coverage",
+      "deductible_comparison"
+    ],
+    "description": "Policyholder's windshield cracked by road debris (rock kicked up by a truck). Collision deductible is $500, Comprehensive deductible is $100. Windshield replacement cost is $450. Under Collision, payout would be $0 (below deductible). Under Comprehensive, payout is $450 - $100 = $350. Tests whether Claims Officer routes to Comprehensive as the most favorable coverage for the client.",
+    "input": {
+      "claimant_name": "Patricia Novak",
+      "policy_number": "OMA-2025-61472",
+      "incident_date": "2026-02-17",
+      "incident_type": "comprehensive",
+      "description": "I was driving on I-71 northbound near Mansfield when a large rock kicked up by the semi-truck ahead of me struck my windshield. There is now a large crack running diagonally across the entire driver's side of the windshield, about 18 inches long. No other damage to the vehicle. I got a quote from SafeLite for windshield replacement at $450. The truck did not stop and I did not get a plate number.",
+      "police_report": false,
+      "photos": [
+        "windshield_crack.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-61472",
+      "holder": "Patricia Novak",
+      "status": "active",
+      "effective_date": "2025-07-01",
+      "expiry_date": "2026-07-01",
+      "vehicle": {
+        "year": 2023,
+        "make": "Subaru",
+        "model": "Outback",
+        "vin": "4S4BTACC2P3234567"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 35000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 35000,
+          "deductible": 100
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "comprehensive",
+        "severity": "low",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "coverage_type": "comprehensive",
+        "deductible": 100,
+        "exclusions": false
+      },
+      "assessor": {
+        "total_loss": false,
+        "repair_estimate_range": [400, 500]
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 15
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "approved_amount_range": [300, 400]
+      },
+      "finance": {
+        "payment_authorized": true,
+        "subrogation": false
+      }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "fnol_complete",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_type",
+        "op": "contains",
+        "value": "comprehensive",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 100,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [350, 550],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 15,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "between",
+        "value": [250, 450],
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "comprehensive_preferred_over_collision_lower_deductible",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "claims_officer",
+          "field": "deductible",
+          "op": "lte",
+          "value": 100
+        }
+      },
+      {
+        "name": "approved_claim_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "no_other_party_means_no_subrogation",
+        "if": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
+    }
+  },
+  {
+    "id": "TC-034",
+    "name": "UM/UIM Claim - Underinsured Motorist Gap Coverage",
+    "difficulty": "hard",
+    "tags": [
+      "uim",
+      "underinsured_motorist",
+      "gap_coverage",
+      "multi_party",
+      "subrogation"
+    ],
+    "description": "Policyholder hit by underinsured driver whose liability limit is only $15,000. Policyholder's vehicle damage is $28,000. Policyholder has UIM coverage with $50,000 limit and $500 deductible. Other driver's insurer pays their $15,000 limit. UIM should cover the gap: $28,000 - $15,000 - $500 = $12,500. Tests whether the pipeline correctly identifies UIM applicability, calculates the gap, and notes that subrogation is not applicable since other insurer already paid their limit.",
+    "input": {
+      "claimant_name": "Thomas Greenfield",
+      "policy_number": "OMA-2025-47823",
+      "incident_date": "2026-02-09",
+      "incident_type": "collision",
+      "description": "I was driving southbound on Route 23 near Circleville when the other driver crossed the center line and hit me head-on. My vehicle sustained major front-end damage — the frame is bent, engine pushed back, both airbags deployed. The other driver, Michael Torres, admitted fault at the scene. However, his insurance (Budget Auto Insurance) informed me that his liability limit is only $15,000 and that is the maximum they will pay for my vehicle damage. My vehicle damage is estimated at $28,000 by two independent shops. I have UIM coverage on my Ohio Mutual policy and need to file a claim for the difference. Police report PR-2026-0709.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0709",
+      "photos": [
+        "front_end_head_on.jpg",
+        "frame_damage.jpg",
+        "airbags_deployed.jpg",
+        "engine_pushed_back.jpg"
+      ],
+      "witnesses": 1,
+      "other_party_info": {
+        "name": "Michael Torres",
+        "insurance": "Budget Auto Insurance",
+        "policy": "BAI-33021",
+        "liability_limit": 15000
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-47823",
+      "holder": "Thomas Greenfield",
+      "status": "active",
+      "effective_date": "2025-05-01",
+      "expiry_date": "2026-05-01",
+      "vehicle": {
+        "year": 2022,
+        "make": "Ford",
+        "model": "F-150",
+        "vin": "1FTEW1EP5NFA34567"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 45000,
+          "deductible": 1000
+        },
+        "comprehensive": {
+          "limit": 45000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "uninsured_underinsured_motorist": {
+          "limit": 50000,
+          "deductible": 500
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "high",
+        "priority": "high"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "coverage_type": "uim",
+        "deductible": 500,
+        "exclusions": false
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [25000, 32000]
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 15
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "approved_amount_range": [11500, 13500]
+      },
+      "finance": {
+        "payment_authorized": true,
+        "subrogation": false
+      }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": ["high", "moderate"],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_type",
+        "op": "contains",
+        "value": "u",
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 500,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "repair_estimate.total",
+        "op": "between",
+        "value": [24000, 33000],
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 20,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "between",
+        "value": [10000, 15000],
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "subrogation.applicable",
+        "op": "eq",
+        "value": false,
+        "critical": true
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "uim_covers_gap_above_other_party_limit",
+        "if": {
+          "agent": "claims_officer",
+          "field": "coverage_valid",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "lt",
+          "value": 28000
+        }
+      },
+      {
+        "name": "approved_uim_claim_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "no_subrogation_when_other_insurer_paid_limit",
+        "if": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "finance",
+          "field": "subrogation.applicable",
+          "op": "eq",
+          "value": false
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
+    }
+  },
+  {
+    "id": "TC-035",
+    "name": "Total Loss with Lienholder - Dual-Payee Settlement",
+    "difficulty": "hard",
+    "tags": [
+      "total_loss",
+      "lienholder",
+      "dual_payee",
+      "collision",
+      "loan_balance"
+    ],
+    "description": "Policyholder has a car loan with bank as lienholder. Vehicle is a total loss (repair $22,000, ACV $25,000, ratio 88%). Collision coverage with $1,000 deductible. Loan balance is $20,000. Tests whether pipeline correctly determines total loss, calculates payout as ACV - deductible = $24,000, and Finance notes the lienholder for dual-payee check issuance.",
+    "input": {
+      "claimant_name": "Angela Whitfield",
+      "policy_number": "OMA-2025-58190",
+      "incident_date": "2026-02-13",
+      "incident_type": "collision",
+      "description": "I was driving on I-270 during rush hour when traffic suddenly stopped. I could not brake in time and rear-ended a utility truck at approximately 40 mph. My vehicle sustained massive front-end damage — the entire front is caved in, the engine bay is crushed, and the frame is visibly bent. Airbags deployed on both sides. The tow company said the car is likely totaled. I still owe $20,000 on my car loan through Fifth Third Bank. The other driver (utility truck) has minor damage. Police report filed PR-2026-0913. Note: I have a lien on this vehicle — Fifth Third Bank is the lienholder listed on my policy.",
+      "police_report": true,
+      "police_report_number": "PR-2026-0913",
+      "photos": [
+        "front_end_crushed.jpg",
+        "frame_bent.jpg",
+        "engine_bay_damage.jpg",
+        "airbags_deployed.jpg",
+        "full_vehicle_view.jpg"
+      ],
+      "witnesses": 3,
+      "other_party_info": {
+        "name": "City of Columbus Utility Services",
+        "insurance": "Municipal Self-Insured",
+        "vehicle_type": "utility_truck"
+      }
+    },
+    "policy": {
+      "policy_number": "OMA-2025-58190",
+      "holder": "Angela Whitfield",
+      "status": "active",
+      "effective_date": "2025-03-01",
+      "expiry_date": "2026-03-01",
+      "vehicle": {
+        "year": 2023,
+        "make": "Nissan",
+        "model": "Rogue",
+        "vin": "5N1AT3BB2PC345678"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 30000,
+          "deductible": 1000
+        },
+        "comprehensive": {
+          "limit": 30000,
+          "deductible": 500
+        },
+        "liability": {
+          "bodily_injury": 100000,
+          "property_damage": 50000
+        },
+        "rental_reimbursement": {
+          "daily_limit": 40,
+          "max_days": 30
+        }
+      },
+      "claims_history": [],
+      "premium_paid": true,
+      "lienholder": {
+        "name": "Fifth Third Bank",
+        "address": "38 Fountain Square Plaza, Cincinnati, OH 45263",
+        "loan_balance": 20000
+      }
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "high",
+        "priority": "high"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "coverage_type": "collision",
+        "deductible": 1000,
+        "exclusions": false
+      },
+      "assessor": {
+        "total_loss": true,
+        "vehicle_acv_range": [23000, 27000],
+        "total_loss_ratio_min": 0.75
+      },
+      "fraud_analyst": {
+        "risk_level": "low",
+        "fraud_score_max": 15
+      },
+      "senior_reviewer": {
+        "decision": "approved",
+        "approved_amount_range": [22000, 26000]
+      },
+      "finance": {
+        "payment_authorized": true,
+        "lienholder_noted": true,
+        "rental_reimbursement": true
+      }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": ["high"],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_type",
+        "op": "contains",
+        "value": "collision",
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 1000,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "exclusions_triggered",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "vehicle_acv",
+        "op": "between",
+        "value": [22000, 28000],
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss_ratio",
+        "op": "gte",
+        "value": 0.75,
+        "critical": false
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "eq",
+        "value": "low",
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "lte",
+        "value": 15,
+        "critical": false
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "eq",
+        "value": "approved",
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "approved_amount",
+        "op": "between",
+        "value": [21000, 27000],
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "finance",
+        "field": "rental_reimbursement.applicable",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "total_loss_triggers_acv_payout",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "vehicle_acv",
+          "op": "gt",
+          "value": 0
+        }
+      },
+      {
+        "name": "approved_total_loss_authorizes_payment",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "finance",
+          "field": "payment_authorized",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "total_loss_includes_rental_reimbursement",
+        "if": {
+          "agent": "assessor",
+          "field": "total_loss",
+          "op": "eq",
+          "value": true
+        },
+        "then": {
+          "agent": "finance",
+          "field": "rental_reimbursement.applicable",
+          "op": "eq",
+          "value": true
+        }
+      },
+      {
+        "name": "approved_claim_has_positive_amount",
+        "if": {
+          "agent": "senior_reviewer",
+          "field": "decision",
+          "op": "eq",
+          "value": "approved"
+        },
+        "then": {
+          "agent": "senior_reviewer",
+          "field": "approved_amount",
+          "op": "gt",
+          "value": 0
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
+    }
+  },
+  {
     "id": "TC-040",
     "name": "Flood Damage \u2014 Acts of God with Negligence",
     "difficulty": "hard",

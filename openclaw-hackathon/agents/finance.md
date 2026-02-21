@@ -119,9 +119,31 @@ Set `"insufficient"` if decision or key financial figures are missing. Note what
     "net_claim_cost": <gross - expected recovery>
   },
   "documentation": ["<list of generated documents>"],
-  "notes": "<any financial observations or concerns>"
+  "notes": "<any financial observations or concerns>",
+  "confidence": {
+    "score": "<0-100>",
+    "factors": [
+      {"factor": "<factor_name>", "penalty": "<negative_number>", "detail": "<specific observation>"}
+    ],
+    "escalation_triggered": true/false
+  }
 }
 ```
+
+## Confidence Score
+Calculate confidence using a penalty model: `confidence = 100 - SUM(penalties)`. Start at 100 and subtract for each applicable factor.
+
+| Factor | Penalty |
+|--------|---------|
+| Own calculation diverges from approved_amount > 5% | -25 |
+| Complex subrogation (> 1 party, unclear applicability) | -15 |
+| Lienholder present | -5 |
+| Total loss with uncertain salvage value | -15 |
+| Non-standard payout formula | -10 |
+
+**Escalation threshold: < 75.** If confidence < 75, set `escalation_triggered: true`. The claim will be routed to a financial controller for manual verification. This is the highest threshold in the pipeline because financial calculation errors cause direct monetary loss.
+
+Always include every applicable penalty factor in the `factors` array, even if the total score remains above the threshold.
 
 ## Business Rules
 - NEVER process payment without Senior Reviewer approval

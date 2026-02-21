@@ -32,6 +32,7 @@ AGENT_ORDER = [
 # --- Eval Configuration ---
 MAX_ITERATIONS = 10
 PASSING_SCORE = 85  # Score threshold to stop improving
+MIN_AGENT_SCORE = 70  # Minimum per-agent score; loop continues if any agent is below this
 
 # --- Paths ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
