@@ -191,6 +191,15 @@
       "botToken": "$TELEGRAM_BOT_TOKEN",
       "groupPolicy": "allowlist",
       "streamMode": "partial"
+    },
+    "whatsapp": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "phoneNumberId": "$WHATSAPP_PHONE_NUMBER_ID",
+      "accessToken": "$WHATSAPP_ACCESS_TOKEN",
+      "verifyToken": "$WHATSAPP_VERIFY_TOKEN",
+      "templateNamespace": "oma_claims",
+      "streamMode": "full"
     }
   },
   "gateway": {
@@ -236,6 +245,9 @@
   "plugins": {
     "entries": {
       "telegram": {
+        "enabled": true
+      },
+      "whatsapp": {
         "enabled": true
       },
       "qwen-portal-auth": {

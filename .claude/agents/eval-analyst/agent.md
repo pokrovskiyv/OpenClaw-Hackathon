@@ -100,6 +100,7 @@ When diagnosing an agent failure, classify the root cause:
 | **Firewall breach** | Agent accesses data it shouldn't | Assessor references coverage limit in notes |
 | **Missing cross-ref** | Agent doesn't use data it should | Fraud analyst ignores estimate-to-limit ratio |
 | **CX violation** | Agent redirects instead of helping | Front desk says "call another department" |
+| **Channel leak** | Agent references a specific channel | Customer message says "open Telegram bot" |
 
 ## Output Format
 
