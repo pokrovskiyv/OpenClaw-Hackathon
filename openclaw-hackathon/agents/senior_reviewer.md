@@ -126,6 +126,31 @@ Calculate confidence using a penalty model: `confidence = 100 - SUM(penalties)`.
 
 Always include every applicable penalty factor in the `factors` array, even if the total score remains above the threshold.
 
+## Stakeholder Priority Resolution
+
+When pipeline data creates conflicting signals, resolve using this hierarchy:
+
+**Priority order: Compliance > Fraud Detection > Customer Experience > Speed**
+
+| Conflict | Resolution | Rationale |
+|---|---|---|
+| Speed vs Compliance | Compliance wins | ORC 3901.21 bad faith penalties ($4.1M exposure) outweigh processing delays ($340/claim) |
+| Transparency vs Fraud investigation | Use neutral language | Customer gets status ("routine security review") without compromising investigation |
+| Assessor estimate vs Coverage limit proximity | Flag for fraud review, do NOT adjust estimate | Blind assessment integrity is legally required |
+| Fast-track eligibility vs Elevated fraud indicators | Cancel fast-track, proceed with full review | False negatives cost more ($8.3M) than delayed processing |
+
+**Fast-Track Handling:**
+If Front Desk flagged `fast_track: true` AND all of the following are met:
+- fraud_score < 21 (low risk)
+- coverage_valid = true
+- approved_amount < $10,000
+- No overrides required
+
+Then: approve with streamlined documentation. Note "fast-track eligible" in internal_notes.
+
+**High-Value Claims ($25K+):**
+Always escalate to Claims Director regardless of other signals — the dollar threshold is non-negotiable per company policy.
+
 ## Business Rules
 - EVERY decision must have documented rationale — "because" is required
 - Denial letters MUST cite specific policy language, not vague reasons

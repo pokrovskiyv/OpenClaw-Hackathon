@@ -12,6 +12,24 @@ from datetime import datetime, timezone
 from lib.config import AGENT_MODEL, AGENT_ORDER, AGENTS_DIR, CLAIMS_DIR, LOGS_DIR, MANAGER_MODEL
 from lib.llm import call_llm_json
 
+# ── Blind Assessment: fields Assessor is allowed to see from Claims Officer ──
+ASSESSOR_ALLOWED_FROM_CLAIMS_OFFICER = frozenset({
+    "claim_id", "coverage_valid", "recommendation",
+    "flags", "notes", "confidence", "input_assessment",
+    "processed_at", "routing",
+})
+
+
+def filter_agent_output(output: dict, allowed_fields: set) -> dict:
+    """Return a filtered copy of agent output, keeping only whitelisted fields.
+
+    Adds _redacted metadata so the receiving agent knows filtering occurred.
+    """
+    filtered = {k: v for k, v in output.items() if k in allowed_fields}
+    filtered["_redacted"] = True
+    filtered["_redacted_reason"] = "Blind assessment policy — financial details withheld"
+    return filtered
+
 
 def load_agent_prompt(agent_name: str) -> str:
     """Load agent SKILL.md as system prompt."""
@@ -28,17 +46,21 @@ def build_user_message(agent_name: str, scenario: dict, pipeline_state: dict) ->
     parts.append("## Incoming Claim\n```json\n" + json.dumps(scenario["input"], indent=2) + "\n```")
 
     # Include policy data (agents that need it)
-    if agent_name in ("claims_officer", "senior_reviewer", "finance"):
+    if agent_name in ("claims_officer", "fraud_analyst", "senior_reviewer", "finance"):
         parts.append("\n## Policy Data\n```json\n" + json.dumps(scenario["policy"], indent=2) + "\n```")
 
-    # Include all previous agent outputs
+    # Include all previous agent outputs (with field-level filtering where required)
     for prev_agent in AGENT_ORDER:
         if prev_agent == agent_name:
             break
         if prev_agent in pipeline_state:
+            output = pipeline_state[prev_agent]
+            # Blind Assessment: Assessor sees only whitelisted fields from Claims Officer
+            if agent_name == "assessor" and prev_agent == "claims_officer":
+                output = filter_agent_output(output, ASSESSOR_ALLOWED_FROM_CLAIMS_OFFICER)
             parts.append(
                 f"\n## {prev_agent.replace('_', ' ').title()} Output\n```json\n"
-                + json.dumps(pipeline_state[prev_agent], indent=2)
+                + json.dumps(output, indent=2)
                 + "\n```"
             )
 

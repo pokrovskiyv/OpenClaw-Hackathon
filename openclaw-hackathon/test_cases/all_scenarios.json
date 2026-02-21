@@ -419,6 +419,20 @@
         "op": "eq",
         "value": false,
         "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "coverage_limit",
+        "op": "exists",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "deductible",
+        "op": "exists",
+        "value": false,
+        "critical": true
       }
     ],
     "business_rules": [
@@ -1060,6 +1074,20 @@
         "agent": "finance",
         "field": "payment_authorized",
         "op": "eq",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "coverage_limit",
+        "op": "exists",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "deductible",
+        "op": "exists",
         "value": false,
         "critical": true
       }
@@ -8125,6 +8153,227 @@
             "proceed",
             "enhanced_documentation"
           ]
+        }
+      }
+    ],
+    "verdict_criteria": {
+      "require_all_critical": true,
+      "min_non_critical_pass_rate": 0.7
+    }
+  },
+  {
+    "id": "TC-036",
+    "name": "Estimate-to-Limit Fraud - Suspicious Damage Targeting Coverage Maximum",
+    "difficulty": "hard",
+    "tags": [
+      "fraud",
+      "estimate_to_limit",
+      "blind_assessment",
+      "collision",
+      "inflated_claims"
+    ],
+    "description": "Claimant reports collision damage with repair estimate suspiciously close to coverage limit. Policy has $25,000 collision limit with $500 deductible. The claimed damage conveniently totals ~$24,500 (limit minus deductible = exact max payout). Tests whether fraud analyst detects estimate-to-limit pattern using cross-reference between blind assessor estimate and policy limits. Also tests that assessor's blind estimate is unbiased by financial data.",
+    "input": {
+      "claimant_name": "Derek Voss",
+      "policy_number": "OMA-2025-71482",
+      "incident_date": "2026-02-17",
+      "incident_type": "collision",
+      "description": "I was driving on SR-315 when I swerved to avoid debris on the road and hit a concrete median barrier. The entire driver side is damaged — front fender, driver door, rear quarter panel, and side mirror are all destroyed. The suspension on the left side feels bent. No other vehicles involved. No witnesses. It happened around 11 PM. I didn't file a police report because it was a single-vehicle accident and I drove home.",
+      "police_report": false,
+      "police_report_number": null,
+      "photos": [
+        "driver_side_damage.jpg",
+        "bent_suspension.jpg"
+      ],
+      "witnesses": 0,
+      "other_party_info": null
+    },
+    "policy": {
+      "policy_number": "OMA-2025-71482",
+      "holder": "Derek Voss",
+      "status": "active",
+      "effective_date": "2026-01-15",
+      "expiry_date": "2027-01-15",
+      "vehicle": {
+        "year": 2019,
+        "make": "BMW",
+        "model": "3 Series",
+        "vin": "WBA5R1C50KA987654"
+      },
+      "coverage": {
+        "collision": {
+          "limit": 25000,
+          "deductible": 500
+        },
+        "comprehensive": {
+          "limit": 25000,
+          "deductible": 250
+        },
+        "liability": {
+          "bodily_injury": 50000,
+          "property_damage": 25000
+        }
+      },
+      "claims_history": [
+        {
+          "date": "2025-08-10",
+          "type": "comprehensive",
+          "amount": 3200,
+          "description": "Windshield replacement and minor hail damage"
+        }
+      ],
+      "premium_paid": true
+    },
+    "expected": {
+      "front_desk": {
+        "category": "collision",
+        "severity": "high",
+        "priority": "standard"
+      },
+      "claims_officer": {
+        "coverage_valid": true,
+        "coverage_type": "collision",
+        "deductible": 500,
+        "exclusions": false
+      },
+      "assessor": {
+        "total_loss": false,
+        "estimated_damage_range": [12000, 22000]
+      },
+      "fraud_analyst": {
+        "risk_level": "moderate",
+        "fraud_score_min": 25
+      },
+      "senior_reviewer": {
+        "decision": "approved"
+      },
+      "finance": {
+        "payment_authorized": true
+      }
+    },
+    "assertions": [
+      {
+        "agent": "front_desk",
+        "field": "category",
+        "op": "eq",
+        "value": "collision",
+        "critical": true
+      },
+      {
+        "agent": "front_desk",
+        "field": "severity",
+        "op": "in",
+        "value": ["moderate", "high"],
+        "critical": false
+      },
+      {
+        "agent": "claims_officer",
+        "field": "coverage_valid",
+        "op": "eq",
+        "value": true,
+        "critical": true
+      },
+      {
+        "agent": "claims_officer",
+        "field": "deductible",
+        "op": "eq",
+        "value": 500,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "total_loss",
+        "op": "eq",
+        "value": false,
+        "critical": false
+      },
+      {
+        "agent": "assessor",
+        "field": "coverage_limit",
+        "op": "exists",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "assessor",
+        "field": "deductible",
+        "op": "exists",
+        "value": false,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "fraud_score",
+        "op": "gte",
+        "value": 25,
+        "critical": true
+      },
+      {
+        "agent": "fraud_analyst",
+        "field": "risk_level",
+        "op": "in",
+        "value": ["moderate", "high", "critical"],
+        "critical": true
+      },
+      {
+        "agent": "senior_reviewer",
+        "field": "decision",
+        "op": "in",
+        "value": ["approved", "approved_partial", "investigate"],
+        "critical": false
+      },
+      {
+        "agent": "finance",
+        "field": "payment_authorized",
+        "op": "eq",
+        "value": true,
+        "critical": false
+      }
+    ],
+    "business_rules": [
+      {
+        "name": "Estimate-to-limit triggers elevated fraud score",
+        "if": {
+          "agent": "assessor",
+          "field": "repair_estimate.total",
+          "op": "gte",
+          "value": 20000
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "fraud_score",
+          "op": "gte",
+          "value": 30
+        }
+      },
+      {
+        "name": "New policy + single vehicle + no witnesses = elevated risk",
+        "if": {
+          "agent": "fraud_analyst",
+          "field": "fraud_score",
+          "op": "gte",
+          "value": 25
+        },
+        "then": {
+          "agent": "fraud_analyst",
+          "field": "risk_level",
+          "op": "in",
+          "value": ["moderate", "high", "critical"]
+        }
+      },
+      {
+        "name": "Blind assessment: assessor must not leak financial data",
+        "if": {
+          "agent": "assessor",
+          "field": "repair_estimate.total",
+          "op": "exists",
+          "value": true
+        },
+        "then": {
+          "agent": "assessor",
+          "field": "coverage_limit",
+          "op": "exists",
+          "value": false
         }
       }
     ],

@@ -10,9 +10,6 @@ ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 # Model for running agents (the "workers")
 AGENT_MODEL = "claude-haiku-4-5-20251001"  # Fast + cost-efficient for structured output
 
-# Model for evaluation (the "judge") — use a stronger model
-EVAL_MODEL = "claude-sonnet-4-6"
-
 # Model for improvement (the "coach") — strongest available
 IMPROVER_MODEL = "claude-sonnet-4-6"
 
