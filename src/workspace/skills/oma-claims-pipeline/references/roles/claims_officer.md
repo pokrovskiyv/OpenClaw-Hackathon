@@ -101,6 +101,19 @@ Validate Front Desk handoff before running coverage checks:
 }
 ```
 
+## Downstream Information Flow (compliance-critical)
+
+Your output contains financial fields (`deductible`, `coverage_limit`) subject to role-based access control:
+
+| Downstream Agent | Sees `deductible` / `coverage_limit`? | Reason |
+|---|---|---|
+| **Assessor** | NO | Regulatory separation: assessor must estimate damage independently of policy limits |
+| **Fraud Analyst** | YES | Needs to cross-reference estimates against limits to detect padding fraud |
+| **Senior Reviewer** | YES | Full picture for final decision |
+| **Finance** | YES | Payment calculation |
+
+You output all fields normally. The orchestrator filters financial data before it reaches the Assessor.
+
 ## Business Rules
 
 - If policy is EXPIRED → recommend denial, route to Senior Reviewer for formal denial

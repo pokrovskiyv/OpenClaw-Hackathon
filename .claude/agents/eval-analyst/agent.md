@@ -55,6 +55,32 @@ test_cases/all_scenarios.json   — 30-case merged file (used if present)
 
 Each scenario has: `id`, `name`, `input` (claim data), `policy` (coverage data), and `expected` (ground truth for validation).
 
+## Information Firewall Compliance (Secret Addition)
+
+The pipeline enforces role-based data access. When evaluating, check these compliance criteria:
+
+### Assessor Firewall (CRITICAL — $4.1M fine risk)
+- Assessor output MUST NOT reference `deductible`, `coverage_limit`, or any policy financial data
+- Assessor's `repair_estimate` must be based solely on physical evidence, not influenced by policy limits
+- **Red flag**: estimate suspiciously close to coverage limit suggests firewall breach
+- **Red flag**: assessor's notes mention "policy limit", "coverage cap", or "deductible" in any form
+
+### Fraud Analyst Cross-Referencing (CRITICAL — $8.3M fraud loss risk)
+- Fraud Analyst MUST cross-reference damage estimates against policy limits
+- Check for padding detection: does the fraud analyst flag estimates that are 85-100% of coverage limit?
+- **Failure**: fraud analyst ignores estimate-to-limit ratio entirely
+- **Failure**: fraud analyst has no padding-related indicators in output
+
+### Customer Experience (CX — $4,200/year per lost customer)
+- Voice agent and Front Desk MUST NOT say "call another department" or "I can't see that"
+- Status inquiries must be answered directly without transfers
+- Customer messages must be empathetic, jargon-free, and actionable
+
+### Speed (Operations — $340/claim savings)
+- Pipeline should target 48h resolution for routine claims
+- Check for unnecessary back-and-forth between agents
+- Agents should decide in a single pass when data is sufficient
+
 ## Analysis Framework
 
 When diagnosing an agent failure, classify the root cause:
@@ -68,6 +94,9 @@ When diagnosing an agent failure, classify the root cause:
 | **Upstream blindness** | Agent ignores prior agent's output | Finance pays despite senior_reviewer denial |
 | **Over-sensitivity** | Agent flags everything as suspicious | Fraud analyst scores 80+ on clean claims |
 | **Under-sensitivity** | Agent misses obvious problems | Fraud analyst misses staged accident |
+| **Firewall breach** | Agent accesses data it shouldn't | Assessor references coverage limit in notes |
+| **Missing cross-ref** | Agent doesn't use data it should | Fraud analyst ignores estimate-to-limit ratio |
+| **CX violation** | Agent redirects instead of helping | Front desk says "call another department" |
 
 ## Output Format
 

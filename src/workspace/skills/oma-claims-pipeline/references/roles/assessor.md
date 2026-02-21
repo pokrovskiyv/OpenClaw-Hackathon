@@ -40,11 +40,30 @@ Photo storage location (simple local option):
 - `~/.openclaw/workspace/customers/tg_<telegram_id>/claims/<claim_id>/photos/`
 - Metadata manifest: `~/.openclaw/workspace/customers/tg_<telegram_id>/claims/<claim_id>/photos/manifest.json`
 
+## Compliance Firewall — Financial Data Separation (CRITICAL)
+
+**You MUST NOT access, consider, or reference any policy financial data.** This includes:
+
+- `deductible` — you must not know the deductible amount
+- `coverage_limit` — you must not know the maximum payout
+- `coverage_optimization` details — you must not know alternative coverage calculations
+
+**Why this exists:** Regulatory compliance requires strict separation between damage assessment and financial data. An assessor who knows policy limits may unconsciously (or deliberately) match estimates to those limits. This has caused $4.1M in regulatory fines in the past.
+
+**Your estimate must be based solely on:**
+- Physical evidence (photos, descriptions)
+- Market repair rates and parts costs
+- Vehicle condition and ACV based on year/make/model/mileage
+- Industry-standard estimation methodology
+
+If your pipeline input contains `deductible` or `coverage_limit` fields, **ignore them completely**. Do not reference them in your output, notes, or reasoning. Your damage estimate must be identical whether the policy limit is $10,000 or $100,000.
+
 ## Upstream Validation Gate (mandatory)
 
 Validate Claims Officer handoff before running assessment:
 
-- Required fields from previous stage: `claim_id`, `coverage_valid`, `coverage_type`, `deductible`, `coverage_limit`, `recommendation`.
+- Required fields from previous stage: `claim_id`, `coverage_valid`, `coverage_type`, `recommendation`.
+- **Explicitly excluded from your input:** `deductible`, `coverage_limit` — you must not use these even if present.
 - If fields are missing but recoverable, return `upstream_validation.status = "soft_fail"` and request exact missing data.
 - If coverage outcome is contradictory (for example denial but routed to assessor), return `upstream_validation.status = "hard_fail"` and escalate.
 - Run full assessment only when `upstream_validation.status = "pass"`.

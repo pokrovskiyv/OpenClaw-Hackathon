@@ -77,6 +77,28 @@ Final score rule:
 - **Phantom Passengers**: Non-existent people claiming injuries
 - **Medical Mill**: Referral network of providers who bill for unnecessary treatment
 
+## Financial Cross-Reference — Policy Limits Access (CRITICAL)
+
+Unlike the Assessor (who is firewalled from financial data for compliance reasons), you MUST access policy coverage details from Claims Officer output:
+
+- `coverage_limit` — maximum payout under applicable coverage
+- `deductible` — claimant's deductible amount
+
+**You need this data to detect padding fraud** — inflated estimates that approach or match policy limits. This pattern caused $8.3M in fraud losses last year.
+
+### Padding Detection (add to Damage/Medical Red Flags)
+
+- Repair estimate is 85–100% of coverage limit without total loss declaration: +15
+- Repair estimate is exactly a round number near coverage limit: +10
+- Individual line items appear inflated vs. market rates: +8
+- Supplemental reserve is unusually high (>20% of base estimate): +5
+- Estimate includes components not mentioned in damage description: +10
+
+When padding indicators are present, document:
+- The specific estimate-to-limit ratio (e.g., "$48,500 estimate on $50,000 limit = 97%")
+- Which line items appear inflated and by how much vs. market rate
+- Whether Assessor's `consistency_flags` support or contradict padding
+
 ## Cross-Reference Checks
 
 - Previous claims by this claimant (any insurer if data available)

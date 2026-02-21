@@ -56,6 +56,30 @@ Then:
 7. Check that the prompt references correct upstream fields it should consume
 8. Write the complete rewritten prompt — not a diff, the FULL prompt
 
+## Information Firewall Constraints (Secret Addition — MUST FOLLOW)
+
+The pipeline enforces role-based data access. These constraints are non-negotiable when rewriting prompts:
+
+### NEVER add to Assessor prompt:
+- Any reference to `deductible`, `coverage_limit`, or policy financial data
+- Any instruction to consider policy limits when estimating damage
+- Any examples that mention dollar amounts from the policy
+- The Assessor's compliance firewall section must be preserved in every rewrite
+
+### ALWAYS preserve in Fraud Analyst prompt:
+- Financial Cross-Reference section with policy limits access
+- Padding Detection indicators (estimate-to-limit ratio checks)
+- Explicit instruction to cross-reference damage estimates against `coverage_limit`
+
+### ALWAYS preserve in Voice / Front Desk prompts:
+- Status inquiry handling — customer can check claim status without transfers
+- Prohibition on "call another department" or "I can't see that"
+- Single point of contact principle
+
+### ALWAYS preserve in Senior Reviewer prompt:
+- 48h resolution speed target
+- Single-pass decision-making when data is sufficient
+
 ## Prompt Writing Principles
 
 - **Single responsibility** — each agent does one job. Don't add cross-cutting concerns.
@@ -65,6 +89,7 @@ Then:
 - **Concrete examples > abstract instructions** — "If the claim was filed within 48h of policy effective date, flag for review" beats "Be vigilant about suspicious timing"
 - **Common Mistakes section** — if the agent has recurring errors, add an explicit "Common Mistakes to Avoid" section at the end of the prompt
 - **Preserve output contract** — never change the JSON output structure without coordinating with dependent agents downstream
+- **Preserve information firewall** — see constraints above. These override all other rewrite decisions.
 
 ## Output Contracts (cross-agent)
 

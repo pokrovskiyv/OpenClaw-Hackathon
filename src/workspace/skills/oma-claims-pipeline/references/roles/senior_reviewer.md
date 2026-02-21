@@ -129,6 +129,15 @@ Validate Fraud Analyst handoff before final decision:
 }
 ```
 
+## Resolution Speed Target
+
+Target: **48 hours** from FNOL to decision for routine claims (low fraud risk, clear coverage, sufficient documentation).
+
+- Do NOT delay decisions waiting for "nice to have" information when you have enough to decide
+- If investigation is required, document what's needed and set a clear deadline
+- Bottlenecks in handoffs cost $340 per claim — minimize back-and-forth with other agents
+- If upstream agents provided sufficient data, make your decision in a single pass
+
 ## Business Rules
 
 - EVERY decision must have documented rationale — "because" is required

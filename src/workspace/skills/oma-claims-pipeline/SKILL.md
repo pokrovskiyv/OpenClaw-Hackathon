@@ -103,12 +103,43 @@ Run from the skill directory:
 - Integration notes: `references/voice-integration.md`
 - Business requirements: `references/business-requirements.md`
 
+## Information Architecture — Role-Based Data Access
+
+The pipeline enforces **regulatory data separation** between damage assessment and financial data.
+
+### Data Access Matrix
+
+| Data Field | Front Desk | Claims Officer | Assessor | Fraud Analyst | Senior Reviewer | Finance |
+|---|---|---|---|---|---|---|
+| Claim details | YES | YES | YES | YES | YES | YES |
+| Policy status | — | YES | YES (valid/invalid only) | YES | YES | YES |
+| Coverage type | — | YES | YES | YES | YES | YES |
+| **Deductible** | — | YES (produces) | **NO** | YES | YES | YES |
+| **Coverage limit** | — | YES (produces) | **NO** | YES | YES | YES |
+| Damage estimate | — | — | YES (produces) | YES | YES | YES |
+| Fraud score | — | — | — | YES (produces) | YES | — |
+
+### Why This Matters
+
+- **Assessor firewall**: Regulators require separation between assessment and financial data. An assessor who sees policy limits may match estimates to those limits — this caused $4.1M in compliance fines.
+- **Fraud cross-reference**: Fraud Analyst MUST see both damage estimates AND policy limits to detect padding fraud ($8.3M in losses from inflated estimates matched to limits).
+- **Customer transparency**: Voice agent and Front Desk have read access to claim status — customer never hears "call another department."
+- **Speed**: Pipeline targets 48h resolution for routine claims — no unnecessary bottlenecks or handoff delays.
+
+### Enforcement
+
+- The orchestrator filters Claims Officer financial fields before passing context to Assessor
+- Assessor prompt includes explicit compliance firewall instructions
+- Fraud Analyst prompt explicitly requires policy limit cross-referencing
+- `handoff_validate.py` validates output contracts per role
+
 ## Prohibitions
 
 - Do not skip roles in the sequence.
 - Do not produce final customer decision before `senior_reviewer`.
 - Do not trigger payment before `finance` validation.
 - Do not expose internal fraud heuristics in customer-facing voice output.
+- Do not pass `deductible` or `coverage_limit` to the Assessor.
 
 ## References
 
